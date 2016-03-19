@@ -1,1 +1,3 @@
 #define MAX_VAR 127
+#define MAX_NUM_VARS 128
+#define MAX_NUM_CLAUSES 65536
