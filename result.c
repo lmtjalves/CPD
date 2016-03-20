@@ -9,9 +9,9 @@ struct result new_stack_result(void){
   return res;
 }
 
-uint8_t result_get_maxsat_value (struct result result){
+uint8_t result_get_maxsat_value (struct result *result){
   //#pragma omp critical
-  return result.maxsat_value;
+  return result->maxsat_value;
 }
 
 void result_set_maxsat_value (struct result *result, uint8_t new_maxsat_value){
@@ -19,9 +19,9 @@ void result_set_maxsat_value (struct result *result, uint8_t new_maxsat_value){
   result->maxsat_value = new_maxsat_value;
 }
 
-uint64_t result_get_na (struct result result){
+uint64_t result_get_na (struct result *result){
   //#pragma omp critical
-  return result.na;
+  return result->na;
 }
 
 void result_set_na (struct result *result, uint64_t number_assignments){
@@ -29,9 +29,9 @@ void result_set_na (struct result *result, uint64_t number_assignments){
   result->na = number_assignments;
 }
 
-struct assignment result_get_assignment_sample(struct result result){
+struct assignment result_get_assignment_sample(struct result *result){
   //#pragma omp critical
-  return result.sample;
+  return result->sample;
 }
 
 void result_set_assignment_sample(struct result *result, struct assignment new_sample){

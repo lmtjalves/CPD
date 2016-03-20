@@ -29,10 +29,10 @@ UT_TEST(result_set_maxsat_value_get_maxsat_value) {
     struct result result = new_stack_result();
 
     result_set_maxsat_value(&result, 0);
-    UT_ASSERT_FALSE(result_get_maxsat_value(result));
+    UT_ASSERT_FALSE(result_get_maxsat_value(&result));
 
     result_set_maxsat_value(&result, 10);
-    UT_ASSERT_TRUE(result_get_maxsat_value(result) == 10);
+    UT_ASSERT_TRUE(result_get_maxsat_value(&result) == 10);
 
     return 0;
 }
@@ -54,10 +54,10 @@ UT_TEST(result_set_na_get_na) {
     struct result result = new_stack_result();
 
     result_set_na(&result, 0);
-    UT_ASSERT_FALSE(result_get_na(result));
+    UT_ASSERT_FALSE(result_get_na(&result));
 
     result_set_na(&result, 10);
-    UT_ASSERT_TRUE(result_get_na(result) == 10);
+    UT_ASSERT_TRUE(result_get_na(&result) == 10);
 
     return 0;
 }
@@ -96,8 +96,8 @@ UT_TEST(result_set_assignment_sample_get_assignment_sample) {
     }
 
     result_set_assignment_sample(&result, assignment);
-    UT_ASSERT_TRUE(result_get_assignment_sample(result).vars[0] == assignment.vars[0] && \
-                   result_get_assignment_sample(result).vars[1] == assignment.vars[1]);
+    UT_ASSERT_TRUE(result_get_assignment_sample(&result).vars[0] == assignment.vars[0] && \
+                   result_get_assignment_sample(&result).vars[1] == assignment.vars[1]);
 
     return 0;
 }
