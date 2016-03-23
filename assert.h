@@ -71,4 +71,21 @@ do { \
     exit(1); \
 } while(0)
 
+
+#define ASSERT_MALLOC(TYPE, VAR, COUNT) \
+do { \
+    VAR = (TYPE *) malloc(sizeof(TYPE) * (COUNT)); \
+    ASSERT_NON_NULL(VAR); \
+} while(0)
+
+#define ASSERT_MALLOC_CREATE_VAR(TYPE, VAR, COUNT) \
+TYPE *VAR; \
+ASSERT_MALLOC(TYPE, VAR, COUNT)
+
+#define ASSERT_FREE(p) \
+do { \
+ASSERT_NON_NULL(p); \
+free(p); \
+} while(0)
+
 #endif /*ASSERT_H__*/
