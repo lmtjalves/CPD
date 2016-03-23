@@ -42,10 +42,10 @@ void result_set_assignment_sample(struct result *result, struct assignment new_s
 
 bool result_update(struct result *result, uint8_t new_maxsat_value, struct assignment new_sample){
   if (new_maxsat_value == result->maxsat_value){
-    //#pragma omp atomic TODO
+    //#pragma omp atomic FIXME
     (result->na)++;
   } else if (new_maxsat_value > result->maxsat_value){
-    //#pragma omp critical TODO
+    //#pragma omp critical FIXME
     {
       result->maxsat_value = new_maxsat_value;
       result->sample.vars[0] = new_sample.vars[0];
