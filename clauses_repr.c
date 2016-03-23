@@ -132,7 +132,7 @@ void free_clauses_repr(struct clauses_repr *clauses_repr) {
 
     return;
 on_error:
-    ASSERT_SENTINEL;
+    ASSERT_EXIT();
 }
 
 

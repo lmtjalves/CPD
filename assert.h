@@ -25,25 +25,29 @@ fprintf(stderr, LOG_TYPE " (%s:%d: errno: '%s' ) " MESSAGE "\n", __FILE__, __LIN
 #define ASSERT_LOG_ASSERT_VA(MESSAGE, ...) ASSERT_LOG_GENERIC_VA("[ASSERT]", MESSAGE, __VA_ARGS__)
 
 #ifdef __linux__
-#include <execinfo.h>
-static void assert_log_backtrace(void) {
-    const int BACKTRACE_LIMIT = 100;
-    void *trace[BACKTRACE_LIMIT] ; 
-    char **messages = (char **)NULL;
-    int i, trace_size = 0;
 
-    trace_size = backtrace(trace, BACKTRACE_LIMIT);
-    messages = backtrace_symbols(trace, trace_size);
-    ASSERT_LOG_BACKTRACE("Execution_path:");
-    for (i=0; i<trace_size; ++i) {
-        ASSERT_LOG_BACKTRACE_VA("%s", messages[i]);
-    }
-    free(messages);
-}
+#include <execinfo.h>
+#define ASSERT_LOG_BACKTRACE_BACKTRACE() \
+do { \
+    /*using albb prefix to avoid shadowing other variables*/ \
+    const int albb_BACKTRACE_LIMIT = 100; \
+    void *albb_trace[albb_BACKTRACE_LIMIT]; \
+    char **albb_messages = (char **)NULL; \
+    int albb_i, albb_trace_size = 0; \
+\
+    albb_trace_size = backtrace(albb_trace, albb_BACKTRACE_LIMIT); \
+    albb_messages = backtrace_symbols(albb_trace, albb_trace_size); \
+    ASSERT_LOG_BACKTRACE("Execution_path:"); \
+    for (albb_i=0; albb_i < albb_trace_size; ++albb_i) { \
+        ASSERT_LOG_BACKTRACE_VA("%s", albb_messages[albb_i]); \
+    } \
+    free(albb_messages);\
+} while(0)
+
 #else
-static void assert_log_backtrace(void) {
-    ASSERT_LOG_BACKTRACE("Not printing backtrace because not running on linux!");
-}
+
+#define ASSERT_LOG_BACKTRACE_BACKTRACE() ASSERT_LOG_BACKTRACE("Not printing backtrace because not running on linux!")
+
 #endif /*__linux__*/
 
 #define ASSERT_MSG(EXPR, MSG) ASSERT_MSG_VA(EXPR, MSG "%s", "")
@@ -51,9 +55,9 @@ static void assert_log_backtrace(void) {
 #define ASSERT_MSG_VA(EXPR, MSG, ...) do {\
     if (!(EXPR)) {\
         ASSERT_LOG_ASSERT_VA("Evaluation of '" #EXPR "' failed. ||| "  MSG, __VA_ARGS__);\
-        assert_log_backtrace();\
+        ASSERT_LOG_BACKTRACE_BACKTRACE(); \
         goto on_error; /*Error handling*/\
-    }\
+    } \
 } while (0)
 
 #define ASSERT(EXPR) ASSERT_MSG(EXPR, "")
@@ -62,10 +66,9 @@ static void assert_log_backtrace(void) {
 
 #define ASSERT_EXIT() \
 do { \
-    ASSERT_LOG_ASSERT("Exiting"); \
+    ASSERT_LOG_ASSERT("Reached point of no return. Exiting."); \
+    ASSERT_LOG_BACKTRACE_BACKTRACE(); \
     exit(1); \
 } while(0)
-
-#define ASSERT_SENTINEL ASSERT_MSG(false, "Reached sentinel. This should never happen")
 
 #endif /*ASSERT_H__*/
