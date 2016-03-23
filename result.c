@@ -39,3 +39,21 @@ void result_set_assignment_sample(struct result *result, struct assignment new_s
   result->sample.vars[0] = new_sample.vars[0];
   result->sample.vars[1] = new_sample.vars[1];
 }
+
+bool result_update(struct result *result, uint8_t new_maxsat_value, struct assignment new_sample){
+  if (new_maxsat_value == result->maxsat_value){
+    //#pragma omp atomic TODO
+    (result->na)++;
+  } else if (new_maxsat_value > result->maxsat_value){
+    //#pragma omp critical TODO
+    {
+      result->maxsat_value = new_maxsat_value;
+      result->sample.vars[0] = new_sample.vars[0];
+      result->sample.vars[1] = new_sample.vars[1];
+      result->na = 1;
+    }
+  } else {
+    return false;
+  }
+  return true;
+}

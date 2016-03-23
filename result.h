@@ -5,7 +5,7 @@
 #include "stdio.h"
 
 struct result {
-	uint8_t maxsat_value; //value of MAXSAT
+	uint8_t maxsat_value; //value of MAXSAT (max:128)
 	uint64_t na; //number of complete variable assignments that achieve MAXSAT
 	struct assignment sample; //one sample of the assignments that achieve MAXSAT
 };
@@ -20,5 +20,8 @@ void result_set_na (struct result *result, uint64_t number_assignments);
 
 struct assignment result_get_assignment_sample(struct result *result);
 void result_set_assignment_sample(struct result *result, struct assignment new_sample);
+
+//returns true if something was updated, returns false otherwise
+bool result_update(struct result *result, uint8_t new_maxsat_value, struct assignment new_sample);
 
 #endif /*RESULT_H__*/
