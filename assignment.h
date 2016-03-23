@@ -12,6 +12,7 @@ struct assignment {
 };
 
 struct assignment new_stack_assignment(void);
+struct assignment new_stack_assignment_from_num(uint64_t num[2]); /*num[0] has the highest bits, num[1] has the lowest bits read from right to left */
 bool assignment_get_var(struct assignment assignment, uint8_t var);
 void assignment_set_var(struct assignment *assignment, uint8_t var, bool value);
 
