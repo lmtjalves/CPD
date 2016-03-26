@@ -13,7 +13,7 @@ struct result {
 
 struct result new_stack_result(void);
 
-uint8_t result_get_maxsat_value (struct result *result);
+uint16_t result_get_maxsat_value (struct result *result);
 void result_set_maxsat_value (struct result *result, uint16_t new_maxsat_value);
 
 uint64_t result_get_na (struct result *result);

@@ -84,14 +84,19 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 	if(var_to_test > clauses_repr_num_vars(clauses->clauses_repr)) {
 		// Trivial case were all the variables are assigned
 		// Check if we achieved a maxsat value or not and update if so update the
-		// for(int i = 1; i <= clauses_repr_num_vars(clauses->clauses_repr); i++) {
-		// 	printf(" var%d -> %d", i, assignment_get_var(clauses->assignment, i));
-		// }
+		for(int i = 1; i <= clauses_repr_num_vars(clauses->clauses_repr); i++) {
+			if(assignment_get_var(clauses->assignment, i) == false) {
+     	 	printf("%d ", -i);
+	    } else {
+	      printf("%d ", i);
+	    }
+		}
+
 		// printf("\nCurrent result: %d, %llu\n", result_get_maxsat_value(result), result_get_na(result));
 		// printf("Have: %d\n", clauses->num_true_clauses);
 
-		result_update(result, clauses->num_true_clauses, clauses->assignment);
-	} else if(var_to_test < clauses->last_assigned_var) {
+		if(result_update(result, clauses->num_true_clauses, clauses->assignment)) printf("%d\n", clauses->num_true_clauses);
+	} else if(var_to_test <= clauses->last_assigned_var) {
 		// The variable as already a fixed value assigned, don't branch, just evaluate
 		// and go to the next variable.
 		eval_var_clauses(clauses, var_to_test);
@@ -101,7 +106,7 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 
 		partial_maxsat(clauses, result, var_to_test + 1);
 		// No need to compensate in this case, since all the previous variables also
-		// have a fixed value
+		// have a fixed value no other combination will be tested
 	} else {
 		// We can assign to the variable two values, true or false
 		for(int i = 0; i <= 1; i++) {
@@ -111,13 +116,9 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 			eval_var_clauses(clauses, var_to_test);
 
 			// Don't follow this assignment if there's a better result already
-			if(should_prune(clauses, result)){
-				rollback_assignment_to_var(clauses, var_to_test);
-				continue;
+			if(!should_prune(clauses, result)){
+				partial_maxsat(clauses, result, var_to_test + 1);
 			}
-
-			// Go to the next variable
-			partial_maxsat(clauses, result, var_to_test + 1);
 
 			// Rollback to undo the effects of this assignment
 			rollback_assignment_to_var(clauses, var_to_test);
@@ -159,9 +160,6 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var) {
 		int8_t clause_filter_value = clauses->calculated_clauses_filter[clause_id];
 
 		if(abs(clause_filter_value) == var) {
-			// Make it not calculated
-			clauses->calculated_clauses_filter[clause_id] = 0;
-
 			// The variable is the one that is determining the value of the clause
 			clauses->num_unknown_clauses++;
 
@@ -170,6 +168,9 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var) {
 			} else {
 				clauses->num_true_clauses--;
 			}
+
+			// Make it not calculated
+			clauses->calculated_clauses_filter[clause_id] = 0;
 		}
 	}
 
@@ -190,7 +191,6 @@ void eval_var_clauses(struct clauses *clauses, uint8_t var) {
 
 	struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
 
-	// FIXME Possible enhancement, stop when it wont improve the maxsat (aka prunning)
 	for(uint16_t i = 0; i < var_clauses.len; i++) {
 		eval_clause(clauses, var_clauses.first[i]);
 	}
@@ -227,7 +227,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
 	// Assume it's value is false
 	enum clause_value ret = FALSE;
 	int8_t var = 0;
-	for(int i = 0; i < clause.len; i++) {
+	for(int8_t i = 0; i < clause.len; i++) {
 		var = clause.first[i];
 
 		if(abs(var) > clauses->last_assigned_var) {

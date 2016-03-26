@@ -39,4 +39,12 @@ struct clauses {
  */
 struct result maxsat(struct clauses_repr *clauses_repr);
 
+void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test);
+bool should_prune(struct clauses *clauses, struct result *result);
+void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
+void eval_var_clauses(struct clauses *clauses, uint8_t var);
+void eval_clause(struct clauses *clauses, uint16_t clause_id);
+
+struct clauses *new_stack_clauses(struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var);
+
 #endif /*CLAUSES_H__*/

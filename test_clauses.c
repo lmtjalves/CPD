@@ -3,7 +3,7 @@
 #include "clauses.h"
 
 UT_TEST(create_clauses) {
-  struct new_clauses_repr_from_file clauses_repr_aux = new_clauses_repr_from_file("test/ex2.in");
+  struct new_clauses_repr_from_file clauses_repr_aux = new_clauses_repr_from_file("test/ex3.in");
 
   UT_ASSERT_TRUE(clauses_repr_aux.success == true);
   struct clauses_repr *clauses_repr = clauses_repr_aux.clauses_repr;

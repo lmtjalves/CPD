@@ -10,7 +10,7 @@ struct result new_stack_result(void){
   return res;
 }
 
-uint8_t result_get_maxsat_value (struct result *result){
+uint16_t result_get_maxsat_value (struct result *result){
   ASSERT_NON_NULL(result);
 
   return result->maxsat_value;
@@ -77,6 +77,7 @@ bool result_update(struct result *result, uint16_t new_maxsat_value, struct assi
     //#pragma omp atomic FIXME
     (result->na)++;
   } else if (new_maxsat_value > result->maxsat_value){
+
     //#pragma omp critical FIXME
     {
       result->maxsat_value = new_maxsat_value;
