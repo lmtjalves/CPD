@@ -6,7 +6,27 @@
 #include "parse_long.h"
 #include "debug.h"
 
+/*These fixme just mark the spot where "project specific" cosntraints are abused to optimized space
+ *FIXME: var_clauses_index depends on MAX_NUM_VARS_CLAUSE MAX_NUM_CLAUSES
+ *FIXME: var_clauses_index_clauses depends on MAX_NUM_CLAUSES
+ *FIXME: clause_num_index depends on MAX_NUM_VARS_CLAUSE MAX_NUM_CLAUSES
+ *FIXME: clause_num_index_clauses depends on MAX_NUM_VAR
+ *FIXME: num_clauses depends on MAX_NUM_CLAUSES
+ *FIXME: num_vars depends on MAX_VAR*/
+struct clauses_repr {
+    /*saves which clauses a variable is in*/
+    uint32_t *var_clauses_index; /*max 20 vars/clause, max 65535 clauses. 20*65536 can be index with uint32_t*/
+    uint16_t *var_clauses_index_clauses; /*max 65535 clause, can be indexed with uint16_t*/
 
+    /*saves all clauses, by number*/
+    uint32_t *clause_num_index; /*see var_clauses_index*/
+    int8_t *clause_num_index_clauses; /*max 127 vars, negative is represented with 8th bit, so int8_t */
+
+    uint16_t num_clauses;
+    uint8_t num_vars;
+};
+
+/*Structs for internal functions*/
 struct file_read {
     size_t num_read;
     bool success;
@@ -44,12 +64,13 @@ static int8_t var_index_from_var(int8_t var);
  * Implementation of public functions
  */
 
-struct new_stack_clauses_repr_from_file new_stack_clauses_repr_from_file(const char *file_path) {
+struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_path) {
     /* We read the file two times.
      * The first time we find out the total number of varibles, clauses, etc
      * Then we alloc the memory, 
      * The second time we fill the data structures*/
-    struct new_stack_clauses_repr_from_file ret = {.success = true};
+    struct new_clauses_repr_from_file ret = {.success = true};
+    ASSERT_MALLOC(struct clauses_repr, ret.clauses_repr, 1);
 
 
     FILE *file = fopen(file_path, "r");
@@ -77,13 +98,16 @@ struct new_stack_clauses_repr_from_file new_stack_clauses_repr_from_file(const c
         struct parse_maxsat parse_maxsat_ret = parse_maxsat(file, var_clause_count_ret, var_count);
         ASSERT_MSG(parse_maxsat_ret.success, "Failed parsing clauses from file.");
 
-        ret.clauses_repr.clause_num_index = parse_maxsat_ret.clause_num_index;
-        ret.clauses_repr.clause_num_index_clauses = parse_maxsat_ret.clause_num_index_clauses;
-        struct var_clauses_index var_clauses_index_ret = var_clauses_index(var_clause_count_ret, ret.clauses_repr.clause_num_index, ret.clauses_repr.clause_num_index_clauses, var_count);
+        ret.clauses_repr->clause_num_index = parse_maxsat_ret.clause_num_index;
+        ret.clauses_repr->clause_num_index_clauses = parse_maxsat_ret.clause_num_index_clauses;
+        struct var_clauses_index var_clauses_index_ret = var_clauses_index(var_clause_count_ret, ret.clauses_repr->clause_num_index, ret.clauses_repr->clause_num_index_clauses, var_count);
         ASSERT_MSG(var_clauses_index_ret.success, "Failed to build the var_clause_index.");
-        ret.clauses_repr.var_clauses_index = var_clauses_index_ret.var_clauses_index;
-        ret.clauses_repr.var_clauses_index_clauses = var_clauses_index_ret.var_clauses_index_clauses;
+        ret.clauses_repr->var_clauses_index = var_clauses_index_ret.var_clauses_index;
+        ret.clauses_repr->var_clauses_index_clauses = var_clauses_index_ret.var_clauses_index_clauses;
     }
+
+    ret.clauses_repr->num_vars = var_clause_count_ret.num_vars;
+    ret.clauses_repr->num_clauses = var_clause_count_ret.num_clauses;
     
     return ret;
 
@@ -123,18 +147,33 @@ struct clauses_repr_clause clauses_repr_clause(const struct clauses_repr *clause
 
 void free_clauses_repr(struct clauses_repr *clauses_repr) {
     ASSERT_NON_NULL(clauses_repr);
-#define CHECKED_FREE(p) ASSERT_NON_NULL(p); free(p)
-    CHECKED_FREE(clauses_repr->var_clauses_index);
-    CHECKED_FREE(clauses_repr->var_clauses_index_clauses);
-    CHECKED_FREE(clauses_repr->clause_num_index);
-    CHECKED_FREE(clauses_repr->clause_num_index_clauses);
-#undef CHECKED_FREE
+    ASSERT_FREE(clauses_repr->var_clauses_index);
+    ASSERT_FREE(clauses_repr->var_clauses_index_clauses);
+    ASSERT_FREE(clauses_repr->clause_num_index);
+    ASSERT_FREE(clauses_repr->clause_num_index_clauses);
+    ASSERT_FREE(clauses_repr);
 
     return;
 on_error:
-    ASSERT_SENTINEL;
+    ASSERT_EXIT();
 }
 
+uint8_t clauses_repr_num_vars(const struct clauses_repr *clauses_repr) {
+    ASSERT_NON_NULL(clauses_repr);
+    return clauses_repr->num_vars;
+
+on_error:
+    ASSERT_EXIT();
+}
+
+uint16_t clauses_repr_num_clauses(const struct clauses_repr *clauses_repr) {
+    ASSERT_NON_NULL(clauses_repr);
+    return clauses_repr->num_clauses;
+
+on_error:
+    ASSERT_EXIT();
+
+}
 
 /*
  * private functions
@@ -259,15 +298,13 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
     struct parse_maxsat ret = {.success = true};
 
     /*Alloc clauses_repr memory*/
-#define CHECKED_MALLOC(VAR, TYPE, COUNT) TYPE *VAR = (TYPE *) malloc(sizeof(TYPE) * (COUNT)); ASSERT_NON_NULL((VAR))
-    CHECKED_MALLOC(cur_clause_num_index, uint32_t, var_clause_count.num_clauses + 1); /* +1 because we index with clause_num_index[i] and [i+1] */
+    ASSERT_MALLOC_CREATE_VAR(uint32_t, cur_clause_num_index, var_clause_count.num_clauses + 1); /* +1 because we index with clause_num_index[i] and [i+1] */
     ret.clause_num_index = cur_clause_num_index;
     *cur_clause_num_index = 0;
     ++cur_clause_num_index;
 
-    CHECKED_MALLOC(cur_clause_num_index_clauses, int8_t, var_clause_count.total_num_vars);
+    ASSERT_MALLOC_CREATE_VAR(int8_t, cur_clause_num_index_clauses, var_clause_count.total_num_vars);
     ret.clause_num_index_clauses = cur_clause_num_index_clauses;
-#undef CHECKED_MALLOC
 
     file_read_ret = file_read(file, buf, buf_size);
     ASSERT_MSG_VA(file_read_ret.success, "Failed read. error '%d' eof '%d'", file_read_ret.error, file_read_ret.eof);
@@ -350,9 +387,8 @@ on_error:
 static struct var_clauses_index var_clauses_index(struct var_clause_count var_clause_count, const uint32_t *clause_num_index, const int8_t *clause_num_index_clauses, const size_t *var_count) {
     struct var_clauses_index ret = {.success = true};
 
-#define CHECKED_MALLOC(VAR, TYPE, COUNT) TYPE *VAR = (TYPE *) malloc(sizeof(TYPE) * (COUNT)); ASSERT_NON_NULL(VAR)
     /* +1 because we don't use var 0 and +1 reason above . Not name cur_ because we don't change it.*/
-    CHECKED_MALLOC(var_clauses_index, uint32_t, var_clause_count.num_vars + 2); 
+    ASSERT_MALLOC_CREATE_VAR(uint32_t, var_clauses_index, var_clause_count.num_vars + 2); 
     ret.var_clauses_index = var_clauses_index;
     ret.var_clauses_index[0] = 0; /*skip var 0*/
     ret.var_clauses_index[1] = 0; /*var 1 start at position 0*/
@@ -365,9 +401,8 @@ static struct var_clauses_index var_clauses_index(struct var_clause_count var_cl
     }
 
     /*Not name cur_ because we don't change it.*/
-    CHECKED_MALLOC(var_clauses_index_clauses, uint16_t, var_clause_count.total_num_vars);
+    ASSERT_MALLOC_CREATE_VAR(uint16_t, var_clauses_index_clauses, var_clause_count.total_num_vars);
     ret.var_clauses_index_clauses = var_clauses_index_clauses;
-#undef CHECKED_MALLOC
 
     { /*error: jump into scope of identifier with variably modified type*/
         size_t clause;

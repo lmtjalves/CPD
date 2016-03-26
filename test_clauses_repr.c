@@ -3,27 +3,29 @@
 #include "clauses_repr.h"
 
 UT_TEST(ex1) {
-    struct new_stack_clauses_repr_from_file ret = new_stack_clauses_repr_from_file("test/ex1.in");
+    struct new_clauses_repr_from_file ret = new_clauses_repr_from_file("test/ex1.in");
     UT_ASSERT_TRUE(ret.success);
-    struct clauses_repr cr = ret.clauses_repr;
+    struct clauses_repr *cr = ret.clauses_repr;
+    UT_ASSERT_TRUE(clauses_repr_num_vars(cr) == 3);
+    UT_ASSERT_TRUE(clauses_repr_num_clauses(cr) == 4);
    
     {
         struct clauses_repr_clause crc;
-        crc = clauses_repr_clause(&cr, 0);
+        crc = clauses_repr_clause(cr, 0);
         UT_ASSERT_TRUE(crc.len == 1);
         UT_ASSERT_TRUE(crc.first[0] == -1);
 
-        crc = clauses_repr_clause(&cr, 1);
+        crc = clauses_repr_clause(cr, 1);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 2);
 
-        crc = clauses_repr_clause(&cr, 2);
+        crc = clauses_repr_clause(cr, 2);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 3);
 
-        crc = clauses_repr_clause(&cr, 3);
+        crc = clauses_repr_clause(cr, 3);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -2);
@@ -32,22 +34,22 @@ UT_TEST(ex1) {
      }
     {
         struct  clauses_repr_clauses_of crco;
-        crco = clauses_repr_clauses_of(&cr, 0);
+        crco = clauses_repr_clauses_of(cr, 0);
         UT_ASSERT_TRUE(crco.len == 0);
 
-        crco = clauses_repr_clauses_of(&cr, 1);
+        crco = clauses_repr_clauses_of(cr, 1);
         UT_ASSERT_TRUE(crco.len == 3);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 1);
         UT_ASSERT_TRUE(crco.first[2] == 3);
 
-        crco = clauses_repr_clauses_of(&cr, 2);
+        crco = clauses_repr_clauses_of(cr, 2);
         UT_ASSERT_TRUE(crco.len == 3);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 2);
         UT_ASSERT_TRUE(crco.first[2] == 3);
 
-        crco = clauses_repr_clauses_of(&cr, 3);
+        crco = clauses_repr_clauses_of(cr, 3);
         UT_ASSERT_TRUE(crco.len == 2);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 3);
@@ -55,363 +57,365 @@ UT_TEST(ex1) {
      }
 
 
-    free_clauses_repr(&ret.clauses_repr);
+    free_clauses_repr(cr);
     return 0;
 }
 
 UT_TEST(ex2) {
-    struct new_stack_clauses_repr_from_file ret = new_stack_clauses_repr_from_file("test/ex2.in");
+    struct new_clauses_repr_from_file ret = new_clauses_repr_from_file("test/ex2.in");
     UT_ASSERT_TRUE(ret.success);
-    struct clauses_repr cr = ret.clauses_repr;
+    struct clauses_repr *cr = ret.clauses_repr;
+    UT_ASSERT_TRUE(clauses_repr_num_vars(cr) == 10);
+    UT_ASSERT_TRUE(clauses_repr_num_clauses(cr) == 70);
 
 	{
         struct clauses_repr_clause crc;
-        crc = clauses_repr_clause(&cr, 0);
+        crc = clauses_repr_clause(cr, 0);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 3);
 
-        crc = clauses_repr_clause(&cr, 1);
+        crc = clauses_repr_clause(cr, 1);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -3);
 
-        crc = clauses_repr_clause(&cr, 2);
+        crc = clauses_repr_clause(cr, 2);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 3);
+        crc = clauses_repr_clause(cr, 3);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 4);
+        crc = clauses_repr_clause(cr, 4);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 7);
 
-        crc = clauses_repr_clause(&cr, 5);
+        crc = clauses_repr_clause(cr, 5);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 6);
+        crc = clauses_repr_clause(cr, 6);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 7);
+        crc = clauses_repr_clause(cr, 7);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 8);
+        crc = clauses_repr_clause(cr, 8);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 9);
+        crc = clauses_repr_clause(cr, 9);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 10);
+        crc = clauses_repr_clause(cr, 10);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 3);
 
-        crc = clauses_repr_clause(&cr, 11);
+        crc = clauses_repr_clause(cr, 11);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -3);
 
-        crc = clauses_repr_clause(&cr, 12);
+        crc = clauses_repr_clause(cr, 12);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 13);
+        crc = clauses_repr_clause(cr, 13);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 14);
+        crc = clauses_repr_clause(cr, 14);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 15);
+        crc = clauses_repr_clause(cr, 15);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 16);
+        crc = clauses_repr_clause(cr, 16);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 17);
+        crc = clauses_repr_clause(cr, 17);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 18);
+        crc = clauses_repr_clause(cr, 18);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 7);
 
-        crc = clauses_repr_clause(&cr, 19);
+        crc = clauses_repr_clause(cr, 19);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 20);
+        crc = clauses_repr_clause(cr, 20);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 21);
+        crc = clauses_repr_clause(cr, 21);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 22);
+        crc = clauses_repr_clause(cr, 22);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 23);
+        crc = clauses_repr_clause(cr, 23);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 24);
+        crc = clauses_repr_clause(cr, 24);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 25);
+        crc = clauses_repr_clause(cr, 25);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 26);
+        crc = clauses_repr_clause(cr, 26);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 27);
+        crc = clauses_repr_clause(cr, 27);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 28);
+        crc = clauses_repr_clause(cr, 28);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 29);
+        crc = clauses_repr_clause(cr, 29);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 30);
+        crc = clauses_repr_clause(cr, 30);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 31);
+        crc = clauses_repr_clause(cr, 31);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 32);
+        crc = clauses_repr_clause(cr, 32);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 7);
 
-        crc = clauses_repr_clause(&cr, 33);
+        crc = clauses_repr_clause(cr, 33);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 34);
+        crc = clauses_repr_clause(cr, 34);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 35);
+        crc = clauses_repr_clause(cr, 35);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 36);
+        crc = clauses_repr_clause(cr, 36);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 37);
+        crc = clauses_repr_clause(cr, 37);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 38);
+        crc = clauses_repr_clause(cr, 38);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 39);
+        crc = clauses_repr_clause(cr, 39);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 40);
+        crc = clauses_repr_clause(cr, 40);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 41);
+        crc = clauses_repr_clause(cr, 41);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 42);
+        crc = clauses_repr_clause(cr, 42);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 43);
+        crc = clauses_repr_clause(cr, 43);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 44);
+        crc = clauses_repr_clause(cr, 44);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 45);
+        crc = clauses_repr_clause(cr, 45);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 46);
+        crc = clauses_repr_clause(cr, 46);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 47);
+        crc = clauses_repr_clause(cr, 47);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 48);
+        crc = clauses_repr_clause(cr, 48);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 7);
 
-        crc = clauses_repr_clause(&cr, 49);
+        crc = clauses_repr_clause(cr, 49);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 50);
+        crc = clauses_repr_clause(cr, 50);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 51);
+        crc = clauses_repr_clause(cr, 51);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 52);
+        crc = clauses_repr_clause(cr, 52);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 53);
+        crc = clauses_repr_clause(cr, 53);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 54);
+        crc = clauses_repr_clause(cr, 54);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 55);
+        crc = clauses_repr_clause(cr, 55);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 56);
+        crc = clauses_repr_clause(cr, 56);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 57);
+        crc = clauses_repr_clause(cr, 57);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 58);
+        crc = clauses_repr_clause(cr, 58);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 59);
+        crc = clauses_repr_clause(cr, 59);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 60);
+        crc = clauses_repr_clause(cr, 60);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 61);
+        crc = clauses_repr_clause(cr, 61);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 62);
+        crc = clauses_repr_clause(cr, 62);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 63);
+        crc = clauses_repr_clause(cr, 63);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 64);
+        crc = clauses_repr_clause(cr, 64);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 9);
 
-        crc = clauses_repr_clause(&cr, 65);
+        crc = clauses_repr_clause(cr, 65);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 66);
+        crc = clauses_repr_clause(cr, 66);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 67);
+        crc = clauses_repr_clause(cr, 67);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 68);
+        crc = clauses_repr_clause(cr, 68);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 69);
+        crc = clauses_repr_clause(cr, 69);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -10);
@@ -420,10 +424,10 @@ UT_TEST(ex2) {
 
     {
         struct  clauses_repr_clauses_of crco;
-        crco = clauses_repr_clauses_of(&cr, 0);
+        crco = clauses_repr_clauses_of(cr, 0);
         UT_ASSERT_TRUE(crco.len == 0);
 
-        crco = clauses_repr_clauses_of(&cr, 1);
+        crco = clauses_repr_clauses_of(cr, 1);
         UT_ASSERT_TRUE(crco.len == 10);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 1);
@@ -436,7 +440,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[8] == 8);
         UT_ASSERT_TRUE(crco.first[9] == 9);
 
-        crco = clauses_repr_clauses_of(&cr, 2);
+        crco = clauses_repr_clauses_of(cr, 2);
         UT_ASSERT_TRUE(crco.len == 16);
         UT_ASSERT_TRUE(crco.first[0] == 10);
         UT_ASSERT_TRUE(crco.first[1] == 11);
@@ -455,7 +459,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[14] == 24);
         UT_ASSERT_TRUE(crco.first[15] == 25);
 
-        crco = clauses_repr_clauses_of(&cr, 3);
+        crco = clauses_repr_clauses_of(cr, 3);
         UT_ASSERT_TRUE(crco.len == 18);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 1);
@@ -476,7 +480,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[16] == 38);
         UT_ASSERT_TRUE(crco.first[17] == 39);
 
-        crco = clauses_repr_clauses_of(&cr, 4);
+        crco = clauses_repr_clauses_of(cr, 4);
         UT_ASSERT_TRUE(crco.len == 10);
         UT_ASSERT_TRUE(crco.first[0] == 12);
         UT_ASSERT_TRUE(crco.first[1] == 13);
@@ -489,7 +493,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[8] == 44);
         UT_ASSERT_TRUE(crco.first[9] == 45);
 
-        crco = clauses_repr_clauses_of(&cr, 5);
+        crco = clauses_repr_clauses_of(cr, 5);
         UT_ASSERT_TRUE(crco.len == 18);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 3);
@@ -510,7 +514,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[16] == 54);
         UT_ASSERT_TRUE(crco.first[17] == 55);
 
-        crco = clauses_repr_clauses_of(&cr, 6);
+        crco = clauses_repr_clauses_of(cr, 6);
         UT_ASSERT_TRUE(crco.len == 12);
         UT_ASSERT_TRUE(crco.first[0] == 16);
         UT_ASSERT_TRUE(crco.first[1] == 17);
@@ -525,7 +529,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[10] == 60);
         UT_ASSERT_TRUE(crco.first[11] == 61);
 
-        crco = clauses_repr_clauses_of(&cr, 7);
+        crco = clauses_repr_clauses_of(cr, 7);
         UT_ASSERT_TRUE(crco.len == 10);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 5);
@@ -538,7 +542,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[8] == 62);
         UT_ASSERT_TRUE(crco.first[9] == 63);
 
-        crco = clauses_repr_clauses_of(&cr, 8);
+        crco = clauses_repr_clauses_of(cr, 8);
         UT_ASSERT_TRUE(crco.len == 16);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 7);
@@ -557,7 +561,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[14] == 66);
         UT_ASSERT_TRUE(crco.first[15] == 67);
 
-        crco = clauses_repr_clauses_of(&cr, 9);
+        crco = clauses_repr_clauses_of(cr, 9);
         UT_ASSERT_TRUE(crco.len == 16);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 9);
@@ -576,7 +580,7 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[14] == 68);
         UT_ASSERT_TRUE(crco.first[15] == 69);
 
-        crco = clauses_repr_clauses_of(&cr, 10);
+        crco = clauses_repr_clauses_of(cr, 10);
         UT_ASSERT_TRUE(crco.len == 14);
         UT_ASSERT_TRUE(crco.first[0] == 24);
         UT_ASSERT_TRUE(crco.first[1] == 25);
@@ -594,3012 +598,3015 @@ UT_TEST(ex2) {
         UT_ASSERT_TRUE(crco.first[13] == 69);
     }
 
-    free_clauses_repr(&ret.clauses_repr);
+    free_clauses_repr(cr);
     return 0;
 }
 
 UT_TEST(ex3) {
-    struct new_stack_clauses_repr_from_file ret = new_stack_clauses_repr_from_file("test/ex3.in");
+    struct new_clauses_repr_from_file ret = new_clauses_repr_from_file("test/ex3.in");
     UT_ASSERT_TRUE(ret.success);
-    struct clauses_repr cr = ret.clauses_repr;
+    struct clauses_repr *cr = ret.clauses_repr;
+    UT_ASSERT_TRUE(clauses_repr_num_vars(cr) == 25);
+    UT_ASSERT_TRUE(clauses_repr_num_clauses(cr) == 500);
+
 
     {
         struct clauses_repr_clause crc;
-        crc = clauses_repr_clause(&cr, 0);
+        crc = clauses_repr_clause(cr, 0);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 1);
+        crc = clauses_repr_clause(cr, 1);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 2);
+        crc = clauses_repr_clause(cr, 2);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 3);
+        crc = clauses_repr_clause(cr, 3);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 4);
+        crc = clauses_repr_clause(cr, 4);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 5);
+        crc = clauses_repr_clause(cr, 5);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 6);
+        crc = clauses_repr_clause(cr, 6);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 7);
+        crc = clauses_repr_clause(cr, 7);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 8);
+        crc = clauses_repr_clause(cr, 8);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 9);
+        crc = clauses_repr_clause(cr, 9);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 10);
+        crc = clauses_repr_clause(cr, 10);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 11);
+        crc = clauses_repr_clause(cr, 11);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 12);
+        crc = clauses_repr_clause(cr, 12);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 13);
+        crc = clauses_repr_clause(cr, 13);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 14);
+        crc = clauses_repr_clause(cr, 14);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 15);
+        crc = clauses_repr_clause(cr, 15);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 16);
+        crc = clauses_repr_clause(cr, 16);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 17);
+        crc = clauses_repr_clause(cr, 17);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 18);
+        crc = clauses_repr_clause(cr, 18);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 19);
+        crc = clauses_repr_clause(cr, 19);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 20);
+        crc = clauses_repr_clause(cr, 20);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 21);
+        crc = clauses_repr_clause(cr, 21);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 22);
+        crc = clauses_repr_clause(cr, 22);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 23);
+        crc = clauses_repr_clause(cr, 23);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 24);
+        crc = clauses_repr_clause(cr, 24);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 25);
+        crc = clauses_repr_clause(cr, 25);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 26);
+        crc = clauses_repr_clause(cr, 26);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 27);
+        crc = clauses_repr_clause(cr, 27);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 28);
+        crc = clauses_repr_clause(cr, 28);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 29);
+        crc = clauses_repr_clause(cr, 29);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 30);
+        crc = clauses_repr_clause(cr, 30);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 31);
+        crc = clauses_repr_clause(cr, 31);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 32);
+        crc = clauses_repr_clause(cr, 32);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 33);
+        crc = clauses_repr_clause(cr, 33);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 34);
+        crc = clauses_repr_clause(cr, 34);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 35);
+        crc = clauses_repr_clause(cr, 35);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 36);
+        crc = clauses_repr_clause(cr, 36);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 37);
+        crc = clauses_repr_clause(cr, 37);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 38);
+        crc = clauses_repr_clause(cr, 38);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 39);
+        crc = clauses_repr_clause(cr, 39);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 40);
+        crc = clauses_repr_clause(cr, 40);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 41);
+        crc = clauses_repr_clause(cr, 41);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 42);
+        crc = clauses_repr_clause(cr, 42);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 43);
+        crc = clauses_repr_clause(cr, 43);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 44);
+        crc = clauses_repr_clause(cr, 44);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 45);
+        crc = clauses_repr_clause(cr, 45);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 46);
+        crc = clauses_repr_clause(cr, 46);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 47);
+        crc = clauses_repr_clause(cr, 47);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 48);
+        crc = clauses_repr_clause(cr, 48);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 49);
+        crc = clauses_repr_clause(cr, 49);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 50);
+        crc = clauses_repr_clause(cr, 50);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 51);
+        crc = clauses_repr_clause(cr, 51);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 52);
+        crc = clauses_repr_clause(cr, 52);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 53);
+        crc = clauses_repr_clause(cr, 53);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 54);
+        crc = clauses_repr_clause(cr, 54);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 55);
+        crc = clauses_repr_clause(cr, 55);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 56);
+        crc = clauses_repr_clause(cr, 56);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 57);
+        crc = clauses_repr_clause(cr, 57);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 58);
+        crc = clauses_repr_clause(cr, 58);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 59);
+        crc = clauses_repr_clause(cr, 59);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 60);
+        crc = clauses_repr_clause(cr, 60);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 61);
+        crc = clauses_repr_clause(cr, 61);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 62);
+        crc = clauses_repr_clause(cr, 62);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 63);
+        crc = clauses_repr_clause(cr, 63);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 64);
+        crc = clauses_repr_clause(cr, 64);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 65);
+        crc = clauses_repr_clause(cr, 65);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 66);
+        crc = clauses_repr_clause(cr, 66);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 67);
+        crc = clauses_repr_clause(cr, 67);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 68);
+        crc = clauses_repr_clause(cr, 68);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 69);
+        crc = clauses_repr_clause(cr, 69);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 70);
+        crc = clauses_repr_clause(cr, 70);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 71);
+        crc = clauses_repr_clause(cr, 71);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 72);
+        crc = clauses_repr_clause(cr, 72);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 73);
+        crc = clauses_repr_clause(cr, 73);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 74);
+        crc = clauses_repr_clause(cr, 74);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 75);
+        crc = clauses_repr_clause(cr, 75);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 76);
+        crc = clauses_repr_clause(cr, 76);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 77);
+        crc = clauses_repr_clause(cr, 77);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 78);
+        crc = clauses_repr_clause(cr, 78);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 79);
+        crc = clauses_repr_clause(cr, 79);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 80);
+        crc = clauses_repr_clause(cr, 80);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 81);
+        crc = clauses_repr_clause(cr, 81);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 82);
+        crc = clauses_repr_clause(cr, 82);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 83);
+        crc = clauses_repr_clause(cr, 83);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 84);
+        crc = clauses_repr_clause(cr, 84);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 85);
+        crc = clauses_repr_clause(cr, 85);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 86);
+        crc = clauses_repr_clause(cr, 86);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 87);
+        crc = clauses_repr_clause(cr, 87);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 88);
+        crc = clauses_repr_clause(cr, 88);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 89);
+        crc = clauses_repr_clause(cr, 89);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 90);
+        crc = clauses_repr_clause(cr, 90);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 91);
+        crc = clauses_repr_clause(cr, 91);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 92);
+        crc = clauses_repr_clause(cr, 92);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 93);
+        crc = clauses_repr_clause(cr, 93);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 94);
+        crc = clauses_repr_clause(cr, 94);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 95);
+        crc = clauses_repr_clause(cr, 95);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 96);
+        crc = clauses_repr_clause(cr, 96);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 97);
+        crc = clauses_repr_clause(cr, 97);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 98);
+        crc = clauses_repr_clause(cr, 98);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 99);
+        crc = clauses_repr_clause(cr, 99);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 100);
+        crc = clauses_repr_clause(cr, 100);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 101);
+        crc = clauses_repr_clause(cr, 101);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 102);
+        crc = clauses_repr_clause(cr, 102);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 103);
+        crc = clauses_repr_clause(cr, 103);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 104);
+        crc = clauses_repr_clause(cr, 104);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 105);
+        crc = clauses_repr_clause(cr, 105);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 106);
+        crc = clauses_repr_clause(cr, 106);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 107);
+        crc = clauses_repr_clause(cr, 107);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 108);
+        crc = clauses_repr_clause(cr, 108);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 109);
+        crc = clauses_repr_clause(cr, 109);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 110);
+        crc = clauses_repr_clause(cr, 110);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 111);
+        crc = clauses_repr_clause(cr, 111);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 112);
+        crc = clauses_repr_clause(cr, 112);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 113);
+        crc = clauses_repr_clause(cr, 113);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 114);
+        crc = clauses_repr_clause(cr, 114);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 115);
+        crc = clauses_repr_clause(cr, 115);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 116);
+        crc = clauses_repr_clause(cr, 116);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 117);
+        crc = clauses_repr_clause(cr, 117);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 118);
+        crc = clauses_repr_clause(cr, 118);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 119);
+        crc = clauses_repr_clause(cr, 119);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 120);
+        crc = clauses_repr_clause(cr, 120);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 121);
+        crc = clauses_repr_clause(cr, 121);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 122);
+        crc = clauses_repr_clause(cr, 122);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 123);
+        crc = clauses_repr_clause(cr, 123);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 124);
+        crc = clauses_repr_clause(cr, 124);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 125);
+        crc = clauses_repr_clause(cr, 125);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 126);
+        crc = clauses_repr_clause(cr, 126);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 127);
+        crc = clauses_repr_clause(cr, 127);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 128);
+        crc = clauses_repr_clause(cr, 128);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 129);
+        crc = clauses_repr_clause(cr, 129);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 130);
+        crc = clauses_repr_clause(cr, 130);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 131);
+        crc = clauses_repr_clause(cr, 131);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 132);
+        crc = clauses_repr_clause(cr, 132);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 133);
+        crc = clauses_repr_clause(cr, 133);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 134);
+        crc = clauses_repr_clause(cr, 134);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 135);
+        crc = clauses_repr_clause(cr, 135);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 136);
+        crc = clauses_repr_clause(cr, 136);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 137);
+        crc = clauses_repr_clause(cr, 137);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 138);
+        crc = clauses_repr_clause(cr, 138);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 139);
+        crc = clauses_repr_clause(cr, 139);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 140);
+        crc = clauses_repr_clause(cr, 140);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 141);
+        crc = clauses_repr_clause(cr, 141);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 142);
+        crc = clauses_repr_clause(cr, 142);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 143);
+        crc = clauses_repr_clause(cr, 143);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 144);
+        crc = clauses_repr_clause(cr, 144);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 145);
+        crc = clauses_repr_clause(cr, 145);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 146);
+        crc = clauses_repr_clause(cr, 146);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 147);
+        crc = clauses_repr_clause(cr, 147);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 148);
+        crc = clauses_repr_clause(cr, 148);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 149);
+        crc = clauses_repr_clause(cr, 149);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 150);
+        crc = clauses_repr_clause(cr, 150);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 151);
+        crc = clauses_repr_clause(cr, 151);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 152);
+        crc = clauses_repr_clause(cr, 152);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 153);
+        crc = clauses_repr_clause(cr, 153);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 154);
+        crc = clauses_repr_clause(cr, 154);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 155);
+        crc = clauses_repr_clause(cr, 155);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 156);
+        crc = clauses_repr_clause(cr, 156);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 157);
+        crc = clauses_repr_clause(cr, 157);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 158);
+        crc = clauses_repr_clause(cr, 158);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 159);
+        crc = clauses_repr_clause(cr, 159);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 160);
+        crc = clauses_repr_clause(cr, 160);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 161);
+        crc = clauses_repr_clause(cr, 161);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 162);
+        crc = clauses_repr_clause(cr, 162);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 163);
+        crc = clauses_repr_clause(cr, 163);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 164);
+        crc = clauses_repr_clause(cr, 164);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 165);
+        crc = clauses_repr_clause(cr, 165);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 166);
+        crc = clauses_repr_clause(cr, 166);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 167);
+        crc = clauses_repr_clause(cr, 167);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 168);
+        crc = clauses_repr_clause(cr, 168);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 169);
+        crc = clauses_repr_clause(cr, 169);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 170);
+        crc = clauses_repr_clause(cr, 170);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 171);
+        crc = clauses_repr_clause(cr, 171);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 172);
+        crc = clauses_repr_clause(cr, 172);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 173);
+        crc = clauses_repr_clause(cr, 173);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 174);
+        crc = clauses_repr_clause(cr, 174);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 175);
+        crc = clauses_repr_clause(cr, 175);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 176);
+        crc = clauses_repr_clause(cr, 176);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 177);
+        crc = clauses_repr_clause(cr, 177);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 178);
+        crc = clauses_repr_clause(cr, 178);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 179);
+        crc = clauses_repr_clause(cr, 179);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 180);
+        crc = clauses_repr_clause(cr, 180);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 181);
+        crc = clauses_repr_clause(cr, 181);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 182);
+        crc = clauses_repr_clause(cr, 182);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 183);
+        crc = clauses_repr_clause(cr, 183);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 184);
+        crc = clauses_repr_clause(cr, 184);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 185);
+        crc = clauses_repr_clause(cr, 185);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 186);
+        crc = clauses_repr_clause(cr, 186);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 187);
+        crc = clauses_repr_clause(cr, 187);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 188);
+        crc = clauses_repr_clause(cr, 188);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 189);
+        crc = clauses_repr_clause(cr, 189);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 190);
+        crc = clauses_repr_clause(cr, 190);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 191);
+        crc = clauses_repr_clause(cr, 191);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 192);
+        crc = clauses_repr_clause(cr, 192);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 193);
+        crc = clauses_repr_clause(cr, 193);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 194);
+        crc = clauses_repr_clause(cr, 194);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 195);
+        crc = clauses_repr_clause(cr, 195);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 196);
+        crc = clauses_repr_clause(cr, 196);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 197);
+        crc = clauses_repr_clause(cr, 197);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 198);
+        crc = clauses_repr_clause(cr, 198);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 199);
+        crc = clauses_repr_clause(cr, 199);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 200);
+        crc = clauses_repr_clause(cr, 200);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 201);
+        crc = clauses_repr_clause(cr, 201);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 202);
+        crc = clauses_repr_clause(cr, 202);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 203);
+        crc = clauses_repr_clause(cr, 203);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 204);
+        crc = clauses_repr_clause(cr, 204);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 205);
+        crc = clauses_repr_clause(cr, 205);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 206);
+        crc = clauses_repr_clause(cr, 206);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 207);
+        crc = clauses_repr_clause(cr, 207);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 208);
+        crc = clauses_repr_clause(cr, 208);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 209);
+        crc = clauses_repr_clause(cr, 209);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 210);
+        crc = clauses_repr_clause(cr, 210);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 211);
+        crc = clauses_repr_clause(cr, 211);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 212);
+        crc = clauses_repr_clause(cr, 212);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 213);
+        crc = clauses_repr_clause(cr, 213);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 214);
+        crc = clauses_repr_clause(cr, 214);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 215);
+        crc = clauses_repr_clause(cr, 215);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 216);
+        crc = clauses_repr_clause(cr, 216);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 217);
+        crc = clauses_repr_clause(cr, 217);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 218);
+        crc = clauses_repr_clause(cr, 218);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 219);
+        crc = clauses_repr_clause(cr, 219);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 220);
+        crc = clauses_repr_clause(cr, 220);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 221);
+        crc = clauses_repr_clause(cr, 221);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 222);
+        crc = clauses_repr_clause(cr, 222);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 223);
+        crc = clauses_repr_clause(cr, 223);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 224);
+        crc = clauses_repr_clause(cr, 224);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 225);
+        crc = clauses_repr_clause(cr, 225);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 226);
+        crc = clauses_repr_clause(cr, 226);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 227);
+        crc = clauses_repr_clause(cr, 227);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 228);
+        crc = clauses_repr_clause(cr, 228);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 229);
+        crc = clauses_repr_clause(cr, 229);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 230);
+        crc = clauses_repr_clause(cr, 230);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 231);
+        crc = clauses_repr_clause(cr, 231);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 232);
+        crc = clauses_repr_clause(cr, 232);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 233);
+        crc = clauses_repr_clause(cr, 233);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 234);
+        crc = clauses_repr_clause(cr, 234);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 235);
+        crc = clauses_repr_clause(cr, 235);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 236);
+        crc = clauses_repr_clause(cr, 236);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 237);
+        crc = clauses_repr_clause(cr, 237);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 238);
+        crc = clauses_repr_clause(cr, 238);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 239);
+        crc = clauses_repr_clause(cr, 239);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 240);
+        crc = clauses_repr_clause(cr, 240);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 241);
+        crc = clauses_repr_clause(cr, 241);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 242);
+        crc = clauses_repr_clause(cr, 242);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 243);
+        crc = clauses_repr_clause(cr, 243);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 244);
+        crc = clauses_repr_clause(cr, 244);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 245);
+        crc = clauses_repr_clause(cr, 245);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 246);
+        crc = clauses_repr_clause(cr, 246);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 247);
+        crc = clauses_repr_clause(cr, 247);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 248);
+        crc = clauses_repr_clause(cr, 248);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 249);
+        crc = clauses_repr_clause(cr, 249);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 250);
+        crc = clauses_repr_clause(cr, 250);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 251);
+        crc = clauses_repr_clause(cr, 251);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 252);
+        crc = clauses_repr_clause(cr, 252);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 253);
+        crc = clauses_repr_clause(cr, 253);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 254);
+        crc = clauses_repr_clause(cr, 254);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 255);
+        crc = clauses_repr_clause(cr, 255);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 256);
+        crc = clauses_repr_clause(cr, 256);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 257);
+        crc = clauses_repr_clause(cr, 257);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 258);
+        crc = clauses_repr_clause(cr, 258);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 259);
+        crc = clauses_repr_clause(cr, 259);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 260);
+        crc = clauses_repr_clause(cr, 260);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 261);
+        crc = clauses_repr_clause(cr, 261);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 262);
+        crc = clauses_repr_clause(cr, 262);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 263);
+        crc = clauses_repr_clause(cr, 263);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 264);
+        crc = clauses_repr_clause(cr, 264);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 265);
+        crc = clauses_repr_clause(cr, 265);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 266);
+        crc = clauses_repr_clause(cr, 266);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 267);
+        crc = clauses_repr_clause(cr, 267);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 268);
+        crc = clauses_repr_clause(cr, 268);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 269);
+        crc = clauses_repr_clause(cr, 269);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 270);
+        crc = clauses_repr_clause(cr, 270);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 271);
+        crc = clauses_repr_clause(cr, 271);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 272);
+        crc = clauses_repr_clause(cr, 272);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 273);
+        crc = clauses_repr_clause(cr, 273);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 274);
+        crc = clauses_repr_clause(cr, 274);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 275);
+        crc = clauses_repr_clause(cr, 275);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 276);
+        crc = clauses_repr_clause(cr, 276);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 277);
+        crc = clauses_repr_clause(cr, 277);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 278);
+        crc = clauses_repr_clause(cr, 278);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 279);
+        crc = clauses_repr_clause(cr, 279);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 280);
+        crc = clauses_repr_clause(cr, 280);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 281);
+        crc = clauses_repr_clause(cr, 281);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 282);
+        crc = clauses_repr_clause(cr, 282);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 283);
+        crc = clauses_repr_clause(cr, 283);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 284);
+        crc = clauses_repr_clause(cr, 284);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 285);
+        crc = clauses_repr_clause(cr, 285);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 286);
+        crc = clauses_repr_clause(cr, 286);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 287);
+        crc = clauses_repr_clause(cr, 287);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 288);
+        crc = clauses_repr_clause(cr, 288);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 289);
+        crc = clauses_repr_clause(cr, 289);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 290);
+        crc = clauses_repr_clause(cr, 290);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 291);
+        crc = clauses_repr_clause(cr, 291);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 292);
+        crc = clauses_repr_clause(cr, 292);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 293);
+        crc = clauses_repr_clause(cr, 293);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 294);
+        crc = clauses_repr_clause(cr, 294);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 295);
+        crc = clauses_repr_clause(cr, 295);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 296);
+        crc = clauses_repr_clause(cr, 296);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 297);
+        crc = clauses_repr_clause(cr, 297);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 298);
+        crc = clauses_repr_clause(cr, 298);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 299);
+        crc = clauses_repr_clause(cr, 299);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 300);
+        crc = clauses_repr_clause(cr, 300);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 301);
+        crc = clauses_repr_clause(cr, 301);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 302);
+        crc = clauses_repr_clause(cr, 302);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 303);
+        crc = clauses_repr_clause(cr, 303);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 304);
+        crc = clauses_repr_clause(cr, 304);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 305);
+        crc = clauses_repr_clause(cr, 305);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 306);
+        crc = clauses_repr_clause(cr, 306);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 307);
+        crc = clauses_repr_clause(cr, 307);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 308);
+        crc = clauses_repr_clause(cr, 308);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 309);
+        crc = clauses_repr_clause(cr, 309);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 310);
+        crc = clauses_repr_clause(cr, 310);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 311);
+        crc = clauses_repr_clause(cr, 311);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 312);
+        crc = clauses_repr_clause(cr, 312);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 313);
+        crc = clauses_repr_clause(cr, 313);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 314);
+        crc = clauses_repr_clause(cr, 314);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 315);
+        crc = clauses_repr_clause(cr, 315);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 316);
+        crc = clauses_repr_clause(cr, 316);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 317);
+        crc = clauses_repr_clause(cr, 317);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 318);
+        crc = clauses_repr_clause(cr, 318);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 319);
+        crc = clauses_repr_clause(cr, 319);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 320);
+        crc = clauses_repr_clause(cr, 320);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 321);
+        crc = clauses_repr_clause(cr, 321);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 322);
+        crc = clauses_repr_clause(cr, 322);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 323);
+        crc = clauses_repr_clause(cr, 323);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 324);
+        crc = clauses_repr_clause(cr, 324);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 325);
+        crc = clauses_repr_clause(cr, 325);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 326);
+        crc = clauses_repr_clause(cr, 326);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 327);
+        crc = clauses_repr_clause(cr, 327);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 328);
+        crc = clauses_repr_clause(cr, 328);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 329);
+        crc = clauses_repr_clause(cr, 329);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 330);
+        crc = clauses_repr_clause(cr, 330);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 331);
+        crc = clauses_repr_clause(cr, 331);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 332);
+        crc = clauses_repr_clause(cr, 332);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 333);
+        crc = clauses_repr_clause(cr, 333);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 334);
+        crc = clauses_repr_clause(cr, 334);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 335);
+        crc = clauses_repr_clause(cr, 335);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 336);
+        crc = clauses_repr_clause(cr, 336);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 337);
+        crc = clauses_repr_clause(cr, 337);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 338);
+        crc = clauses_repr_clause(cr, 338);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 339);
+        crc = clauses_repr_clause(cr, 339);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 340);
+        crc = clauses_repr_clause(cr, 340);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 341);
+        crc = clauses_repr_clause(cr, 341);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 342);
+        crc = clauses_repr_clause(cr, 342);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 343);
+        crc = clauses_repr_clause(cr, 343);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 344);
+        crc = clauses_repr_clause(cr, 344);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 345);
+        crc = clauses_repr_clause(cr, 345);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 346);
+        crc = clauses_repr_clause(cr, 346);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 347);
+        crc = clauses_repr_clause(cr, 347);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 348);
+        crc = clauses_repr_clause(cr, 348);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 349);
+        crc = clauses_repr_clause(cr, 349);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 350);
+        crc = clauses_repr_clause(cr, 350);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 351);
+        crc = clauses_repr_clause(cr, 351);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 352);
+        crc = clauses_repr_clause(cr, 352);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 353);
+        crc = clauses_repr_clause(cr, 353);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 354);
+        crc = clauses_repr_clause(cr, 354);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 355);
+        crc = clauses_repr_clause(cr, 355);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 356);
+        crc = clauses_repr_clause(cr, 356);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 357);
+        crc = clauses_repr_clause(cr, 357);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 358);
+        crc = clauses_repr_clause(cr, 358);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 359);
+        crc = clauses_repr_clause(cr, 359);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 360);
+        crc = clauses_repr_clause(cr, 360);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 361);
+        crc = clauses_repr_clause(cr, 361);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 362);
+        crc = clauses_repr_clause(cr, 362);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 363);
+        crc = clauses_repr_clause(cr, 363);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 364);
+        crc = clauses_repr_clause(cr, 364);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 365);
+        crc = clauses_repr_clause(cr, 365);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 366);
+        crc = clauses_repr_clause(cr, 366);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 367);
+        crc = clauses_repr_clause(cr, 367);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 368);
+        crc = clauses_repr_clause(cr, 368);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 369);
+        crc = clauses_repr_clause(cr, 369);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 370);
+        crc = clauses_repr_clause(cr, 370);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 371);
+        crc = clauses_repr_clause(cr, 371);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 372);
+        crc = clauses_repr_clause(cr, 372);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 373);
+        crc = clauses_repr_clause(cr, 373);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 374);
+        crc = clauses_repr_clause(cr, 374);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 375);
+        crc = clauses_repr_clause(cr, 375);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 376);
+        crc = clauses_repr_clause(cr, 376);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 377);
+        crc = clauses_repr_clause(cr, 377);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 378);
+        crc = clauses_repr_clause(cr, 378);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 379);
+        crc = clauses_repr_clause(cr, 379);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 380);
+        crc = clauses_repr_clause(cr, 380);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 381);
+        crc = clauses_repr_clause(cr, 381);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 382);
+        crc = clauses_repr_clause(cr, 382);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 383);
+        crc = clauses_repr_clause(cr, 383);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 384);
+        crc = clauses_repr_clause(cr, 384);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 385);
+        crc = clauses_repr_clause(cr, 385);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 386);
+        crc = clauses_repr_clause(cr, 386);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 387);
+        crc = clauses_repr_clause(cr, 387);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 388);
+        crc = clauses_repr_clause(cr, 388);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 389);
+        crc = clauses_repr_clause(cr, 389);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 390);
+        crc = clauses_repr_clause(cr, 390);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 391);
+        crc = clauses_repr_clause(cr, 391);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 392);
+        crc = clauses_repr_clause(cr, 392);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 393);
+        crc = clauses_repr_clause(cr, 393);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 394);
+        crc = clauses_repr_clause(cr, 394);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 395);
+        crc = clauses_repr_clause(cr, 395);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 396);
+        crc = clauses_repr_clause(cr, 396);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 397);
+        crc = clauses_repr_clause(cr, 397);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 398);
+        crc = clauses_repr_clause(cr, 398);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 399);
+        crc = clauses_repr_clause(cr, 399);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 400);
+        crc = clauses_repr_clause(cr, 400);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 401);
+        crc = clauses_repr_clause(cr, 401);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 402);
+        crc = clauses_repr_clause(cr, 402);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 403);
+        crc = clauses_repr_clause(cr, 403);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 404);
+        crc = clauses_repr_clause(cr, 404);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 405);
+        crc = clauses_repr_clause(cr, 405);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 406);
+        crc = clauses_repr_clause(cr, 406);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 407);
+        crc = clauses_repr_clause(cr, 407);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 408);
+        crc = clauses_repr_clause(cr, 408);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 409);
+        crc = clauses_repr_clause(cr, 409);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 410);
+        crc = clauses_repr_clause(cr, 410);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 411);
+        crc = clauses_repr_clause(cr, 411);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 412);
+        crc = clauses_repr_clause(cr, 412);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 413);
+        crc = clauses_repr_clause(cr, 413);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 414);
+        crc = clauses_repr_clause(cr, 414);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 415);
+        crc = clauses_repr_clause(cr, 415);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 416);
+        crc = clauses_repr_clause(cr, 416);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 417);
+        crc = clauses_repr_clause(cr, 417);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 418);
+        crc = clauses_repr_clause(cr, 418);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 419);
+        crc = clauses_repr_clause(cr, 419);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 420);
+        crc = clauses_repr_clause(cr, 420);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 421);
+        crc = clauses_repr_clause(cr, 421);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 422);
+        crc = clauses_repr_clause(cr, 422);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 423);
+        crc = clauses_repr_clause(cr, 423);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 424);
+        crc = clauses_repr_clause(cr, 424);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 425);
+        crc = clauses_repr_clause(cr, 425);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 426);
+        crc = clauses_repr_clause(cr, 426);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 427);
+        crc = clauses_repr_clause(cr, 427);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 428);
+        crc = clauses_repr_clause(cr, 428);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 429);
+        crc = clauses_repr_clause(cr, 429);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 430);
+        crc = clauses_repr_clause(cr, 430);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 431);
+        crc = clauses_repr_clause(cr, 431);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 432);
+        crc = clauses_repr_clause(cr, 432);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 433);
+        crc = clauses_repr_clause(cr, 433);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 434);
+        crc = clauses_repr_clause(cr, 434);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 435);
+        crc = clauses_repr_clause(cr, 435);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 436);
+        crc = clauses_repr_clause(cr, 436);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 437);
+        crc = clauses_repr_clause(cr, 437);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 438);
+        crc = clauses_repr_clause(cr, 438);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 439);
+        crc = clauses_repr_clause(cr, 439);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 440);
+        crc = clauses_repr_clause(cr, 440);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 441);
+        crc = clauses_repr_clause(cr, 441);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 442);
+        crc = clauses_repr_clause(cr, 442);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 443);
+        crc = clauses_repr_clause(cr, 443);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 444);
+        crc = clauses_repr_clause(cr, 444);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 445);
+        crc = clauses_repr_clause(cr, 445);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 446);
+        crc = clauses_repr_clause(cr, 446);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 447);
+        crc = clauses_repr_clause(cr, 447);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 448);
+        crc = clauses_repr_clause(cr, 448);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 449);
+        crc = clauses_repr_clause(cr, 449);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 450);
+        crc = clauses_repr_clause(cr, 450);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 451);
+        crc = clauses_repr_clause(cr, 451);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 452);
+        crc = clauses_repr_clause(cr, 452);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 453);
+        crc = clauses_repr_clause(cr, 453);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 454);
+        crc = clauses_repr_clause(cr, 454);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 455);
+        crc = clauses_repr_clause(cr, 455);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 456);
+        crc = clauses_repr_clause(cr, 456);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 457);
+        crc = clauses_repr_clause(cr, 457);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 458);
+        crc = clauses_repr_clause(cr, 458);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 459);
+        crc = clauses_repr_clause(cr, 459);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 460);
+        crc = clauses_repr_clause(cr, 460);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 461);
+        crc = clauses_repr_clause(cr, 461);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 462);
+        crc = clauses_repr_clause(cr, 462);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 463);
+        crc = clauses_repr_clause(cr, 463);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 464);
+        crc = clauses_repr_clause(cr, 464);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 465);
+        crc = clauses_repr_clause(cr, 465);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 466);
+        crc = clauses_repr_clause(cr, 466);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 467);
+        crc = clauses_repr_clause(cr, 467);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 468);
+        crc = clauses_repr_clause(cr, 468);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 469);
+        crc = clauses_repr_clause(cr, 469);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 470);
+        crc = clauses_repr_clause(cr, 470);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 471);
+        crc = clauses_repr_clause(cr, 471);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 472);
+        crc = clauses_repr_clause(cr, 472);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 473);
+        crc = clauses_repr_clause(cr, 473);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 474);
+        crc = clauses_repr_clause(cr, 474);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 475);
+        crc = clauses_repr_clause(cr, 475);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 476);
+        crc = clauses_repr_clause(cr, 476);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 477);
+        crc = clauses_repr_clause(cr, 477);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 478);
+        crc = clauses_repr_clause(cr, 478);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 479);
+        crc = clauses_repr_clause(cr, 479);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 480);
+        crc = clauses_repr_clause(cr, 480);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 481);
+        crc = clauses_repr_clause(cr, 481);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 482);
+        crc = clauses_repr_clause(cr, 482);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 483);
+        crc = clauses_repr_clause(cr, 483);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 484);
+        crc = clauses_repr_clause(cr, 484);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 485);
+        crc = clauses_repr_clause(cr, 485);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 486);
+        crc = clauses_repr_clause(cr, 486);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 487);
+        crc = clauses_repr_clause(cr, 487);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 488);
+        crc = clauses_repr_clause(cr, 488);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 489);
+        crc = clauses_repr_clause(cr, 489);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 490);
+        crc = clauses_repr_clause(cr, 490);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 491);
+        crc = clauses_repr_clause(cr, 491);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 492);
+        crc = clauses_repr_clause(cr, 492);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 493);
+        crc = clauses_repr_clause(cr, 493);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 494);
+        crc = clauses_repr_clause(cr, 494);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 495);
+        crc = clauses_repr_clause(cr, 495);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 496);
+        crc = clauses_repr_clause(cr, 496);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 497);
+        crc = clauses_repr_clause(cr, 497);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 498);
+        crc = clauses_repr_clause(cr, 498);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 499);
+        crc = clauses_repr_clause(cr, 499);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 9);
@@ -3608,10 +3615,10 @@ UT_TEST(ex3) {
     }
     {
         struct  clauses_repr_clauses_of crco;
-        crco = clauses_repr_clauses_of(&cr, 0);
+        crco = clauses_repr_clauses_of(cr, 0);
         UT_ASSERT_TRUE(crco.len == 0);
 
-        crco = clauses_repr_clauses_of(&cr, 1);
+        crco = clauses_repr_clauses_of(cr, 1);
         UT_ASSERT_TRUE(crco.len == 52);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 27);
@@ -3666,7 +3673,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[50] == 470);
         UT_ASSERT_TRUE(crco.first[51] == 484);
 
-        crco = clauses_repr_clauses_of(&cr, 2);
+        crco = clauses_repr_clauses_of(cr, 2);
         UT_ASSERT_TRUE(crco.len == 59);
         UT_ASSERT_TRUE(crco.first[0] == 10);
         UT_ASSERT_TRUE(crco.first[1] == 22);
@@ -3728,7 +3735,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[57] == 488);
         UT_ASSERT_TRUE(crco.first[58] == 490);
 
-        crco = clauses_repr_clauses_of(&cr, 3);
+        crco = clauses_repr_clauses_of(cr, 3);
         UT_ASSERT_TRUE(crco.len == 61);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 19);
@@ -3792,7 +3799,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[59] == 489);
         UT_ASSERT_TRUE(crco.first[60] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 4);
+        crco = clauses_repr_clauses_of(cr, 4);
         UT_ASSERT_TRUE(crco.len == 55);
         UT_ASSERT_TRUE(crco.first[0] == 11);
         UT_ASSERT_TRUE(crco.first[1] == 19);
@@ -3850,7 +3857,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[53] == 466);
         UT_ASSERT_TRUE(crco.first[54] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 5);
+        crco = clauses_repr_clauses_of(cr, 5);
         UT_ASSERT_TRUE(crco.len == 58);
         UT_ASSERT_TRUE(crco.first[0] == 20);
         UT_ASSERT_TRUE(crco.first[1] == 35);
@@ -3911,7 +3918,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[56] == 476);
         UT_ASSERT_TRUE(crco.first[57] == 490);
 
-        crco = clauses_repr_clauses_of(&cr, 6);
+        crco = clauses_repr_clauses_of(cr, 6);
         UT_ASSERT_TRUE(crco.len == 55);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 10);
@@ -3969,7 +3976,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[53] == 458);
         UT_ASSERT_TRUE(crco.first[54] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 7);
+        crco = clauses_repr_clauses_of(cr, 7);
         UT_ASSERT_TRUE(crco.len == 53);
         UT_ASSERT_TRUE(crco.first[0] == 7);
         UT_ASSERT_TRUE(crco.first[1] == 25);
@@ -4025,7 +4032,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[51] == 492);
         UT_ASSERT_TRUE(crco.first[52] == 494);
 
-        crco = clauses_repr_clauses_of(&cr, 8);
+        crco = clauses_repr_clauses_of(cr, 8);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 62);
@@ -4082,7 +4089,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[52] == 494);
         UT_ASSERT_TRUE(crco.first[53] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 9);
+        crco = clauses_repr_clauses_of(cr, 9);
         UT_ASSERT_TRUE(crco.len == 59);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 6);
@@ -4144,7 +4151,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[57] == 469);
         UT_ASSERT_TRUE(crco.first[58] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 10);
+        crco = clauses_repr_clauses_of(cr, 10);
         UT_ASSERT_TRUE(crco.len == 63);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 7);
@@ -4210,7 +4217,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[61] == 482);
         UT_ASSERT_TRUE(crco.first[62] == 495);
 
-        crco = clauses_repr_clauses_of(&cr, 11);
+        crco = clauses_repr_clauses_of(cr, 11);
         UT_ASSERT_TRUE(crco.len == 60);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 13);
@@ -4273,7 +4280,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[58] == 471);
         UT_ASSERT_TRUE(crco.first[59] == 484);
 
-        crco = clauses_repr_clauses_of(&cr, 12);
+        crco = clauses_repr_clauses_of(cr, 12);
         UT_ASSERT_TRUE(crco.len == 62);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 8);
@@ -4338,7 +4345,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[60] == 479);
         UT_ASSERT_TRUE(crco.first[61] == 488);
 
-        crco = clauses_repr_clauses_of(&cr, 13);
+        crco = clauses_repr_clauses_of(cr, 13);
         UT_ASSERT_TRUE(crco.len == 68);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 12);
@@ -4409,7 +4416,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[66] == 482);
         UT_ASSERT_TRUE(crco.first[67] == 489);
 
-        crco = clauses_repr_clauses_of(&cr, 14);
+        crco = clauses_repr_clauses_of(cr, 14);
         UT_ASSERT_TRUE(crco.len == 66);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 5);
@@ -4478,7 +4485,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[64] == 478);
         UT_ASSERT_TRUE(crco.first[65] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 15);
+        crco = clauses_repr_clauses_of(cr, 15);
         UT_ASSERT_TRUE(crco.len == 47);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 6);
@@ -4528,7 +4535,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[45] == 491);
         UT_ASSERT_TRUE(crco.first[46] == 492);
 
-        crco = clauses_repr_clauses_of(&cr, 16);
+        crco = clauses_repr_clauses_of(cr, 16);
         UT_ASSERT_TRUE(crco.len == 64);
         UT_ASSERT_TRUE(crco.first[0] == 21);
         UT_ASSERT_TRUE(crco.first[1] == 31);
@@ -4595,7 +4602,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[62] == 487);
         UT_ASSERT_TRUE(crco.first[63] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 17);
+        crco = clauses_repr_clauses_of(cr, 17);
         UT_ASSERT_TRUE(crco.len == 52);
         UT_ASSERT_TRUE(crco.first[0] == 16);
         UT_ASSERT_TRUE(crco.first[1] == 26);
@@ -4650,7 +4657,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[50] == 489);
         UT_ASSERT_TRUE(crco.first[51] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 18);
+        crco = clauses_repr_clauses_of(cr, 18);
         UT_ASSERT_TRUE(crco.len == 76);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 27);
@@ -4729,7 +4736,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[74] == 486);
         UT_ASSERT_TRUE(crco.first[75] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 19);
+        crco = clauses_repr_clauses_of(cr, 19);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 4);
@@ -4786,7 +4793,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[52] == 485);
         UT_ASSERT_TRUE(crco.first[53] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 20);
+        crco = clauses_repr_clauses_of(cr, 20);
         UT_ASSERT_TRUE(crco.len == 58);
         UT_ASSERT_TRUE(crco.first[0] == 16);
         UT_ASSERT_TRUE(crco.first[1] == 23);
@@ -4847,7 +4854,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[56] == 491);
         UT_ASSERT_TRUE(crco.first[57] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 21);
+        crco = clauses_repr_clauses_of(cr, 21);
         UT_ASSERT_TRUE(crco.len == 71);
         UT_ASSERT_TRUE(crco.first[0] == 9);
         UT_ASSERT_TRUE(crco.first[1] == 33);
@@ -4921,7 +4928,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[69] == 480);
         UT_ASSERT_TRUE(crco.first[70] == 487);
 
-        crco = clauses_repr_clauses_of(&cr, 22);
+        crco = clauses_repr_clauses_of(cr, 22);
         UT_ASSERT_TRUE(crco.len == 70);
         UT_ASSERT_TRUE(crco.first[0] == 5);
         UT_ASSERT_TRUE(crco.first[1] == 32);
@@ -4994,7 +5001,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[68] == 494);
         UT_ASSERT_TRUE(crco.first[69] == 495);
 
-        crco = clauses_repr_clauses_of(&cr, 23);
+        crco = clauses_repr_clauses_of(cr, 23);
         UT_ASSERT_TRUE(crco.len == 64);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 9);
@@ -5061,7 +5068,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[62] == 496);
         UT_ASSERT_TRUE(crco.first[63] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 24);
+        crco = clauses_repr_clauses_of(cr, 24);
         UT_ASSERT_TRUE(crco.len == 65);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 5);
@@ -5129,7 +5136,7 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[63] == 490);
         UT_ASSERT_TRUE(crco.first[64] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 25);
+        crco = clauses_repr_clauses_of(cr, 25);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 7);
@@ -5187,2748 +5194,2750 @@ UT_TEST(ex3) {
         UT_ASSERT_TRUE(crco.first[53] == 487);
     }
 
-    free_clauses_repr(&cr);
+    free_clauses_repr(cr);
     return 0;
 }
 
 UT_TEST(ex4) {
-    struct new_stack_clauses_repr_from_file ret = new_stack_clauses_repr_from_file("test/ex4.in");
+    struct new_clauses_repr_from_file ret = new_clauses_repr_from_file("test/ex4.in");
     UT_ASSERT_TRUE(ret.success);
-    struct clauses_repr cr = ret.clauses_repr;
+    struct clauses_repr *cr = ret.clauses_repr;
+    UT_ASSERT_TRUE(clauses_repr_num_vars(cr) == 30);
+    UT_ASSERT_TRUE(clauses_repr_num_clauses(cr) == 500);
 
     {
         struct clauses_repr_clause crc;
-        crc = clauses_repr_clause(&cr, 0);
+        crc = clauses_repr_clause(cr, 0);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 1);
+        crc = clauses_repr_clause(cr, 1);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 2);
+        crc = clauses_repr_clause(cr, 2);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 3);
+        crc = clauses_repr_clause(cr, 3);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 4);
+        crc = clauses_repr_clause(cr, 4);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 5);
+        crc = clauses_repr_clause(cr, 5);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 6);
+        crc = clauses_repr_clause(cr, 6);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 7);
+        crc = clauses_repr_clause(cr, 7);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -20);
 
-        crc = clauses_repr_clause(&cr, 8);
+        crc = clauses_repr_clause(cr, 8);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 9);
+        crc = clauses_repr_clause(cr, 9);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 10);
+        crc = clauses_repr_clause(cr, 10);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 11);
+        crc = clauses_repr_clause(cr, 11);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -13);
 
-        crc = clauses_repr_clause(&cr, 12);
+        crc = clauses_repr_clause(cr, 12);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 13);
+        crc = clauses_repr_clause(cr, 13);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -27);
 
-        crc = clauses_repr_clause(&cr, 14);
+        crc = clauses_repr_clause(cr, 14);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 15);
+        crc = clauses_repr_clause(cr, 15);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 16);
+        crc = clauses_repr_clause(cr, 16);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 17);
+        crc = clauses_repr_clause(cr, 17);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 18);
+        crc = clauses_repr_clause(cr, 18);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -16);
 
-        crc = clauses_repr_clause(&cr, 19);
+        crc = clauses_repr_clause(cr, 19);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 20);
+        crc = clauses_repr_clause(cr, 20);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -25);
 
-        crc = clauses_repr_clause(&cr, 21);
+        crc = clauses_repr_clause(cr, 21);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 22);
+        crc = clauses_repr_clause(cr, 22);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 13);
 
-        crc = clauses_repr_clause(&cr, 23);
+        crc = clauses_repr_clause(cr, 23);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 24);
+        crc = clauses_repr_clause(cr, 24);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 25);
+        crc = clauses_repr_clause(cr, 25);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 26);
+        crc = clauses_repr_clause(cr, 26);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -28);
 
-        crc = clauses_repr_clause(&cr, 27);
+        crc = clauses_repr_clause(cr, 27);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 28);
+        crc = clauses_repr_clause(cr, 28);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 24);
 
-        crc = clauses_repr_clause(&cr, 29);
+        crc = clauses_repr_clause(cr, 29);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 30);
+        crc = clauses_repr_clause(cr, 30);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 31);
+        crc = clauses_repr_clause(cr, 31);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 27);
 
-        crc = clauses_repr_clause(&cr, 32);
+        crc = clauses_repr_clause(cr, 32);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 17);
 
-        crc = clauses_repr_clause(&cr, 33);
+        crc = clauses_repr_clause(cr, 33);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -1);
 
-        crc = clauses_repr_clause(&cr, 34);
+        crc = clauses_repr_clause(cr, 34);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 35);
+        crc = clauses_repr_clause(cr, 35);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 36);
+        crc = clauses_repr_clause(cr, 36);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 37);
+        crc = clauses_repr_clause(cr, 37);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 38);
+        crc = clauses_repr_clause(cr, 38);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 39);
+        crc = clauses_repr_clause(cr, 39);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 40);
+        crc = clauses_repr_clause(cr, 40);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 41);
+        crc = clauses_repr_clause(cr, 41);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 42);
+        crc = clauses_repr_clause(cr, 42);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 43);
+        crc = clauses_repr_clause(cr, 43);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 44);
+        crc = clauses_repr_clause(cr, 44);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 45);
+        crc = clauses_repr_clause(cr, 45);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 46);
+        crc = clauses_repr_clause(cr, 46);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 47);
+        crc = clauses_repr_clause(cr, 47);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 48);
+        crc = clauses_repr_clause(cr, 48);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 49);
+        crc = clauses_repr_clause(cr, 49);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 50);
+        crc = clauses_repr_clause(cr, 50);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 51);
+        crc = clauses_repr_clause(cr, 51);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 18);
 
-        crc = clauses_repr_clause(&cr, 52);
+        crc = clauses_repr_clause(cr, 52);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 53);
+        crc = clauses_repr_clause(cr, 53);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 54);
+        crc = clauses_repr_clause(cr, 54);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 55);
+        crc = clauses_repr_clause(cr, 55);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 56);
+        crc = clauses_repr_clause(cr, 56);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 57);
+        crc = clauses_repr_clause(cr, 57);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 58);
+        crc = clauses_repr_clause(cr, 58);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 15);
 
-        crc = clauses_repr_clause(&cr, 59);
+        crc = clauses_repr_clause(cr, 59);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 60);
+        crc = clauses_repr_clause(cr, 60);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 61);
+        crc = clauses_repr_clause(cr, 61);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 62);
+        crc = clauses_repr_clause(cr, 62);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 63);
+        crc = clauses_repr_clause(cr, 63);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 64);
+        crc = clauses_repr_clause(cr, 64);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -22);
 
-        crc = clauses_repr_clause(&cr, 65);
+        crc = clauses_repr_clause(cr, 65);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 66);
+        crc = clauses_repr_clause(cr, 66);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -25);
 
-        crc = clauses_repr_clause(&cr, 67);
+        crc = clauses_repr_clause(cr, 67);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 68);
+        crc = clauses_repr_clause(cr, 68);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -20);
 
-        crc = clauses_repr_clause(&cr, 69);
+        crc = clauses_repr_clause(cr, 69);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 70);
+        crc = clauses_repr_clause(cr, 70);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 71);
+        crc = clauses_repr_clause(cr, 71);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 72);
+        crc = clauses_repr_clause(cr, 72);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 73);
+        crc = clauses_repr_clause(cr, 73);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 74);
+        crc = clauses_repr_clause(cr, 74);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 75);
+        crc = clauses_repr_clause(cr, 75);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 76);
+        crc = clauses_repr_clause(cr, 76);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 77);
+        crc = clauses_repr_clause(cr, 77);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 78);
+        crc = clauses_repr_clause(cr, 78);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 79);
+        crc = clauses_repr_clause(cr, 79);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 80);
+        crc = clauses_repr_clause(cr, 80);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 81);
+        crc = clauses_repr_clause(cr, 81);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 82);
+        crc = clauses_repr_clause(cr, 82);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 83);
+        crc = clauses_repr_clause(cr, 83);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 84);
+        crc = clauses_repr_clause(cr, 84);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 85);
+        crc = clauses_repr_clause(cr, 85);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -12);
 
-        crc = clauses_repr_clause(&cr, 86);
+        crc = clauses_repr_clause(cr, 86);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 87);
+        crc = clauses_repr_clause(cr, 87);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 88);
+        crc = clauses_repr_clause(cr, 88);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 15);
 
-        crc = clauses_repr_clause(&cr, 89);
+        crc = clauses_repr_clause(cr, 89);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 90);
+        crc = clauses_repr_clause(cr, 90);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 91);
+        crc = clauses_repr_clause(cr, 91);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 92);
+        crc = clauses_repr_clause(cr, 92);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 93);
+        crc = clauses_repr_clause(cr, 93);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 94);
+        crc = clauses_repr_clause(cr, 94);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 95);
+        crc = clauses_repr_clause(cr, 95);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 18);
 
-        crc = clauses_repr_clause(&cr, 96);
+        crc = clauses_repr_clause(cr, 96);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 97);
+        crc = clauses_repr_clause(cr, 97);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 98);
+        crc = clauses_repr_clause(cr, 98);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 99);
+        crc = clauses_repr_clause(cr, 99);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 100);
+        crc = clauses_repr_clause(cr, 100);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 101);
+        crc = clauses_repr_clause(cr, 101);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 102);
+        crc = clauses_repr_clause(cr, 102);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 103);
+        crc = clauses_repr_clause(cr, 103);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -11);
 
-        crc = clauses_repr_clause(&cr, 104);
+        crc = clauses_repr_clause(cr, 104);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 3);
 
-        crc = clauses_repr_clause(&cr, 105);
+        crc = clauses_repr_clause(cr, 105);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 106);
+        crc = clauses_repr_clause(cr, 106);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -23);
 
-        crc = clauses_repr_clause(&cr, 107);
+        crc = clauses_repr_clause(cr, 107);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 108);
+        crc = clauses_repr_clause(cr, 108);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 109);
+        crc = clauses_repr_clause(cr, 109);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -24);
 
-        crc = clauses_repr_clause(&cr, 110);
+        crc = clauses_repr_clause(cr, 110);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 111);
+        crc = clauses_repr_clause(cr, 111);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -11);
 
-        crc = clauses_repr_clause(&cr, 112);
+        crc = clauses_repr_clause(cr, 112);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 25);
 
-        crc = clauses_repr_clause(&cr, 113);
+        crc = clauses_repr_clause(cr, 113);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 114);
+        crc = clauses_repr_clause(cr, 114);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 115);
+        crc = clauses_repr_clause(cr, 115);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -23);
 
-        crc = clauses_repr_clause(&cr, 116);
+        crc = clauses_repr_clause(cr, 116);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 117);
+        crc = clauses_repr_clause(cr, 117);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 13);
 
-        crc = clauses_repr_clause(&cr, 118);
+        crc = clauses_repr_clause(cr, 118);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 119);
+        crc = clauses_repr_clause(cr, 119);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 120);
+        crc = clauses_repr_clause(cr, 120);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 121);
+        crc = clauses_repr_clause(cr, 121);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 122);
+        crc = clauses_repr_clause(cr, 122);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 123);
+        crc = clauses_repr_clause(cr, 123);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 124);
+        crc = clauses_repr_clause(cr, 124);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -26);
 
-        crc = clauses_repr_clause(&cr, 125);
+        crc = clauses_repr_clause(cr, 125);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 126);
+        crc = clauses_repr_clause(cr, 126);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 127);
+        crc = clauses_repr_clause(cr, 127);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 128);
+        crc = clauses_repr_clause(cr, 128);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 129);
+        crc = clauses_repr_clause(cr, 129);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 130);
+        crc = clauses_repr_clause(cr, 130);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 29);
 
-        crc = clauses_repr_clause(&cr, 131);
+        crc = clauses_repr_clause(cr, 131);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 18);
 
-        crc = clauses_repr_clause(&cr, 132);
+        crc = clauses_repr_clause(cr, 132);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 133);
+        crc = clauses_repr_clause(cr, 133);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 134);
+        crc = clauses_repr_clause(cr, 134);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 135);
+        crc = clauses_repr_clause(cr, 135);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 136);
+        crc = clauses_repr_clause(cr, 136);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 137);
+        crc = clauses_repr_clause(cr, 137);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -16);
 
-        crc = clauses_repr_clause(&cr, 138);
+        crc = clauses_repr_clause(cr, 138);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 139);
+        crc = clauses_repr_clause(cr, 139);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -11);
 
-        crc = clauses_repr_clause(&cr, 140);
+        crc = clauses_repr_clause(cr, 140);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 141);
+        crc = clauses_repr_clause(cr, 141);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 22);
 
-        crc = clauses_repr_clause(&cr, 142);
+        crc = clauses_repr_clause(cr, 142);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 143);
+        crc = clauses_repr_clause(cr, 143);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 144);
+        crc = clauses_repr_clause(cr, 144);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 145);
+        crc = clauses_repr_clause(cr, 145);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 1);
 
-        crc = clauses_repr_clause(&cr, 146);
+        crc = clauses_repr_clause(cr, 146);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 147);
+        crc = clauses_repr_clause(cr, 147);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 148);
+        crc = clauses_repr_clause(cr, 148);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 149);
+        crc = clauses_repr_clause(cr, 149);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 150);
+        crc = clauses_repr_clause(cr, 150);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 25);
 
-        crc = clauses_repr_clause(&cr, 151);
+        crc = clauses_repr_clause(cr, 151);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 152);
+        crc = clauses_repr_clause(cr, 152);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 153);
+        crc = clauses_repr_clause(cr, 153);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 154);
+        crc = clauses_repr_clause(cr, 154);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 23);
 
-        crc = clauses_repr_clause(&cr, 155);
+        crc = clauses_repr_clause(cr, 155);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 156);
+        crc = clauses_repr_clause(cr, 156);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 157);
+        crc = clauses_repr_clause(cr, 157);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 158);
+        crc = clauses_repr_clause(cr, 158);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 159);
+        crc = clauses_repr_clause(cr, 159);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 160);
+        crc = clauses_repr_clause(cr, 160);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 161);
+        crc = clauses_repr_clause(cr, 161);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 1);
 
-        crc = clauses_repr_clause(&cr, 162);
+        crc = clauses_repr_clause(cr, 162);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 163);
+        crc = clauses_repr_clause(cr, 163);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -12);
 
-        crc = clauses_repr_clause(&cr, 164);
+        crc = clauses_repr_clause(cr, 164);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 165);
+        crc = clauses_repr_clause(cr, 165);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 166);
+        crc = clauses_repr_clause(cr, 166);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 25);
 
-        crc = clauses_repr_clause(&cr, 167);
+        crc = clauses_repr_clause(cr, 167);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 168);
+        crc = clauses_repr_clause(cr, 168);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 169);
+        crc = clauses_repr_clause(cr, 169);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 170);
+        crc = clauses_repr_clause(cr, 170);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 18);
 
-        crc = clauses_repr_clause(&cr, 171);
+        crc = clauses_repr_clause(cr, 171);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 172);
+        crc = clauses_repr_clause(cr, 172);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 173);
+        crc = clauses_repr_clause(cr, 173);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 174);
+        crc = clauses_repr_clause(cr, 174);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 24);
 
-        crc = clauses_repr_clause(&cr, 175);
+        crc = clauses_repr_clause(cr, 175);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 13);
 
-        crc = clauses_repr_clause(&cr, 176);
+        crc = clauses_repr_clause(cr, 176);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 177);
+        crc = clauses_repr_clause(cr, 177);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 178);
+        crc = clauses_repr_clause(cr, 178);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -11);
 
-        crc = clauses_repr_clause(&cr, 179);
+        crc = clauses_repr_clause(cr, 179);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 30);
 
-        crc = clauses_repr_clause(&cr, 180);
+        crc = clauses_repr_clause(cr, 180);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 181);
+        crc = clauses_repr_clause(cr, 181);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 182);
+        crc = clauses_repr_clause(cr, 182);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -19);
 
-        crc = clauses_repr_clause(&cr, 183);
+        crc = clauses_repr_clause(cr, 183);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 184);
+        crc = clauses_repr_clause(cr, 184);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 185);
+        crc = clauses_repr_clause(cr, 185);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 186);
+        crc = clauses_repr_clause(cr, 186);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -25);
 
-        crc = clauses_repr_clause(&cr, 187);
+        crc = clauses_repr_clause(cr, 187);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 188);
+        crc = clauses_repr_clause(cr, 188);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 189);
+        crc = clauses_repr_clause(cr, 189);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 12);
 
-        crc = clauses_repr_clause(&cr, 190);
+        crc = clauses_repr_clause(cr, 190);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 191);
+        crc = clauses_repr_clause(cr, 191);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 15);
 
-        crc = clauses_repr_clause(&cr, 192);
+        crc = clauses_repr_clause(cr, 192);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 193);
+        crc = clauses_repr_clause(cr, 193);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 194);
+        crc = clauses_repr_clause(cr, 194);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 23);
 
-        crc = clauses_repr_clause(&cr, 195);
+        crc = clauses_repr_clause(cr, 195);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 196);
+        crc = clauses_repr_clause(cr, 196);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 197);
+        crc = clauses_repr_clause(cr, 197);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 198);
+        crc = clauses_repr_clause(cr, 198);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 22);
 
-        crc = clauses_repr_clause(&cr, 199);
+        crc = clauses_repr_clause(cr, 199);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 200);
+        crc = clauses_repr_clause(cr, 200);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 201);
+        crc = clauses_repr_clause(cr, 201);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 16);
 
-        crc = clauses_repr_clause(&cr, 202);
+        crc = clauses_repr_clause(cr, 202);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 203);
+        crc = clauses_repr_clause(cr, 203);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 204);
+        crc = clauses_repr_clause(cr, 204);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 205);
+        crc = clauses_repr_clause(cr, 205);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 23);
 
-        crc = clauses_repr_clause(&cr, 206);
+        crc = clauses_repr_clause(cr, 206);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 16);
 
-        crc = clauses_repr_clause(&cr, 207);
+        crc = clauses_repr_clause(cr, 207);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 208);
+        crc = clauses_repr_clause(cr, 208);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 209);
+        crc = clauses_repr_clause(cr, 209);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 210);
+        crc = clauses_repr_clause(cr, 210);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 211);
+        crc = clauses_repr_clause(cr, 211);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 212);
+        crc = clauses_repr_clause(cr, 212);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 213);
+        crc = clauses_repr_clause(cr, 213);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 214);
+        crc = clauses_repr_clause(cr, 214);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 215);
+        crc = clauses_repr_clause(cr, 215);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 216);
+        crc = clauses_repr_clause(cr, 216);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 217);
+        crc = clauses_repr_clause(cr, 217);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 218);
+        crc = clauses_repr_clause(cr, 218);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 26);
 
-        crc = clauses_repr_clause(&cr, 219);
+        crc = clauses_repr_clause(cr, 219);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -1);
 
-        crc = clauses_repr_clause(&cr, 220);
+        crc = clauses_repr_clause(cr, 220);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -19);
 
-        crc = clauses_repr_clause(&cr, 221);
+        crc = clauses_repr_clause(cr, 221);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 222);
+        crc = clauses_repr_clause(cr, 222);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 223);
+        crc = clauses_repr_clause(cr, 223);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 2);
 
-        crc = clauses_repr_clause(&cr, 224);
+        crc = clauses_repr_clause(cr, 224);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -23);
 
-        crc = clauses_repr_clause(&cr, 225);
+        crc = clauses_repr_clause(cr, 225);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 226);
+        crc = clauses_repr_clause(cr, 226);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 11);
 
-        crc = clauses_repr_clause(&cr, 227);
+        crc = clauses_repr_clause(cr, 227);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 228);
+        crc = clauses_repr_clause(cr, 228);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 229);
+        crc = clauses_repr_clause(cr, 229);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 27);
 
-        crc = clauses_repr_clause(&cr, 230);
+        crc = clauses_repr_clause(cr, 230);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 231);
+        crc = clauses_repr_clause(cr, 231);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 4);
 
-        crc = clauses_repr_clause(&cr, 232);
+        crc = clauses_repr_clause(cr, 232);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 233);
+        crc = clauses_repr_clause(cr, 233);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 25);
 
-        crc = clauses_repr_clause(&cr, 234);
+        crc = clauses_repr_clause(cr, 234);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 235);
+        crc = clauses_repr_clause(cr, 235);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 13);
 
-        crc = clauses_repr_clause(&cr, 236);
+        crc = clauses_repr_clause(cr, 236);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 237);
+        crc = clauses_repr_clause(cr, 237);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 29);
 
-        crc = clauses_repr_clause(&cr, 238);
+        crc = clauses_repr_clause(cr, 238);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 239);
+        crc = clauses_repr_clause(cr, 239);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 240);
+        crc = clauses_repr_clause(cr, 240);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 241);
+        crc = clauses_repr_clause(cr, 241);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -23);
 
-        crc = clauses_repr_clause(&cr, 242);
+        crc = clauses_repr_clause(cr, 242);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 243);
+        crc = clauses_repr_clause(cr, 243);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 244);
+        crc = clauses_repr_clause(cr, 244);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 245);
+        crc = clauses_repr_clause(cr, 245);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 246);
+        crc = clauses_repr_clause(cr, 246);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -3);
 
-        crc = clauses_repr_clause(&cr, 247);
+        crc = clauses_repr_clause(cr, 247);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 248);
+        crc = clauses_repr_clause(cr, 248);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 249);
+        crc = clauses_repr_clause(cr, 249);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 22);
 
-        crc = clauses_repr_clause(&cr, 250);
+        crc = clauses_repr_clause(cr, 250);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 251);
+        crc = clauses_repr_clause(cr, 251);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 252);
+        crc = clauses_repr_clause(cr, 252);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 253);
+        crc = clauses_repr_clause(cr, 253);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 254);
+        crc = clauses_repr_clause(cr, 254);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 12);
 
-        crc = clauses_repr_clause(&cr, 255);
+        crc = clauses_repr_clause(cr, 255);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 256);
+        crc = clauses_repr_clause(cr, 256);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 257);
+        crc = clauses_repr_clause(cr, 257);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 258);
+        crc = clauses_repr_clause(cr, 258);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 259);
+        crc = clauses_repr_clause(cr, 259);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == 12);
 
-        crc = clauses_repr_clause(&cr, 260);
+        crc = clauses_repr_clause(cr, 260);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -12);
 
-        crc = clauses_repr_clause(&cr, 261);
+        crc = clauses_repr_clause(cr, 261);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 262);
+        crc = clauses_repr_clause(cr, 262);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 263);
+        crc = clauses_repr_clause(cr, 263);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 264);
+        crc = clauses_repr_clause(cr, 264);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 265);
+        crc = clauses_repr_clause(cr, 265);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 266);
+        crc = clauses_repr_clause(cr, 266);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 267);
+        crc = clauses_repr_clause(cr, 267);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -13);
 
-        crc = clauses_repr_clause(&cr, 268);
+        crc = clauses_repr_clause(cr, 268);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 269);
+        crc = clauses_repr_clause(cr, 269);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -13);
 
-        crc = clauses_repr_clause(&cr, 270);
+        crc = clauses_repr_clause(cr, 270);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 271);
+        crc = clauses_repr_clause(cr, 271);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 2);
 
-        crc = clauses_repr_clause(&cr, 272);
+        crc = clauses_repr_clause(cr, 272);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -7);
 
-        crc = clauses_repr_clause(&cr, 273);
+        crc = clauses_repr_clause(cr, 273);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 17);
 
-        crc = clauses_repr_clause(&cr, 274);
+        crc = clauses_repr_clause(cr, 274);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 11);
 
-        crc = clauses_repr_clause(&cr, 275);
+        crc = clauses_repr_clause(cr, 275);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 7);
 
-        crc = clauses_repr_clause(&cr, 276);
+        crc = clauses_repr_clause(cr, 276);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 277);
+        crc = clauses_repr_clause(cr, 277);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 278);
+        crc = clauses_repr_clause(cr, 278);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 279);
+        crc = clauses_repr_clause(cr, 279);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 280);
+        crc = clauses_repr_clause(cr, 280);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 281);
+        crc = clauses_repr_clause(cr, 281);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 282);
+        crc = clauses_repr_clause(cr, 282);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 1);
 
-        crc = clauses_repr_clause(&cr, 283);
+        crc = clauses_repr_clause(cr, 283);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 284);
+        crc = clauses_repr_clause(cr, 284);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 285);
+        crc = clauses_repr_clause(cr, 285);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 286);
+        crc = clauses_repr_clause(cr, 286);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 287);
+        crc = clauses_repr_clause(cr, 287);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 288);
+        crc = clauses_repr_clause(cr, 288);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 289);
+        crc = clauses_repr_clause(cr, 289);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 29);
 
-        crc = clauses_repr_clause(&cr, 290);
+        crc = clauses_repr_clause(cr, 290);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 291);
+        crc = clauses_repr_clause(cr, 291);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 292);
+        crc = clauses_repr_clause(cr, 292);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 293);
+        crc = clauses_repr_clause(cr, 293);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -22);
 
-        crc = clauses_repr_clause(&cr, 294);
+        crc = clauses_repr_clause(cr, 294);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -4);
 
-        crc = clauses_repr_clause(&cr, 295);
+        crc = clauses_repr_clause(cr, 295);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 296);
+        crc = clauses_repr_clause(cr, 296);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 297);
+        crc = clauses_repr_clause(cr, 297);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 298);
+        crc = clauses_repr_clause(cr, 298);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -23);
 
-        crc = clauses_repr_clause(&cr, 299);
+        crc = clauses_repr_clause(cr, 299);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 300);
+        crc = clauses_repr_clause(cr, 300);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 301);
+        crc = clauses_repr_clause(cr, 301);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 302);
+        crc = clauses_repr_clause(cr, 302);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -27);
 
-        crc = clauses_repr_clause(&cr, 303);
+        crc = clauses_repr_clause(cr, 303);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 304);
+        crc = clauses_repr_clause(cr, 304);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 305);
+        crc = clauses_repr_clause(cr, 305);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 2);
 
-        crc = clauses_repr_clause(&cr, 306);
+        crc = clauses_repr_clause(cr, 306);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 307);
+        crc = clauses_repr_clause(cr, 307);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -22);
 
-        crc = clauses_repr_clause(&cr, 308);
+        crc = clauses_repr_clause(cr, 308);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 309);
+        crc = clauses_repr_clause(cr, 309);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 310);
+        crc = clauses_repr_clause(cr, 310);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 311);
+        crc = clauses_repr_clause(cr, 311);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -1);
 
-        crc = clauses_repr_clause(&cr, 312);
+        crc = clauses_repr_clause(cr, 312);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 313);
+        crc = clauses_repr_clause(cr, 313);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -16);
 
-        crc = clauses_repr_clause(&cr, 314);
+        crc = clauses_repr_clause(cr, 314);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 15);
 
-        crc = clauses_repr_clause(&cr, 315);
+        crc = clauses_repr_clause(cr, 315);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 316);
+        crc = clauses_repr_clause(cr, 316);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 317);
+        crc = clauses_repr_clause(cr, 317);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 318);
+        crc = clauses_repr_clause(cr, 318);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 319);
+        crc = clauses_repr_clause(cr, 319);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 320);
+        crc = clauses_repr_clause(cr, 320);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 321);
+        crc = clauses_repr_clause(cr, 321);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 322);
+        crc = clauses_repr_clause(cr, 322);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 323);
+        crc = clauses_repr_clause(cr, 323);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 324);
+        crc = clauses_repr_clause(cr, 324);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 325);
+        crc = clauses_repr_clause(cr, 325);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 326);
+        crc = clauses_repr_clause(cr, 326);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 327);
+        crc = clauses_repr_clause(cr, 327);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 328);
+        crc = clauses_repr_clause(cr, 328);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 329);
+        crc = clauses_repr_clause(cr, 329);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 3);
 
-        crc = clauses_repr_clause(&cr, 330);
+        crc = clauses_repr_clause(cr, 330);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 331);
+        crc = clauses_repr_clause(cr, 331);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 332);
+        crc = clauses_repr_clause(cr, 332);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 333);
+        crc = clauses_repr_clause(cr, 333);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -13);
 
-        crc = clauses_repr_clause(&cr, 334);
+        crc = clauses_repr_clause(cr, 334);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 335);
+        crc = clauses_repr_clause(cr, 335);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 336);
+        crc = clauses_repr_clause(cr, 336);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 337);
+        crc = clauses_repr_clause(cr, 337);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 17);
 
-        crc = clauses_repr_clause(&cr, 338);
+        crc = clauses_repr_clause(cr, 338);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 339);
+        crc = clauses_repr_clause(cr, 339);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 340);
+        crc = clauses_repr_clause(cr, 340);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -27);
 
-        crc = clauses_repr_clause(&cr, 341);
+        crc = clauses_repr_clause(cr, 341);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -19);
 
-        crc = clauses_repr_clause(&cr, 342);
+        crc = clauses_repr_clause(cr, 342);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 343);
+        crc = clauses_repr_clause(cr, 343);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 344);
+        crc = clauses_repr_clause(cr, 344);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 345);
+        crc = clauses_repr_clause(cr, 345);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -16);
 
-        crc = clauses_repr_clause(&cr, 346);
+        crc = clauses_repr_clause(cr, 346);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 347);
+        crc = clauses_repr_clause(cr, 347);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 348);
+        crc = clauses_repr_clause(cr, 348);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 349);
+        crc = clauses_repr_clause(cr, 349);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -20);
 
-        crc = clauses_repr_clause(&cr, 350);
+        crc = clauses_repr_clause(cr, 350);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 351);
+        crc = clauses_repr_clause(cr, 351);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 352);
+        crc = clauses_repr_clause(cr, 352);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 23);
 
-        crc = clauses_repr_clause(&cr, 353);
+        crc = clauses_repr_clause(cr, 353);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 354);
+        crc = clauses_repr_clause(cr, 354);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 355);
+        crc = clauses_repr_clause(cr, 355);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 356);
+        crc = clauses_repr_clause(cr, 356);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 18);
 
-        crc = clauses_repr_clause(&cr, 357);
+        crc = clauses_repr_clause(cr, 357);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 358);
+        crc = clauses_repr_clause(cr, 358);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 359);
+        crc = clauses_repr_clause(cr, 359);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 360);
+        crc = clauses_repr_clause(cr, 360);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 361);
+        crc = clauses_repr_clause(cr, 361);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 362);
+        crc = clauses_repr_clause(cr, 362);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 363);
+        crc = clauses_repr_clause(cr, 363);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 364);
+        crc = clauses_repr_clause(cr, 364);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -9);
 
-        crc = clauses_repr_clause(&cr, 365);
+        crc = clauses_repr_clause(cr, 365);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 30);
 
-        crc = clauses_repr_clause(&cr, 366);
+        crc = clauses_repr_clause(cr, 366);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 367);
+        crc = clauses_repr_clause(cr, 367);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 368);
+        crc = clauses_repr_clause(cr, 368);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 369);
+        crc = clauses_repr_clause(cr, 369);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -28);
 
-        crc = clauses_repr_clause(&cr, 370);
+        crc = clauses_repr_clause(cr, 370);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 371);
+        crc = clauses_repr_clause(cr, 371);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 372);
+        crc = clauses_repr_clause(cr, 372);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 373);
+        crc = clauses_repr_clause(cr, 373);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 374);
+        crc = clauses_repr_clause(cr, 374);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 375);
+        crc = clauses_repr_clause(cr, 375);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 376);
+        crc = clauses_repr_clause(cr, 376);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 20);
 
-        crc = clauses_repr_clause(&cr, 377);
+        crc = clauses_repr_clause(cr, 377);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -15);
 
-        crc = clauses_repr_clause(&cr, 378);
+        crc = clauses_repr_clause(cr, 378);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 379);
+        crc = clauses_repr_clause(cr, 379);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 380);
+        crc = clauses_repr_clause(cr, 380);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -24);
 
-        crc = clauses_repr_clause(&cr, 381);
+        crc = clauses_repr_clause(cr, 381);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 382);
+        crc = clauses_repr_clause(cr, 382);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 383);
+        crc = clauses_repr_clause(cr, 383);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 384);
+        crc = clauses_repr_clause(cr, 384);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 385);
+        crc = clauses_repr_clause(cr, 385);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 386);
+        crc = clauses_repr_clause(cr, 386);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -18);
 
-        crc = clauses_repr_clause(&cr, 387);
+        crc = clauses_repr_clause(cr, 387);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 388);
+        crc = clauses_repr_clause(cr, 388);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 389);
+        crc = clauses_repr_clause(cr, 389);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 390);
+        crc = clauses_repr_clause(cr, 390);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -28);
 
-        crc = clauses_repr_clause(&cr, 391);
+        crc = clauses_repr_clause(cr, 391);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 392);
+        crc = clauses_repr_clause(cr, 392);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 393);
+        crc = clauses_repr_clause(cr, 393);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -20);
 
-        crc = clauses_repr_clause(&cr, 394);
+        crc = clauses_repr_clause(cr, 394);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 395);
+        crc = clauses_repr_clause(cr, 395);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 30);
 
-        crc = clauses_repr_clause(&cr, 396);
+        crc = clauses_repr_clause(cr, 396);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 397);
+        crc = clauses_repr_clause(cr, 397);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 29);
 
-        crc = clauses_repr_clause(&cr, 398);
+        crc = clauses_repr_clause(cr, 398);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == -5);
 
-        crc = clauses_repr_clause(&cr, 399);
+        crc = clauses_repr_clause(cr, 399);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 22);
 
-        crc = clauses_repr_clause(&cr, 400);
+        crc = clauses_repr_clause(cr, 400);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 401);
+        crc = clauses_repr_clause(cr, 401);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 402);
+        crc = clauses_repr_clause(cr, 402);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 403);
+        crc = clauses_repr_clause(cr, 403);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 404);
+        crc = clauses_repr_clause(cr, 404);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 17);
 
-        crc = clauses_repr_clause(&cr, 405);
+        crc = clauses_repr_clause(cr, 405);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 406);
+        crc = clauses_repr_clause(cr, 406);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 26);
 
-        crc = clauses_repr_clause(&cr, 407);
+        crc = clauses_repr_clause(cr, 407);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 408);
+        crc = clauses_repr_clause(cr, 408);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 409);
+        crc = clauses_repr_clause(cr, 409);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 24);
 
-        crc = clauses_repr_clause(&cr, 410);
+        crc = clauses_repr_clause(cr, 410);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 411);
+        crc = clauses_repr_clause(cr, 411);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 412);
+        crc = clauses_repr_clause(cr, 412);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 1);
 
-        crc = clauses_repr_clause(&cr, 413);
+        crc = clauses_repr_clause(cr, 413);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 414);
+        crc = clauses_repr_clause(cr, 414);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 415);
+        crc = clauses_repr_clause(cr, 415);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 416);
+        crc = clauses_repr_clause(cr, 416);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 417);
+        crc = clauses_repr_clause(cr, 417);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 418);
+        crc = clauses_repr_clause(cr, 418);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 419);
+        crc = clauses_repr_clause(cr, 419);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 420);
+        crc = clauses_repr_clause(cr, 420);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 421);
+        crc = clauses_repr_clause(cr, 421);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 422);
+        crc = clauses_repr_clause(cr, 422);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -24);
 
-        crc = clauses_repr_clause(&cr, 423);
+        crc = clauses_repr_clause(cr, 423);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 424);
+        crc = clauses_repr_clause(cr, 424);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 425);
+        crc = clauses_repr_clause(cr, 425);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 426);
+        crc = clauses_repr_clause(cr, 426);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 427);
+        crc = clauses_repr_clause(cr, 427);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -22);
 
-        crc = clauses_repr_clause(&cr, 428);
+        crc = clauses_repr_clause(cr, 428);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 25);
 
-        crc = clauses_repr_clause(&cr, 429);
+        crc = clauses_repr_clause(cr, 429);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 24);
 
-        crc = clauses_repr_clause(&cr, 430);
+        crc = clauses_repr_clause(cr, 430);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 431);
+        crc = clauses_repr_clause(cr, 431);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 432);
+        crc = clauses_repr_clause(cr, 432);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -6);
 
-        crc = clauses_repr_clause(&cr, 433);
+        crc = clauses_repr_clause(cr, 433);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 434);
+        crc = clauses_repr_clause(cr, 434);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -30);
 
-        crc = clauses_repr_clause(&cr, 435);
+        crc = clauses_repr_clause(cr, 435);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 436);
+        crc = clauses_repr_clause(cr, 436);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 437);
+        crc = clauses_repr_clause(cr, 437);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 438);
+        crc = clauses_repr_clause(cr, 438);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 439);
+        crc = clauses_repr_clause(cr, 439);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -1);
 
-        crc = clauses_repr_clause(&cr, 440);
+        crc = clauses_repr_clause(cr, 440);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 441);
+        crc = clauses_repr_clause(cr, 441);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -2);
 
-        crc = clauses_repr_clause(&cr, 442);
+        crc = clauses_repr_clause(cr, 442);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 443);
+        crc = clauses_repr_clause(cr, 443);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -21);
 
-        crc = clauses_repr_clause(&cr, 444);
+        crc = clauses_repr_clause(cr, 444);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 445);
+        crc = clauses_repr_clause(cr, 445);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 446);
+        crc = clauses_repr_clause(cr, 446);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 447);
+        crc = clauses_repr_clause(cr, 447);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 448);
+        crc = clauses_repr_clause(cr, 448);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 449);
+        crc = clauses_repr_clause(cr, 449);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 28);
 
-        crc = clauses_repr_clause(&cr, 450);
+        crc = clauses_repr_clause(cr, 450);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -8);
 
-        crc = clauses_repr_clause(&cr, 451);
+        crc = clauses_repr_clause(cr, 451);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 452);
+        crc = clauses_repr_clause(cr, 452);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 6);
 
-        crc = clauses_repr_clause(&cr, 453);
+        crc = clauses_repr_clause(cr, 453);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 30);
 
-        crc = clauses_repr_clause(&cr, 454);
+        crc = clauses_repr_clause(cr, 454);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 455);
+        crc = clauses_repr_clause(cr, 455);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 456);
+        crc = clauses_repr_clause(cr, 456);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -26);
 
-        crc = clauses_repr_clause(&cr, 457);
+        crc = clauses_repr_clause(cr, 457);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 19);
 
-        crc = clauses_repr_clause(&cr, 458);
+        crc = clauses_repr_clause(cr, 458);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 459);
+        crc = clauses_repr_clause(cr, 459);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -10);
 
-        crc = clauses_repr_clause(&cr, 460);
+        crc = clauses_repr_clause(cr, 460);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 10);
 
-        crc = clauses_repr_clause(&cr, 461);
+        crc = clauses_repr_clause(cr, 461);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -25);
 
-        crc = clauses_repr_clause(&cr, 462);
+        crc = clauses_repr_clause(cr, 462);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 463);
+        crc = clauses_repr_clause(cr, 463);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 464);
+        crc = clauses_repr_clause(cr, 464);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 29);
 
-        crc = clauses_repr_clause(&cr, 465);
+        crc = clauses_repr_clause(cr, 465);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 8);
 
-        crc = clauses_repr_clause(&cr, 466);
+        crc = clauses_repr_clause(cr, 466);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 1);
 
-        crc = clauses_repr_clause(&cr, 467);
+        crc = clauses_repr_clause(cr, 467);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 24);
 
-        crc = clauses_repr_clause(&cr, 468);
+        crc = clauses_repr_clause(cr, 468);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 469);
+        crc = clauses_repr_clause(cr, 469);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 470);
+        crc = clauses_repr_clause(cr, 470);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -29);
 
-        crc = clauses_repr_clause(&cr, 471);
+        crc = clauses_repr_clause(cr, 471);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -1);
 
-        crc = clauses_repr_clause(&cr, 472);
+        crc = clauses_repr_clause(cr, 472);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -22);
 
-        crc = clauses_repr_clause(&cr, 473);
+        crc = clauses_repr_clause(cr, 473);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 474);
+        crc = clauses_repr_clause(cr, 474);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 475);
+        crc = clauses_repr_clause(cr, 475);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 476);
+        crc = clauses_repr_clause(cr, 476);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 477);
+        crc = clauses_repr_clause(cr, 477);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 478);
+        crc = clauses_repr_clause(cr, 478);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -14);
 
-        crc = clauses_repr_clause(&cr, 479);
+        crc = clauses_repr_clause(cr, 479);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 480);
+        crc = clauses_repr_clause(cr, 480);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 13);
 
-        crc = clauses_repr_clause(&cr, 481);
+        crc = clauses_repr_clause(cr, 481);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 27);
 
-        crc = clauses_repr_clause(&cr, 482);
+        crc = clauses_repr_clause(cr, 482);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 483);
+        crc = clauses_repr_clause(cr, 483);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 20);
 
-        crc = clauses_repr_clause(&cr, 484);
+        crc = clauses_repr_clause(cr, 484);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 5);
 
-        crc = clauses_repr_clause(&cr, 485);
+        crc = clauses_repr_clause(cr, 485);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 486);
+        crc = clauses_repr_clause(cr, 486);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 487);
+        crc = clauses_repr_clause(cr, 487);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -17);
 
-        crc = clauses_repr_clause(&cr, 488);
+        crc = clauses_repr_clause(cr, 488);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 489);
+        crc = clauses_repr_clause(cr, 489);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 490);
+        crc = clauses_repr_clause(cr, 490);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 16);
 
-        crc = clauses_repr_clause(&cr, 491);
+        crc = clauses_repr_clause(cr, 491);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -3);
 
-        crc = clauses_repr_clause(&cr, 492);
+        crc = clauses_repr_clause(cr, 492);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 14);
 
-        crc = clauses_repr_clause(&cr, 493);
+        crc = clauses_repr_clause(cr, 493);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 494);
+        crc = clauses_repr_clause(cr, 494);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -24);
 
-        crc = clauses_repr_clause(&cr, 495);
+        crc = clauses_repr_clause(cr, 495);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 496);
+        crc = clauses_repr_clause(cr, 496);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 21);
 
-        crc = clauses_repr_clause(&cr, 497);
+        crc = clauses_repr_clause(cr, 497);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 498);
+        crc = clauses_repr_clause(cr, 498);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 499);
+        crc = clauses_repr_clause(cr, 499);
         UT_ASSERT_TRUE(crc.len == 2);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -26);
@@ -7936,10 +7945,10 @@ UT_TEST(ex4) {
     }
     {
         struct  clauses_repr_clauses_of crco;
-        crco = clauses_repr_clauses_of(&cr, 0);
+        crco = clauses_repr_clauses_of(cr, 0);
         UT_ASSERT_TRUE(crco.len == 0);
 
-        crco = clauses_repr_clauses_of(&cr, 1);
+        crco = clauses_repr_clauses_of(cr, 1);
         UT_ASSERT_TRUE(crco.len == 40);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 9);
@@ -7982,7 +7991,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[38] == 473);
         UT_ASSERT_TRUE(crco.first[39] == 488);
 
-        crco = clauses_repr_clauses_of(&cr, 2);
+        crco = clauses_repr_clauses_of(cr, 2);
         UT_ASSERT_TRUE(crco.len == 48);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 25);
@@ -8033,7 +8042,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[46] == 497);
         UT_ASSERT_TRUE(crco.first[47] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 3);
+        crco = clauses_repr_clauses_of(cr, 3);
         UT_ASSERT_TRUE(crco.len == 33);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 16);
@@ -8069,7 +8078,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[31] == 491);
         UT_ASSERT_TRUE(crco.first[32] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 4);
+        crco = clauses_repr_clauses_of(cr, 4);
         UT_ASSERT_TRUE(crco.len == 46);
         UT_ASSERT_TRUE(crco.first[0] == 5);
         UT_ASSERT_TRUE(crco.first[1] == 9);
@@ -8118,7 +8127,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[44] == 480);
         UT_ASSERT_TRUE(crco.first[45] == 485);
 
-        crco = clauses_repr_clauses_of(&cr, 5);
+        crco = clauses_repr_clauses_of(cr, 5);
         UT_ASSERT_TRUE(crco.len == 41);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 16);
@@ -8162,7 +8171,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[39] == 484);
         UT_ASSERT_TRUE(crco.first[40] == 495);
 
-        crco = clauses_repr_clauses_of(&cr, 6);
+        crco = clauses_repr_clauses_of(cr, 6);
         UT_ASSERT_TRUE(crco.len == 48);
         UT_ASSERT_TRUE(crco.first[0] == 14);
         UT_ASSERT_TRUE(crco.first[1] == 36);
@@ -8213,7 +8222,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[46] == 474);
         UT_ASSERT_TRUE(crco.first[47] == 479);
 
-        crco = clauses_repr_clauses_of(&cr, 7);
+        crco = clauses_repr_clauses_of(cr, 7);
         UT_ASSERT_TRUE(crco.len == 36);
         UT_ASSERT_TRUE(crco.first[0] == 17);
         UT_ASSERT_TRUE(crco.first[1] == 25);
@@ -8252,7 +8261,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[34] == 458);
         UT_ASSERT_TRUE(crco.first[35] == 484);
 
-        crco = clauses_repr_clauses_of(&cr, 8);
+        crco = clauses_repr_clauses_of(cr, 8);
         UT_ASSERT_TRUE(crco.len == 47);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 21);
@@ -8302,7 +8311,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[45] == 478);
         UT_ASSERT_TRUE(crco.first[46] == 483);
 
-        crco = clauses_repr_clauses_of(&cr, 9);
+        crco = clauses_repr_clauses_of(cr, 9);
         UT_ASSERT_TRUE(crco.len == 38);
         UT_ASSERT_TRUE(crco.first[0] == 5);
         UT_ASSERT_TRUE(crco.first[1] == 6);
@@ -8343,7 +8352,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[36] == 405);
         UT_ASSERT_TRUE(crco.first[37] == 455);
 
-        crco = clauses_repr_clauses_of(&cr, 10);
+        crco = clauses_repr_clauses_of(cr, 10);
         UT_ASSERT_TRUE(crco.len == 53);
         UT_ASSERT_TRUE(crco.first[0] == 16);
         UT_ASSERT_TRUE(crco.first[1] == 41);
@@ -8399,7 +8408,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[51] == 485);
         UT_ASSERT_TRUE(crco.first[52] == 486);
 
-        crco = clauses_repr_clauses_of(&cr, 11);
+        crco = clauses_repr_clauses_of(cr, 11);
         UT_ASSERT_TRUE(crco.len == 34);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 4);
@@ -8436,7 +8445,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[32] == 433);
         UT_ASSERT_TRUE(crco.first[33] == 440);
 
-        crco = clauses_repr_clauses_of(&cr, 12);
+        crco = clauses_repr_clauses_of(cr, 12);
         UT_ASSERT_TRUE(crco.len == 31);
         UT_ASSERT_TRUE(crco.first[0] == 50);
         UT_ASSERT_TRUE(crco.first[1] == 52);
@@ -8470,7 +8479,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[29] == 466);
         UT_ASSERT_TRUE(crco.first[30] == 474);
 
-        crco = clauses_repr_clauses_of(&cr, 13);
+        crco = clauses_repr_clauses_of(cr, 13);
         UT_ASSERT_TRUE(crco.len == 38);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 11);
@@ -8511,7 +8520,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[36] == 487);
         UT_ASSERT_TRUE(crco.first[37] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 14);
+        crco = clauses_repr_clauses_of(cr, 14);
         UT_ASSERT_TRUE(crco.len == 44);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 21);
@@ -8558,7 +8567,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[42] == 492);
         UT_ASSERT_TRUE(crco.first[43] == 494);
 
-        crco = clauses_repr_clauses_of(&cr, 15);
+        crco = clauses_repr_clauses_of(cr, 15);
         UT_ASSERT_TRUE(crco.len == 41);
         UT_ASSERT_TRUE(crco.first[0] == 28);
         UT_ASSERT_TRUE(crco.first[1] == 41);
@@ -8602,7 +8611,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[39] == 482);
         UT_ASSERT_TRUE(crco.first[40] == 488);
 
-        crco = clauses_repr_clauses_of(&cr, 16);
+        crco = clauses_repr_clauses_of(cr, 16);
         UT_ASSERT_TRUE(crco.len == 45);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 10);
@@ -8650,7 +8659,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[43] == 497);
         UT_ASSERT_TRUE(crco.first[44] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 17);
+        crco = clauses_repr_clauses_of(cr, 17);
         UT_ASSERT_TRUE(crco.len == 41);
         UT_ASSERT_TRUE(crco.first[0] == 19);
         UT_ASSERT_TRUE(crco.first[1] == 27);
@@ -8694,7 +8703,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[39] == 477);
         UT_ASSERT_TRUE(crco.first[40] == 487);
 
-        crco = clauses_repr_clauses_of(&cr, 18);
+        crco = clauses_repr_clauses_of(cr, 18);
         UT_ASSERT_TRUE(crco.len == 36);
         UT_ASSERT_TRUE(crco.first[0] == 31);
         UT_ASSERT_TRUE(crco.first[1] == 38);
@@ -8733,7 +8742,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[34] == 479);
         UT_ASSERT_TRUE(crco.first[35] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 19);
+        crco = clauses_repr_clauses_of(cr, 19);
         UT_ASSERT_TRUE(crco.len == 42);
         UT_ASSERT_TRUE(crco.first[0] == 7);
         UT_ASSERT_TRUE(crco.first[1] == 18);
@@ -8778,7 +8787,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[40] == 457);
         UT_ASSERT_TRUE(crco.first[41] == 485);
 
-        crco = clauses_repr_clauses_of(&cr, 20);
+        crco = clauses_repr_clauses_of(cr, 20);
         UT_ASSERT_TRUE(crco.len == 36);
         UT_ASSERT_TRUE(crco.first[0] == 7);
         UT_ASSERT_TRUE(crco.first[1] == 11);
@@ -8817,7 +8826,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[34] == 493);
         UT_ASSERT_TRUE(crco.first[35] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 21);
+        crco = clauses_repr_clauses_of(cr, 21);
         UT_ASSERT_TRUE(crco.len == 45);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 2);
@@ -8865,7 +8874,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[43] == 476);
         UT_ASSERT_TRUE(crco.first[44] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 22);
+        crco = clauses_repr_clauses_of(cr, 22);
         UT_ASSERT_TRUE(crco.len == 35);
         UT_ASSERT_TRUE(crco.first[0] == 24);
         UT_ASSERT_TRUE(crco.first[1] == 26);
@@ -8903,7 +8912,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[33] == 489);
         UT_ASSERT_TRUE(crco.first[34] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 23);
+        crco = clauses_repr_clauses_of(cr, 23);
         UT_ASSERT_TRUE(crco.len == 47);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 23);
@@ -8953,7 +8962,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[45] == 482);
         UT_ASSERT_TRUE(crco.first[46] == 489);
 
-        crco = clauses_repr_clauses_of(&cr, 24);
+        crco = clauses_repr_clauses_of(cr, 24);
         UT_ASSERT_TRUE(crco.len == 43);
         UT_ASSERT_TRUE(crco.first[0] == 28);
         UT_ASSERT_TRUE(crco.first[1] == 30);
@@ -8999,7 +9008,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[41] == 495);
         UT_ASSERT_TRUE(crco.first[42] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 25);
+        crco = clauses_repr_clauses_of(cr, 25);
         UT_ASSERT_TRUE(crco.len == 44);
         UT_ASSERT_TRUE(crco.first[0] == 20);
         UT_ASSERT_TRUE(crco.first[1] == 55);
@@ -9046,7 +9055,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[42] == 471);
         UT_ASSERT_TRUE(crco.first[43] == 490);
 
-        crco = clauses_repr_clauses_of(&cr, 26);
+        crco = clauses_repr_clauses_of(cr, 26);
         UT_ASSERT_TRUE(crco.len == 30);
         UT_ASSERT_TRUE(crco.first[0] == 87);
         UT_ASSERT_TRUE(crco.first[1] == 105);
@@ -9079,7 +9088,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[28] == 456);
         UT_ASSERT_TRUE(crco.first[29] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 27);
+        crco = clauses_repr_clauses_of(cr, 27);
         UT_ASSERT_TRUE(crco.len == 57);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 8);
@@ -9139,7 +9148,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[55] == 481);
         UT_ASSERT_TRUE(crco.first[56] == 492);
 
-        crco = clauses_repr_clauses_of(&cr, 28);
+        crco = clauses_repr_clauses_of(cr, 28);
         UT_ASSERT_TRUE(crco.len == 31);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 10);
@@ -9173,7 +9182,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[29] == 449);
         UT_ASSERT_TRUE(crco.first[30] == 469);
 
-        crco = clauses_repr_clauses_of(&cr, 29);
+        crco = clauses_repr_clauses_of(cr, 29);
         UT_ASSERT_TRUE(crco.len == 51);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 3);
@@ -9227,7 +9236,7 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[49] == 472);
         UT_ASSERT_TRUE(crco.first[50] == 491);
 
-        crco = clauses_repr_clauses_of(&cr, 30);
+        crco = clauses_repr_clauses_of(cr, 30);
         UT_ASSERT_TRUE(crco.len == 34);
         UT_ASSERT_TRUE(crco.first[0] == 9);
         UT_ASSERT_TRUE(crco.first[1] == 15);
@@ -9265,3012 +9274,3014 @@ UT_TEST(ex4) {
         UT_ASSERT_TRUE(crco.first[33] == 477);
     }
 
-    free_clauses_repr(&cr);
+    free_clauses_repr(cr);
     return 0;
 }
 
 UT_TEST(ex5) {
-    struct new_stack_clauses_repr_from_file ret = new_stack_clauses_repr_from_file("test/ex5.in");
+    struct new_clauses_repr_from_file ret = new_clauses_repr_from_file("test/ex5.in");
     UT_ASSERT_TRUE(ret.success);
-    struct clauses_repr cr = ret.clauses_repr;
+    struct clauses_repr *cr = ret.clauses_repr;
+    UT_ASSERT_TRUE(clauses_repr_num_vars(cr) == 30);
+    UT_ASSERT_TRUE(clauses_repr_num_clauses(cr) == 500);
 
     {
         struct clauses_repr_clause crc;
-        crc = clauses_repr_clause(&cr, 0);
+        crc = clauses_repr_clause(cr, 0);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 1);
+        crc = clauses_repr_clause(cr, 1);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 2);
+        crc = clauses_repr_clause(cr, 2);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 3);
+        crc = clauses_repr_clause(cr, 3);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 4);
+        crc = clauses_repr_clause(cr, 4);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 27);
 
-        crc = clauses_repr_clause(&cr, 5);
+        crc = clauses_repr_clause(cr, 5);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 6);
+        crc = clauses_repr_clause(cr, 6);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 7);
+        crc = clauses_repr_clause(cr, 7);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 8);
+        crc = clauses_repr_clause(cr, 8);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 9);
+        crc = clauses_repr_clause(cr, 9);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 10);
+        crc = clauses_repr_clause(cr, 10);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 11);
+        crc = clauses_repr_clause(cr, 11);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 12);
+        crc = clauses_repr_clause(cr, 12);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 13);
+        crc = clauses_repr_clause(cr, 13);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 14);
+        crc = clauses_repr_clause(cr, 14);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 15);
+        crc = clauses_repr_clause(cr, 15);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 16);
+        crc = clauses_repr_clause(cr, 16);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 17);
+        crc = clauses_repr_clause(cr, 17);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 18);
+        crc = clauses_repr_clause(cr, 18);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 19);
+        crc = clauses_repr_clause(cr, 19);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 20);
+        crc = clauses_repr_clause(cr, 20);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 21);
+        crc = clauses_repr_clause(cr, 21);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 22);
+        crc = clauses_repr_clause(cr, 22);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 23);
+        crc = clauses_repr_clause(cr, 23);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 24);
+        crc = clauses_repr_clause(cr, 24);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 25);
+        crc = clauses_repr_clause(cr, 25);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 26);
+        crc = clauses_repr_clause(cr, 26);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 27);
+        crc = clauses_repr_clause(cr, 27);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 28);
+        crc = clauses_repr_clause(cr, 28);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 29);
+        crc = clauses_repr_clause(cr, 29);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 30);
+        crc = clauses_repr_clause(cr, 30);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 31);
+        crc = clauses_repr_clause(cr, 31);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 32);
+        crc = clauses_repr_clause(cr, 32);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 33);
+        crc = clauses_repr_clause(cr, 33);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 34);
+        crc = clauses_repr_clause(cr, 34);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 35);
+        crc = clauses_repr_clause(cr, 35);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 36);
+        crc = clauses_repr_clause(cr, 36);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 37);
+        crc = clauses_repr_clause(cr, 37);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 38);
+        crc = clauses_repr_clause(cr, 38);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 39);
+        crc = clauses_repr_clause(cr, 39);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 40);
+        crc = clauses_repr_clause(cr, 40);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 41);
+        crc = clauses_repr_clause(cr, 41);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 42);
+        crc = clauses_repr_clause(cr, 42);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 43);
+        crc = clauses_repr_clause(cr, 43);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 44);
+        crc = clauses_repr_clause(cr, 44);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 45);
+        crc = clauses_repr_clause(cr, 45);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 46);
+        crc = clauses_repr_clause(cr, 46);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 47);
+        crc = clauses_repr_clause(cr, 47);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 48);
+        crc = clauses_repr_clause(cr, 48);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 49);
+        crc = clauses_repr_clause(cr, 49);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 50);
+        crc = clauses_repr_clause(cr, 50);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 51);
+        crc = clauses_repr_clause(cr, 51);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 52);
+        crc = clauses_repr_clause(cr, 52);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 53);
+        crc = clauses_repr_clause(cr, 53);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 54);
+        crc = clauses_repr_clause(cr, 54);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 55);
+        crc = clauses_repr_clause(cr, 55);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 56);
+        crc = clauses_repr_clause(cr, 56);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 57);
+        crc = clauses_repr_clause(cr, 57);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 58);
+        crc = clauses_repr_clause(cr, 58);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 59);
+        crc = clauses_repr_clause(cr, 59);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 60);
+        crc = clauses_repr_clause(cr, 60);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 61);
+        crc = clauses_repr_clause(cr, 61);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 62);
+        crc = clauses_repr_clause(cr, 62);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 63);
+        crc = clauses_repr_clause(cr, 63);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 64);
+        crc = clauses_repr_clause(cr, 64);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 65);
+        crc = clauses_repr_clause(cr, 65);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 66);
+        crc = clauses_repr_clause(cr, 66);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 67);
+        crc = clauses_repr_clause(cr, 67);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 68);
+        crc = clauses_repr_clause(cr, 68);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 69);
+        crc = clauses_repr_clause(cr, 69);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 70);
+        crc = clauses_repr_clause(cr, 70);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 71);
+        crc = clauses_repr_clause(cr, 71);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 72);
+        crc = clauses_repr_clause(cr, 72);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 73);
+        crc = clauses_repr_clause(cr, 73);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 74);
+        crc = clauses_repr_clause(cr, 74);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 75);
+        crc = clauses_repr_clause(cr, 75);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 76);
+        crc = clauses_repr_clause(cr, 76);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 77);
+        crc = clauses_repr_clause(cr, 77);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 78);
+        crc = clauses_repr_clause(cr, 78);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 79);
+        crc = clauses_repr_clause(cr, 79);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 80);
+        crc = clauses_repr_clause(cr, 80);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 81);
+        crc = clauses_repr_clause(cr, 81);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 82);
+        crc = clauses_repr_clause(cr, 82);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 83);
+        crc = clauses_repr_clause(cr, 83);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 84);
+        crc = clauses_repr_clause(cr, 84);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 85);
+        crc = clauses_repr_clause(cr, 85);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 86);
+        crc = clauses_repr_clause(cr, 86);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 87);
+        crc = clauses_repr_clause(cr, 87);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 88);
+        crc = clauses_repr_clause(cr, 88);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 89);
+        crc = clauses_repr_clause(cr, 89);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 90);
+        crc = clauses_repr_clause(cr, 90);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 91);
+        crc = clauses_repr_clause(cr, 91);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 92);
+        crc = clauses_repr_clause(cr, 92);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 93);
+        crc = clauses_repr_clause(cr, 93);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 94);
+        crc = clauses_repr_clause(cr, 94);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 95);
+        crc = clauses_repr_clause(cr, 95);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 96);
+        crc = clauses_repr_clause(cr, 96);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 97);
+        crc = clauses_repr_clause(cr, 97);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 98);
+        crc = clauses_repr_clause(cr, 98);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 99);
+        crc = clauses_repr_clause(cr, 99);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 100);
+        crc = clauses_repr_clause(cr, 100);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 101);
+        crc = clauses_repr_clause(cr, 101);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 102);
+        crc = clauses_repr_clause(cr, 102);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 103);
+        crc = clauses_repr_clause(cr, 103);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 104);
+        crc = clauses_repr_clause(cr, 104);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 105);
+        crc = clauses_repr_clause(cr, 105);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 106);
+        crc = clauses_repr_clause(cr, 106);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 107);
+        crc = clauses_repr_clause(cr, 107);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 108);
+        crc = clauses_repr_clause(cr, 108);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 109);
+        crc = clauses_repr_clause(cr, 109);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 110);
+        crc = clauses_repr_clause(cr, 110);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 111);
+        crc = clauses_repr_clause(cr, 111);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 112);
+        crc = clauses_repr_clause(cr, 112);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 113);
+        crc = clauses_repr_clause(cr, 113);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 114);
+        crc = clauses_repr_clause(cr, 114);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 115);
+        crc = clauses_repr_clause(cr, 115);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 116);
+        crc = clauses_repr_clause(cr, 116);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 117);
+        crc = clauses_repr_clause(cr, 117);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 118);
+        crc = clauses_repr_clause(cr, 118);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 119);
+        crc = clauses_repr_clause(cr, 119);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 120);
+        crc = clauses_repr_clause(cr, 120);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 121);
+        crc = clauses_repr_clause(cr, 121);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 122);
+        crc = clauses_repr_clause(cr, 122);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 123);
+        crc = clauses_repr_clause(cr, 123);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 124);
+        crc = clauses_repr_clause(cr, 124);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 125);
+        crc = clauses_repr_clause(cr, 125);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 126);
+        crc = clauses_repr_clause(cr, 126);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 127);
+        crc = clauses_repr_clause(cr, 127);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 128);
+        crc = clauses_repr_clause(cr, 128);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 129);
+        crc = clauses_repr_clause(cr, 129);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 130);
+        crc = clauses_repr_clause(cr, 130);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 131);
+        crc = clauses_repr_clause(cr, 131);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 132);
+        crc = clauses_repr_clause(cr, 132);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 133);
+        crc = clauses_repr_clause(cr, 133);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 134);
+        crc = clauses_repr_clause(cr, 134);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 135);
+        crc = clauses_repr_clause(cr, 135);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 136);
+        crc = clauses_repr_clause(cr, 136);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 137);
+        crc = clauses_repr_clause(cr, 137);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 138);
+        crc = clauses_repr_clause(cr, 138);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 139);
+        crc = clauses_repr_clause(cr, 139);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 140);
+        crc = clauses_repr_clause(cr, 140);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 141);
+        crc = clauses_repr_clause(cr, 141);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 142);
+        crc = clauses_repr_clause(cr, 142);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 143);
+        crc = clauses_repr_clause(cr, 143);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 144);
+        crc = clauses_repr_clause(cr, 144);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 145);
+        crc = clauses_repr_clause(cr, 145);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 146);
+        crc = clauses_repr_clause(cr, 146);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 147);
+        crc = clauses_repr_clause(cr, 147);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 148);
+        crc = clauses_repr_clause(cr, 148);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 149);
+        crc = clauses_repr_clause(cr, 149);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 150);
+        crc = clauses_repr_clause(cr, 150);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 151);
+        crc = clauses_repr_clause(cr, 151);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 152);
+        crc = clauses_repr_clause(cr, 152);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 153);
+        crc = clauses_repr_clause(cr, 153);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 154);
+        crc = clauses_repr_clause(cr, 154);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 155);
+        crc = clauses_repr_clause(cr, 155);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 156);
+        crc = clauses_repr_clause(cr, 156);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 157);
+        crc = clauses_repr_clause(cr, 157);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 158);
+        crc = clauses_repr_clause(cr, 158);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 159);
+        crc = clauses_repr_clause(cr, 159);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 160);
+        crc = clauses_repr_clause(cr, 160);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 161);
+        crc = clauses_repr_clause(cr, 161);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 162);
+        crc = clauses_repr_clause(cr, 162);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 163);
+        crc = clauses_repr_clause(cr, 163);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 164);
+        crc = clauses_repr_clause(cr, 164);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 165);
+        crc = clauses_repr_clause(cr, 165);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 166);
+        crc = clauses_repr_clause(cr, 166);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 167);
+        crc = clauses_repr_clause(cr, 167);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 168);
+        crc = clauses_repr_clause(cr, 168);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 169);
+        crc = clauses_repr_clause(cr, 169);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 170);
+        crc = clauses_repr_clause(cr, 170);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 171);
+        crc = clauses_repr_clause(cr, 171);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 172);
+        crc = clauses_repr_clause(cr, 172);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 173);
+        crc = clauses_repr_clause(cr, 173);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 174);
+        crc = clauses_repr_clause(cr, 174);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 175);
+        crc = clauses_repr_clause(cr, 175);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 176);
+        crc = clauses_repr_clause(cr, 176);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 177);
+        crc = clauses_repr_clause(cr, 177);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 178);
+        crc = clauses_repr_clause(cr, 178);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 179);
+        crc = clauses_repr_clause(cr, 179);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 180);
+        crc = clauses_repr_clause(cr, 180);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 181);
+        crc = clauses_repr_clause(cr, 181);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 182);
+        crc = clauses_repr_clause(cr, 182);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 183);
+        crc = clauses_repr_clause(cr, 183);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 184);
+        crc = clauses_repr_clause(cr, 184);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 185);
+        crc = clauses_repr_clause(cr, 185);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 186);
+        crc = clauses_repr_clause(cr, 186);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 187);
+        crc = clauses_repr_clause(cr, 187);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 188);
+        crc = clauses_repr_clause(cr, 188);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 189);
+        crc = clauses_repr_clause(cr, 189);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 190);
+        crc = clauses_repr_clause(cr, 190);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 191);
+        crc = clauses_repr_clause(cr, 191);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 192);
+        crc = clauses_repr_clause(cr, 192);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 1);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 193);
+        crc = clauses_repr_clause(cr, 193);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 194);
+        crc = clauses_repr_clause(cr, 194);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 195);
+        crc = clauses_repr_clause(cr, 195);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 196);
+        crc = clauses_repr_clause(cr, 196);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 197);
+        crc = clauses_repr_clause(cr, 197);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 198);
+        crc = clauses_repr_clause(cr, 198);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 199);
+        crc = clauses_repr_clause(cr, 199);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 200);
+        crc = clauses_repr_clause(cr, 200);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 201);
+        crc = clauses_repr_clause(cr, 201);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 202);
+        crc = clauses_repr_clause(cr, 202);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 203);
+        crc = clauses_repr_clause(cr, 203);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 204);
+        crc = clauses_repr_clause(cr, 204);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 205);
+        crc = clauses_repr_clause(cr, 205);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 206);
+        crc = clauses_repr_clause(cr, 206);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 207);
+        crc = clauses_repr_clause(cr, 207);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 208);
+        crc = clauses_repr_clause(cr, 208);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 209);
+        crc = clauses_repr_clause(cr, 209);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 210);
+        crc = clauses_repr_clause(cr, 210);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 211);
+        crc = clauses_repr_clause(cr, 211);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 212);
+        crc = clauses_repr_clause(cr, 212);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 213);
+        crc = clauses_repr_clause(cr, 213);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 4);
 
-        crc = clauses_repr_clause(&cr, 214);
+        crc = clauses_repr_clause(cr, 214);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 215);
+        crc = clauses_repr_clause(cr, 215);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 216);
+        crc = clauses_repr_clause(cr, 216);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 217);
+        crc = clauses_repr_clause(cr, 217);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 218);
+        crc = clauses_repr_clause(cr, 218);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 219);
+        crc = clauses_repr_clause(cr, 219);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 220);
+        crc = clauses_repr_clause(cr, 220);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 221);
+        crc = clauses_repr_clause(cr, 221);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 222);
+        crc = clauses_repr_clause(cr, 222);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 223);
+        crc = clauses_repr_clause(cr, 223);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 224);
+        crc = clauses_repr_clause(cr, 224);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 225);
+        crc = clauses_repr_clause(cr, 225);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 226);
+        crc = clauses_repr_clause(cr, 226);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 25);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 227);
+        crc = clauses_repr_clause(cr, 227);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 228);
+        crc = clauses_repr_clause(cr, 228);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 229);
+        crc = clauses_repr_clause(cr, 229);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 230);
+        crc = clauses_repr_clause(cr, 230);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 231);
+        crc = clauses_repr_clause(cr, 231);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 232);
+        crc = clauses_repr_clause(cr, 232);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 233);
+        crc = clauses_repr_clause(cr, 233);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 234);
+        crc = clauses_repr_clause(cr, 234);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 235);
+        crc = clauses_repr_clause(cr, 235);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 236);
+        crc = clauses_repr_clause(cr, 236);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 237);
+        crc = clauses_repr_clause(cr, 237);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 238);
+        crc = clauses_repr_clause(cr, 238);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 239);
+        crc = clauses_repr_clause(cr, 239);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 240);
+        crc = clauses_repr_clause(cr, 240);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 241);
+        crc = clauses_repr_clause(cr, 241);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 242);
+        crc = clauses_repr_clause(cr, 242);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 243);
+        crc = clauses_repr_clause(cr, 243);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == 6);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 244);
+        crc = clauses_repr_clause(cr, 244);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 29);
 
-        crc = clauses_repr_clause(&cr, 245);
+        crc = clauses_repr_clause(cr, 245);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 246);
+        crc = clauses_repr_clause(cr, 246);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 247);
+        crc = clauses_repr_clause(cr, 247);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 248);
+        crc = clauses_repr_clause(cr, 248);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 249);
+        crc = clauses_repr_clause(cr, 249);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 250);
+        crc = clauses_repr_clause(cr, 250);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 251);
+        crc = clauses_repr_clause(cr, 251);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 252);
+        crc = clauses_repr_clause(cr, 252);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 253);
+        crc = clauses_repr_clause(cr, 253);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 254);
+        crc = clauses_repr_clause(cr, 254);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 255);
+        crc = clauses_repr_clause(cr, 255);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 256);
+        crc = clauses_repr_clause(cr, 256);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 257);
+        crc = clauses_repr_clause(cr, 257);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 258);
+        crc = clauses_repr_clause(cr, 258);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 259);
+        crc = clauses_repr_clause(cr, 259);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 260);
+        crc = clauses_repr_clause(cr, 260);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 261);
+        crc = clauses_repr_clause(cr, 261);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 262);
+        crc = clauses_repr_clause(cr, 262);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 263);
+        crc = clauses_repr_clause(cr, 263);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 264);
+        crc = clauses_repr_clause(cr, 264);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 265);
+        crc = clauses_repr_clause(cr, 265);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 266);
+        crc = clauses_repr_clause(cr, 266);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 267);
+        crc = clauses_repr_clause(cr, 267);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 268);
+        crc = clauses_repr_clause(cr, 268);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 269);
+        crc = clauses_repr_clause(cr, 269);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 270);
+        crc = clauses_repr_clause(cr, 270);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 271);
+        crc = clauses_repr_clause(cr, 271);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 272);
+        crc = clauses_repr_clause(cr, 272);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 273);
+        crc = clauses_repr_clause(cr, 273);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 274);
+        crc = clauses_repr_clause(cr, 274);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 275);
+        crc = clauses_repr_clause(cr, 275);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 276);
+        crc = clauses_repr_clause(cr, 276);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 277);
+        crc = clauses_repr_clause(cr, 277);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 278);
+        crc = clauses_repr_clause(cr, 278);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 279);
+        crc = clauses_repr_clause(cr, 279);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 280);
+        crc = clauses_repr_clause(cr, 280);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 281);
+        crc = clauses_repr_clause(cr, 281);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 282);
+        crc = clauses_repr_clause(cr, 282);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 283);
+        crc = clauses_repr_clause(cr, 283);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 284);
+        crc = clauses_repr_clause(cr, 284);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 285);
+        crc = clauses_repr_clause(cr, 285);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 286);
+        crc = clauses_repr_clause(cr, 286);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 287);
+        crc = clauses_repr_clause(cr, 287);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 288);
+        crc = clauses_repr_clause(cr, 288);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 289);
+        crc = clauses_repr_clause(cr, 289);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 290);
+        crc = clauses_repr_clause(cr, 290);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 291);
+        crc = clauses_repr_clause(cr, 291);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 292);
+        crc = clauses_repr_clause(cr, 292);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 293);
+        crc = clauses_repr_clause(cr, 293);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 294);
+        crc = clauses_repr_clause(cr, 294);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 295);
+        crc = clauses_repr_clause(cr, 295);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 296);
+        crc = clauses_repr_clause(cr, 296);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 297);
+        crc = clauses_repr_clause(cr, 297);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 298);
+        crc = clauses_repr_clause(cr, 298);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 299);
+        crc = clauses_repr_clause(cr, 299);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 300);
+        crc = clauses_repr_clause(cr, 300);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 301);
+        crc = clauses_repr_clause(cr, 301);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 302);
+        crc = clauses_repr_clause(cr, 302);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 303);
+        crc = clauses_repr_clause(cr, 303);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 304);
+        crc = clauses_repr_clause(cr, 304);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 305);
+        crc = clauses_repr_clause(cr, 305);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 306);
+        crc = clauses_repr_clause(cr, 306);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 307);
+        crc = clauses_repr_clause(cr, 307);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 308);
+        crc = clauses_repr_clause(cr, 308);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 309);
+        crc = clauses_repr_clause(cr, 309);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 310);
+        crc = clauses_repr_clause(cr, 310);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 311);
+        crc = clauses_repr_clause(cr, 311);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 312);
+        crc = clauses_repr_clause(cr, 312);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 313);
+        crc = clauses_repr_clause(cr, 313);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 314);
+        crc = clauses_repr_clause(cr, 314);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 315);
+        crc = clauses_repr_clause(cr, 315);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 316);
+        crc = clauses_repr_clause(cr, 316);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 317);
+        crc = clauses_repr_clause(cr, 317);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -8);
 
-        crc = clauses_repr_clause(&cr, 318);
+        crc = clauses_repr_clause(cr, 318);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 319);
+        crc = clauses_repr_clause(cr, 319);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 320);
+        crc = clauses_repr_clause(cr, 320);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 321);
+        crc = clauses_repr_clause(cr, 321);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -2);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == -29);
 
-        crc = clauses_repr_clause(&cr, 322);
+        crc = clauses_repr_clause(cr, 322);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 323);
+        crc = clauses_repr_clause(cr, 323);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 324);
+        crc = clauses_repr_clause(cr, 324);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 325);
+        crc = clauses_repr_clause(cr, 325);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 326);
+        crc = clauses_repr_clause(cr, 326);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 327);
+        crc = clauses_repr_clause(cr, 327);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 328);
+        crc = clauses_repr_clause(cr, 328);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 329);
+        crc = clauses_repr_clause(cr, 329);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 330);
+        crc = clauses_repr_clause(cr, 330);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 331);
+        crc = clauses_repr_clause(cr, 331);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 332);
+        crc = clauses_repr_clause(cr, 332);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 333);
+        crc = clauses_repr_clause(cr, 333);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 334);
+        crc = clauses_repr_clause(cr, 334);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 335);
+        crc = clauses_repr_clause(cr, 335);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 336);
+        crc = clauses_repr_clause(cr, 336);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 337);
+        crc = clauses_repr_clause(cr, 337);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 338);
+        crc = clauses_repr_clause(cr, 338);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 339);
+        crc = clauses_repr_clause(cr, 339);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == -23);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 340);
+        crc = clauses_repr_clause(cr, 340);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -16);
 
-        crc = clauses_repr_clause(&cr, 341);
+        crc = clauses_repr_clause(cr, 341);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 342);
+        crc = clauses_repr_clause(cr, 342);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 343);
+        crc = clauses_repr_clause(cr, 343);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -29);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 344);
+        crc = clauses_repr_clause(cr, 344);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 345);
+        crc = clauses_repr_clause(cr, 345);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 346);
+        crc = clauses_repr_clause(cr, 346);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 347);
+        crc = clauses_repr_clause(cr, 347);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 348);
+        crc = clauses_repr_clause(cr, 348);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 349);
+        crc = clauses_repr_clause(cr, 349);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -27);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -1);
 
-        crc = clauses_repr_clause(&cr, 350);
+        crc = clauses_repr_clause(cr, 350);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 351);
+        crc = clauses_repr_clause(cr, 351);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 352);
+        crc = clauses_repr_clause(cr, 352);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 353);
+        crc = clauses_repr_clause(cr, 353);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 354);
+        crc = clauses_repr_clause(cr, 354);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 355);
+        crc = clauses_repr_clause(cr, 355);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == -15);
 
-        crc = clauses_repr_clause(&cr, 356);
+        crc = clauses_repr_clause(cr, 356);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 357);
+        crc = clauses_repr_clause(cr, 357);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 358);
+        crc = clauses_repr_clause(cr, 358);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 359);
+        crc = clauses_repr_clause(cr, 359);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 360);
+        crc = clauses_repr_clause(cr, 360);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 361);
+        crc = clauses_repr_clause(cr, 361);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == -28);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 362);
+        crc = clauses_repr_clause(cr, 362);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 363);
+        crc = clauses_repr_clause(cr, 363);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 364);
+        crc = clauses_repr_clause(cr, 364);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 365);
+        crc = clauses_repr_clause(cr, 365);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 366);
+        crc = clauses_repr_clause(cr, 366);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 367);
+        crc = clauses_repr_clause(cr, 367);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 368);
+        crc = clauses_repr_clause(cr, 368);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 369);
+        crc = clauses_repr_clause(cr, 369);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 21);
 
-        crc = clauses_repr_clause(&cr, 370);
+        crc = clauses_repr_clause(cr, 370);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 371);
+        crc = clauses_repr_clause(cr, 371);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 372);
+        crc = clauses_repr_clause(cr, 372);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 373);
+        crc = clauses_repr_clause(cr, 373);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 374);
+        crc = clauses_repr_clause(cr, 374);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 375);
+        crc = clauses_repr_clause(cr, 375);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 376);
+        crc = clauses_repr_clause(cr, 376);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 11);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 377);
+        crc = clauses_repr_clause(cr, 377);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 378);
+        crc = clauses_repr_clause(cr, 378);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 379);
+        crc = clauses_repr_clause(cr, 379);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 23);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 380);
+        crc = clauses_repr_clause(cr, 380);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 381);
+        crc = clauses_repr_clause(cr, 381);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 6);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 382);
+        crc = clauses_repr_clause(cr, 382);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 383);
+        crc = clauses_repr_clause(cr, 383);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 3);
         UT_ASSERT_TRUE(crc.first[1] == -14);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 384);
+        crc = clauses_repr_clause(cr, 384);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -20);
 
-        crc = clauses_repr_clause(&cr, 385);
+        crc = clauses_repr_clause(cr, 385);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 386);
+        crc = clauses_repr_clause(cr, 386);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 387);
+        crc = clauses_repr_clause(cr, 387);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == 21);
         UT_ASSERT_TRUE(crc.first[2] == -12);
 
-        crc = clauses_repr_clause(&cr, 388);
+        crc = clauses_repr_clause(cr, 388);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -5);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 389);
+        crc = clauses_repr_clause(cr, 389);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 6);
 
-        crc = clauses_repr_clause(&cr, 390);
+        crc = clauses_repr_clause(cr, 390);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 391);
+        crc = clauses_repr_clause(cr, 391);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 392);
+        crc = clauses_repr_clause(cr, 392);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 393);
+        crc = clauses_repr_clause(cr, 393);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 394);
+        crc = clauses_repr_clause(cr, 394);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 395);
+        crc = clauses_repr_clause(cr, 395);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == 30);
 
-        crc = clauses_repr_clause(&cr, 396);
+        crc = clauses_repr_clause(cr, 396);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 397);
+        crc = clauses_repr_clause(cr, 397);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -5);
 
-        crc = clauses_repr_clause(&cr, 398);
+        crc = clauses_repr_clause(cr, 398);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -19);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 399);
+        crc = clauses_repr_clause(cr, 399);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 14);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 400);
+        crc = clauses_repr_clause(cr, 400);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 401);
+        crc = clauses_repr_clause(cr, 401);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -5);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -11);
 
-        crc = clauses_repr_clause(&cr, 402);
+        crc = clauses_repr_clause(cr, 402);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == -9);
 
-        crc = clauses_repr_clause(&cr, 403);
+        crc = clauses_repr_clause(cr, 403);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 404);
+        crc = clauses_repr_clause(cr, 404);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 405);
+        crc = clauses_repr_clause(cr, 405);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == 3);
         UT_ASSERT_TRUE(crc.first[2] == 24);
 
-        crc = clauses_repr_clause(&cr, 406);
+        crc = clauses_repr_clause(cr, 406);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -19);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == -17);
 
-        crc = clauses_repr_clause(&cr, 407);
+        crc = clauses_repr_clause(cr, 407);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 408);
+        crc = clauses_repr_clause(cr, 408);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == 30);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 409);
+        crc = clauses_repr_clause(cr, 409);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 410);
+        crc = clauses_repr_clause(cr, 410);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == -10);
         UT_ASSERT_TRUE(crc.first[2] == -18);
 
-        crc = clauses_repr_clause(&cr, 411);
+        crc = clauses_repr_clause(cr, 411);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 412);
+        crc = clauses_repr_clause(cr, 412);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 413);
+        crc = clauses_repr_clause(cr, 413);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -1);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == 22);
 
-        crc = clauses_repr_clause(&cr, 414);
+        crc = clauses_repr_clause(cr, 414);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 415);
+        crc = clauses_repr_clause(cr, 415);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -18);
         UT_ASSERT_TRUE(crc.first[2] == -4);
 
-        crc = clauses_repr_clause(&cr, 416);
+        crc = clauses_repr_clause(cr, 416);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -20);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 417);
+        crc = clauses_repr_clause(cr, 417);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 5);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 418);
+        crc = clauses_repr_clause(cr, 418);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 4);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 419);
+        crc = clauses_repr_clause(cr, 419);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -20);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 420);
+        crc = clauses_repr_clause(cr, 420);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 8);
         UT_ASSERT_TRUE(crc.first[2] == 15);
 
-        crc = clauses_repr_clause(&cr, 421);
+        crc = clauses_repr_clause(cr, 421);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -13);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -26);
 
-        crc = clauses_repr_clause(&cr, 422);
+        crc = clauses_repr_clause(cr, 422);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 28);
         UT_ASSERT_TRUE(crc.first[2] == 23);
 
-        crc = clauses_repr_clause(&cr, 423);
+        crc = clauses_repr_clause(cr, 423);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 26);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 424);
+        crc = clauses_repr_clause(cr, 424);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 12);
 
-        crc = clauses_repr_clause(&cr, 425);
+        crc = clauses_repr_clause(cr, 425);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 10);
 
-        crc = clauses_repr_clause(&cr, 426);
+        crc = clauses_repr_clause(cr, 426);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 427);
+        crc = clauses_repr_clause(cr, 427);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 428);
+        crc = clauses_repr_clause(cr, 428);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 429);
+        crc = clauses_repr_clause(cr, 429);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 430);
+        crc = clauses_repr_clause(cr, 430);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 28);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 431);
+        crc = clauses_repr_clause(cr, 431);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 23);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == -19);
 
-        crc = clauses_repr_clause(&cr, 432);
+        crc = clauses_repr_clause(cr, 432);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == 24);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 433);
+        crc = clauses_repr_clause(cr, 433);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 1);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -3);
 
-        crc = clauses_repr_clause(&cr, 434);
+        crc = clauses_repr_clause(cr, 434);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 10);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 435);
+        crc = clauses_repr_clause(cr, 435);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 436);
+        crc = clauses_repr_clause(cr, 436);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 12);
         UT_ASSERT_TRUE(crc.first[1] == 4);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 437);
+        crc = clauses_repr_clause(cr, 437);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 19);
         UT_ASSERT_TRUE(crc.first[1] == -6);
         UT_ASSERT_TRUE(crc.first[2] == 18);
 
-        crc = clauses_repr_clause(&cr, 438);
+        crc = clauses_repr_clause(cr, 438);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -3);
         UT_ASSERT_TRUE(crc.first[2] == -13);
 
-        crc = clauses_repr_clause(&cr, 439);
+        crc = clauses_repr_clause(cr, 439);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == -26);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 440);
+        crc = clauses_repr_clause(cr, 440);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -16);
         UT_ASSERT_TRUE(crc.first[1] == -17);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 441);
+        crc = clauses_repr_clause(cr, 441);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 30);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 442);
+        crc = clauses_repr_clause(cr, 442);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -10);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 443);
+        crc = clauses_repr_clause(cr, 443);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 444);
+        crc = clauses_repr_clause(cr, 444);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -7);
         UT_ASSERT_TRUE(crc.first[2] == -2);
 
-        crc = clauses_repr_clause(&cr, 445);
+        crc = clauses_repr_clause(cr, 445);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 8);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 446);
+        crc = clauses_repr_clause(cr, 446);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 447);
+        crc = clauses_repr_clause(cr, 447);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 8);
 
-        crc = clauses_repr_clause(&cr, 448);
+        crc = clauses_repr_clause(cr, 448);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -21);
         UT_ASSERT_TRUE(crc.first[1] == -24);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 449);
+        crc = clauses_repr_clause(cr, 449);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 450);
+        crc = clauses_repr_clause(cr, 450);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == 9);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 451);
+        crc = clauses_repr_clause(cr, 451);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 24);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 452);
+        crc = clauses_repr_clause(cr, 452);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 453);
+        crc = clauses_repr_clause(cr, 453);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 454);
+        crc = clauses_repr_clause(cr, 454);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 455);
+        crc = clauses_repr_clause(cr, 455);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 456);
+        crc = clauses_repr_clause(cr, 456);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 22);
         UT_ASSERT_TRUE(crc.first[1] == 19);
         UT_ASSERT_TRUE(crc.first[2] == -23);
 
-        crc = clauses_repr_clause(&cr, 457);
+        crc = clauses_repr_clause(cr, 457);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 7);
         UT_ASSERT_TRUE(crc.first[2] == 28);
 
-        crc = clauses_repr_clause(&cr, 458);
+        crc = clauses_repr_clause(cr, 458);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 17);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 3);
 
-        crc = clauses_repr_clause(&cr, 459);
+        crc = clauses_repr_clause(cr, 459);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == 17);
 
-        crc = clauses_repr_clause(&cr, 460);
+        crc = clauses_repr_clause(cr, 460);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -1);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 461);
+        crc = clauses_repr_clause(cr, 461);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -25);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 26);
 
-        crc = clauses_repr_clause(&cr, 462);
+        crc = clauses_repr_clause(cr, 462);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 14);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 463);
+        crc = clauses_repr_clause(cr, 463);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == 22);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 464);
+        crc = clauses_repr_clause(cr, 464);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -8);
         UT_ASSERT_TRUE(crc.first[2] == 7);
 
-        crc = clauses_repr_clause(&cr, 465);
+        crc = clauses_repr_clause(cr, 465);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 13);
         UT_ASSERT_TRUE(crc.first[1] == 11);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 466);
+        crc = clauses_repr_clause(cr, 466);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -22);
         UT_ASSERT_TRUE(crc.first[1] == -30);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 467);
+        crc = clauses_repr_clause(cr, 467);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == 26);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 468);
+        crc = clauses_repr_clause(cr, 468);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -9);
         UT_ASSERT_TRUE(crc.first[1] == 18);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 469);
+        crc = clauses_repr_clause(cr, 469);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 7);
         UT_ASSERT_TRUE(crc.first[1] == 27);
         UT_ASSERT_TRUE(crc.first[2] == -6);
 
-        crc = clauses_repr_clause(&cr, 470);
+        crc = clauses_repr_clause(cr, 470);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -14);
         UT_ASSERT_TRUE(crc.first[1] == -16);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 471);
+        crc = clauses_repr_clause(cr, 471);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 16);
         UT_ASSERT_TRUE(crc.first[1] == 20);
         UT_ASSERT_TRUE(crc.first[2] == -10);
 
-        crc = clauses_repr_clause(&cr, 472);
+        crc = clauses_repr_clause(cr, 472);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -25);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 473);
+        crc = clauses_repr_clause(cr, 473);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -29);
         UT_ASSERT_TRUE(crc.first[1] == -11);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 474);
+        crc = clauses_repr_clause(cr, 474);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -30);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 475);
+        crc = clauses_repr_clause(cr, 475);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 29);
         UT_ASSERT_TRUE(crc.first[1] == -12);
         UT_ASSERT_TRUE(crc.first[2] == -30);
 
-        crc = clauses_repr_clause(&cr, 476);
+        crc = clauses_repr_clause(cr, 476);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 18);
         UT_ASSERT_TRUE(crc.first[1] == -4);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 477);
+        crc = clauses_repr_clause(cr, 477);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -7);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == 11);
 
-        crc = clauses_repr_clause(&cr, 478);
+        crc = clauses_repr_clause(cr, 478);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -11);
         UT_ASSERT_TRUE(crc.first[1] == 16);
         UT_ASSERT_TRUE(crc.first[2] == 2);
 
-        crc = clauses_repr_clause(&cr, 479);
+        crc = clauses_repr_clause(cr, 479);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 10);
         UT_ASSERT_TRUE(crc.first[1] == 13);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 480);
+        crc = clauses_repr_clause(cr, 480);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 2);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -27);
 
-        crc = clauses_repr_clause(&cr, 481);
+        crc = clauses_repr_clause(cr, 481);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 27);
         UT_ASSERT_TRUE(crc.first[1] == -22);
         UT_ASSERT_TRUE(crc.first[2] == 13);
 
-        crc = clauses_repr_clause(&cr, 482);
+        crc = clauses_repr_clause(cr, 482);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -18);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -14);
 
-        crc = clauses_repr_clause(&cr, 483);
+        crc = clauses_repr_clause(cr, 483);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -28);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == -24);
 
-        crc = clauses_repr_clause(&cr, 484);
+        crc = clauses_repr_clause(cr, 484);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -3);
         UT_ASSERT_TRUE(crc.first[1] == 5);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 485);
+        crc = clauses_repr_clause(cr, 485);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 486);
+        crc = clauses_repr_clause(cr, 486);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -6);
         UT_ASSERT_TRUE(crc.first[1] == -15);
         UT_ASSERT_TRUE(crc.first[2] == 16);
 
-        crc = clauses_repr_clause(&cr, 487);
+        crc = clauses_repr_clause(cr, 487);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 21);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 14);
 
-        crc = clauses_repr_clause(&cr, 488);
+        crc = clauses_repr_clause(cr, 488);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -26);
         UT_ASSERT_TRUE(crc.first[1] == -27);
         UT_ASSERT_TRUE(crc.first[2] == 19);
 
-        crc = clauses_repr_clause(&cr, 489);
+        crc = clauses_repr_clause(cr, 489);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -24);
         UT_ASSERT_TRUE(crc.first[1] == 25);
         UT_ASSERT_TRUE(crc.first[2] == 20);
 
-        crc = clauses_repr_clause(&cr, 490);
+        crc = clauses_repr_clause(cr, 490);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -15);
         UT_ASSERT_TRUE(crc.first[1] == 12);
         UT_ASSERT_TRUE(crc.first[2] == 5);
 
-        crc = clauses_repr_clause(&cr, 491);
+        crc = clauses_repr_clause(cr, 491);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 15);
         UT_ASSERT_TRUE(crc.first[1] == -21);
         UT_ASSERT_TRUE(crc.first[2] == -28);
 
-        crc = clauses_repr_clause(&cr, 492);
+        crc = clauses_repr_clause(cr, 492);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == -9);
         UT_ASSERT_TRUE(crc.first[2] == -22);
 
-        crc = clauses_repr_clause(&cr, 493);
+        crc = clauses_repr_clause(cr, 493);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 20);
         UT_ASSERT_TRUE(crc.first[1] == 17);
         UT_ASSERT_TRUE(crc.first[2] == -7);
 
-        crc = clauses_repr_clause(&cr, 494);
+        crc = clauses_repr_clause(cr, 494);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -4);
         UT_ASSERT_TRUE(crc.first[1] == 2);
         UT_ASSERT_TRUE(crc.first[2] == 9);
 
-        crc = clauses_repr_clause(&cr, 495);
+        crc = clauses_repr_clause(cr, 495);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == 9);
         UT_ASSERT_TRUE(crc.first[1] == 15);
         UT_ASSERT_TRUE(crc.first[2] == -25);
 
-        crc = clauses_repr_clause(&cr, 496);
+        crc = clauses_repr_clause(cr, 496);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -23);
         UT_ASSERT_TRUE(crc.first[1] == 29);
         UT_ASSERT_TRUE(crc.first[2] == -21);
 
-        crc = clauses_repr_clause(&cr, 497);
+        crc = clauses_repr_clause(cr, 497);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -8);
         UT_ASSERT_TRUE(crc.first[1] == -2);
         UT_ASSERT_TRUE(crc.first[2] == 25);
 
-        crc = clauses_repr_clause(&cr, 498);
+        crc = clauses_repr_clause(cr, 498);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -17);
         UT_ASSERT_TRUE(crc.first[1] == -13);
         UT_ASSERT_TRUE(crc.first[2] == 1);
 
-        crc = clauses_repr_clause(&cr, 499);
+        crc = clauses_repr_clause(cr, 499);
         UT_ASSERT_TRUE(crc.len == 3);
         UT_ASSERT_TRUE(crc.first[0] == -12);
         UT_ASSERT_TRUE(crc.first[1] == -27);
@@ -12279,10 +12290,10 @@ UT_TEST(ex5) {
     }
     {
         struct  clauses_repr_clauses_of crco;
-        crco = clauses_repr_clauses_of(&cr, 0);
+        crco = clauses_repr_clauses_of(cr, 0);
         UT_ASSERT_TRUE(crco.len == 0);
 
-        crco = clauses_repr_clauses_of(&cr, 1);
+        crco = clauses_repr_clauses_of(cr, 1);
         UT_ASSERT_TRUE(crco.len == 48);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 17);
@@ -12333,7 +12344,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[46] == 467);
         UT_ASSERT_TRUE(crco.first[47] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 2);
+        crco = clauses_repr_clauses_of(cr, 2);
         UT_ASSERT_TRUE(crco.len == 61);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 5);
@@ -12397,7 +12408,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[59] == 494);
         UT_ASSERT_TRUE(crco.first[60] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 3);
+        crco = clauses_repr_clauses_of(cr, 3);
         UT_ASSERT_TRUE(crco.len == 46);
         UT_ASSERT_TRUE(crco.first[0] == 13);
         UT_ASSERT_TRUE(crco.first[1] == 29);
@@ -12446,7 +12457,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[44] == 458);
         UT_ASSERT_TRUE(crco.first[45] == 484);
 
-        crco = clauses_repr_clauses_of(&cr, 4);
+        crco = clauses_repr_clauses_of(cr, 4);
         UT_ASSERT_TRUE(crco.len == 41);
         UT_ASSERT_TRUE(crco.first[0] == 14);
         UT_ASSERT_TRUE(crco.first[1] == 29);
@@ -12490,7 +12501,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[39] == 476);
         UT_ASSERT_TRUE(crco.first[40] == 494);
 
-        crco = clauses_repr_clauses_of(&cr, 5);
+        crco = clauses_repr_clauses_of(cr, 5);
         UT_ASSERT_TRUE(crco.len == 57);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 15);
@@ -12550,7 +12561,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[55] == 484);
         UT_ASSERT_TRUE(crco.first[56] == 490);
 
-        crco = clauses_repr_clauses_of(&cr, 6);
+        crco = clauses_repr_clauses_of(cr, 6);
         UT_ASSERT_TRUE(crco.len == 39);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 18);
@@ -12592,7 +12603,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[37] == 469);
         UT_ASSERT_TRUE(crco.first[38] == 486);
 
-        crco = clauses_repr_clauses_of(&cr, 7);
+        crco = clauses_repr_clauses_of(cr, 7);
         UT_ASSERT_TRUE(crco.len == 64);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 11);
@@ -12659,7 +12670,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[62] == 485);
         UT_ASSERT_TRUE(crco.first[63] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 8);
+        crco = clauses_repr_clauses_of(cr, 8);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 27);
         UT_ASSERT_TRUE(crco.first[1] == 34);
@@ -12716,7 +12727,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[52] == 464);
         UT_ASSERT_TRUE(crco.first[53] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 9);
+        crco = clauses_repr_clauses_of(cr, 9);
         UT_ASSERT_TRUE(crco.len == 57);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 3);
@@ -12776,7 +12787,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[55] == 495);
         UT_ASSERT_TRUE(crco.first[56] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 10);
+        crco = clauses_repr_clauses_of(cr, 10);
         UT_ASSERT_TRUE(crco.len == 44);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 24);
@@ -12823,7 +12834,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[42] == 471);
         UT_ASSERT_TRUE(crco.first[43] == 479);
 
-        crco = clauses_repr_clauses_of(&cr, 11);
+        crco = clauses_repr_clauses_of(cr, 11);
         UT_ASSERT_TRUE(crco.len == 42);
         UT_ASSERT_TRUE(crco.first[0] == 12);
         UT_ASSERT_TRUE(crco.first[1] == 18);
@@ -12868,7 +12879,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[40] == 477);
         UT_ASSERT_TRUE(crco.first[41] == 478);
 
-        crco = clauses_repr_clauses_of(&cr, 12);
+        crco = clauses_repr_clauses_of(cr, 12);
         UT_ASSERT_TRUE(crco.len == 53);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 17);
@@ -12924,7 +12935,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[51] == 490);
         UT_ASSERT_TRUE(crco.first[52] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 13);
+        crco = clauses_repr_clauses_of(cr, 13);
         UT_ASSERT_TRUE(crco.len == 53);
         UT_ASSERT_TRUE(crco.first[0] == 2);
         UT_ASSERT_TRUE(crco.first[1] == 16);
@@ -12980,7 +12991,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[51] == 487);
         UT_ASSERT_TRUE(crco.first[52] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 14);
+        crco = clauses_repr_clauses_of(cr, 14);
         UT_ASSERT_TRUE(crco.len == 41);
         UT_ASSERT_TRUE(crco.first[0] == 9);
         UT_ASSERT_TRUE(crco.first[1] == 11);
@@ -13024,7 +13035,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[39] == 482);
         UT_ASSERT_TRUE(crco.first[40] == 487);
 
-        crco = clauses_repr_clauses_of(&cr, 15);
+        crco = clauses_repr_clauses_of(cr, 15);
         UT_ASSERT_TRUE(crco.len == 61);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 7);
@@ -13088,7 +13099,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[59] == 491);
         UT_ASSERT_TRUE(crco.first[60] == 495);
 
-        crco = clauses_repr_clauses_of(&cr, 16);
+        crco = clauses_repr_clauses_of(cr, 16);
         UT_ASSERT_TRUE(crco.len == 49);
         UT_ASSERT_TRUE(crco.first[0] == 4);
         UT_ASSERT_TRUE(crco.first[1] == 15);
@@ -13140,7 +13151,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[47] == 478);
         UT_ASSERT_TRUE(crco.first[48] == 486);
 
-        crco = clauses_repr_clauses_of(&cr, 17);
+        crco = clauses_repr_clauses_of(cr, 17);
         UT_ASSERT_TRUE(crco.len == 51);
         UT_ASSERT_TRUE(crco.first[0] == 5);
         UT_ASSERT_TRUE(crco.first[1] == 16);
@@ -13194,7 +13205,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[49] == 493);
         UT_ASSERT_TRUE(crco.first[50] == 498);
 
-        crco = clauses_repr_clauses_of(&cr, 18);
+        crco = clauses_repr_clauses_of(cr, 18);
         UT_ASSERT_TRUE(crco.len == 56);
         UT_ASSERT_TRUE(crco.first[0] == 6);
         UT_ASSERT_TRUE(crco.first[1] == 9);
@@ -13253,7 +13264,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[54] == 476);
         UT_ASSERT_TRUE(crco.first[55] == 482);
 
-        crco = clauses_repr_clauses_of(&cr, 19);
+        crco = clauses_repr_clauses_of(cr, 19);
         UT_ASSERT_TRUE(crco.len == 36);
         UT_ASSERT_TRUE(crco.first[0] == 43);
         UT_ASSERT_TRUE(crco.first[1] == 47);
@@ -13292,7 +13303,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[34] == 456);
         UT_ASSERT_TRUE(crco.first[35] == 488);
 
-        crco = clauses_repr_clauses_of(&cr, 20);
+        crco = clauses_repr_clauses_of(cr, 20);
         UT_ASSERT_TRUE(crco.len == 44);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 19);
@@ -13339,7 +13350,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[42] == 489);
         UT_ASSERT_TRUE(crco.first[43] == 493);
 
-        crco = clauses_repr_clauses_of(&cr, 21);
+        crco = clauses_repr_clauses_of(cr, 21);
         UT_ASSERT_TRUE(crco.len == 53);
         UT_ASSERT_TRUE(crco.first[0] == 35);
         UT_ASSERT_TRUE(crco.first[1] == 40);
@@ -13395,7 +13406,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[51] == 491);
         UT_ASSERT_TRUE(crco.first[52] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 22);
+        crco = clauses_repr_clauses_of(cr, 22);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 11);
         UT_ASSERT_TRUE(crco.first[1] == 26);
@@ -13452,7 +13463,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[52] == 481);
         UT_ASSERT_TRUE(crco.first[53] == 492);
 
-        crco = clauses_repr_clauses_of(&cr, 23);
+        crco = clauses_repr_clauses_of(cr, 23);
         UT_ASSERT_TRUE(crco.len == 63);
         UT_ASSERT_TRUE(crco.first[0] == 5);
         UT_ASSERT_TRUE(crco.first[1] == 7);
@@ -13518,7 +13529,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[61] == 492);
         UT_ASSERT_TRUE(crco.first[62] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 24);
+        crco = clauses_repr_clauses_of(cr, 24);
         UT_ASSERT_TRUE(crco.len == 40);
         UT_ASSERT_TRUE(crco.first[0] == 9);
         UT_ASSERT_TRUE(crco.first[1] == 12);
@@ -13561,7 +13572,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[38] == 485);
         UT_ASSERT_TRUE(crco.first[39] == 489);
 
-        crco = clauses_repr_clauses_of(&cr, 25);
+        crco = clauses_repr_clauses_of(cr, 25);
         UT_ASSERT_TRUE(crco.len == 45);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 21);
@@ -13609,7 +13620,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[43] == 495);
         UT_ASSERT_TRUE(crco.first[44] == 497);
 
-        crco = clauses_repr_clauses_of(&cr, 26);
+        crco = clauses_repr_clauses_of(cr, 26);
         UT_ASSERT_TRUE(crco.len == 57);
         UT_ASSERT_TRUE(crco.first[0] == 0);
         UT_ASSERT_TRUE(crco.first[1] == 10);
@@ -13669,7 +13680,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[55] == 467);
         UT_ASSERT_TRUE(crco.first[56] == 488);
 
-        crco = clauses_repr_clauses_of(&cr, 27);
+        crco = clauses_repr_clauses_of(cr, 27);
         UT_ASSERT_TRUE(crco.len == 52);
         UT_ASSERT_TRUE(crco.first[0] == 1);
         UT_ASSERT_TRUE(crco.first[1] == 4);
@@ -13724,7 +13735,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[50] == 488);
         UT_ASSERT_TRUE(crco.first[51] == 499);
 
-        crco = clauses_repr_clauses_of(&cr, 28);
+        crco = clauses_repr_clauses_of(cr, 28);
         UT_ASSERT_TRUE(crco.len == 46);
         UT_ASSERT_TRUE(crco.first[0] == 8);
         UT_ASSERT_TRUE(crco.first[1] == 56);
@@ -13773,7 +13784,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[44] == 483);
         UT_ASSERT_TRUE(crco.first[45] == 491);
 
-        crco = clauses_repr_clauses_of(&cr, 29);
+        crco = clauses_repr_clauses_of(cr, 29);
         UT_ASSERT_TRUE(crco.len == 39);
         UT_ASSERT_TRUE(crco.first[0] == 12);
         UT_ASSERT_TRUE(crco.first[1] == 14);
@@ -13815,7 +13826,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[37] == 475);
         UT_ASSERT_TRUE(crco.first[38] == 496);
 
-        crco = clauses_repr_clauses_of(&cr, 30);
+        crco = clauses_repr_clauses_of(cr, 30);
         UT_ASSERT_TRUE(crco.len == 54);
         UT_ASSERT_TRUE(crco.first[0] == 3);
         UT_ASSERT_TRUE(crco.first[1] == 13);
@@ -13873,7 +13884,7 @@ UT_TEST(ex5) {
         UT_ASSERT_TRUE(crco.first[53] == 475);
     }
 
-    free_clauses_repr(&cr);
+    free_clauses_repr(cr);
     return 0;
 }
 

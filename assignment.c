@@ -12,6 +12,23 @@ struct assignment new_stack_assignment(void) {
     return ret;
 }
 
+/* Assumes big_num = num[0] num[1], so v0 = num[1][0], v1 = num[1][1], ... v63=num[1][63]*/
+struct assignment new_stack_assignment_from_num(uint64_t num[2]) {
+    struct assignment ret;
+
+    size_t var = 0;
+    int num_i; /*int :'(*/
+    for(num_i = 1; num_i >= 0; --num_i) { 
+        size_t bit_i;
+        for(bit_i = 0; bit_i < 64; ++bit_i) {
+            assignment_set_var(&ret, var, GET_BIT(num[num_i], bit_i));
+            ++var;
+        }
+    }
+
+    return ret;
+}
+
 bool assignment_get_var(struct assignment assignment, uint8_t var) {
     ASSERT(var <= MAX_VAR);
     //ASSERT(var <= assignment.cur_var);

@@ -2,8 +2,9 @@
 #include "result.h"
 
 static bool result_is_zero(struct result result) {
+    struct assignment zero_assignment = new_stack_assignment();
     return result.maxsat_value == 0 && result.na == 0 &&
-           result.sample.vars[0] == 0 && result.sample.vars[1] == 0;
+           ~( memcmp( &(result.sample), &zero_assignment, sizeof(struct assignment) ) );
 }
 
 UT_TEST(result_zero_initialized) {
@@ -76,7 +77,7 @@ UT_TEST(result_set_assignment_sample_) {
     }
 
     result_set_assignment_sample(&result, assignment);
-    UT_ASSERT_TRUE(result.sample.vars[0] == assignment.vars[0] && result.sample.vars[1] == assignment.vars[1]);
+    UT_ASSERT_FALSE(memcmp( &(result.sample), &assignment, sizeof(struct assignment)));
 
     return 0;
 }
@@ -96,10 +97,57 @@ UT_TEST(result_set_assignment_sample_get_assignment_sample) {
     }
 
     result_set_assignment_sample(&result, assignment);
-    UT_ASSERT_TRUE(result_get_assignment_sample(&result).vars[0] == assignment.vars[0] && \
-                   result_get_assignment_sample(&result).vars[1] == assignment.vars[1]);
+    struct assignment sample = result_get_assignment_sample(&result);
+
+    UT_ASSERT_FALSE(memcmp(&sample, &assignment, sizeof(struct assignment)));
 
     return 0;
 }
+
+UT_TEST(result_update_case0) {
+    struct result result = new_stack_result();
+    struct assignment assignment = new_stack_assignment();
+    uint8_t new_maxsat_value_0 = 0;
+
+    result_update(&result, new_maxsat_value_0, assignment);
+
+    UT_ASSERT_TRUE(result.na == 1 && result.maxsat_value == new_maxsat_value_0);
+    UT_ASSERT_FALSE(memcmp(&(result.sample), &assignment, sizeof(struct assignment)));
+
+    result_update(&result, new_maxsat_value_0, assignment);
+
+    UT_ASSERT_TRUE(result.na == 2 && result.maxsat_value == new_maxsat_value_0);
+    UT_ASSERT_FALSE(memcmp(&(result.sample), &assignment, sizeof(struct assignment)));
+
+    return 0;
+}
+
+UT_TEST(result_update_case1) {
+    struct result result = new_stack_result();
+    struct assignment assignment = new_stack_assignment();
+    uint8_t new_maxsat_value_1 = 30;
+
+    result_update(&result, new_maxsat_value_1, assignment);
+
+    UT_ASSERT_TRUE(result.na == 1 && result.maxsat_value == new_maxsat_value_1);
+    UT_ASSERT_FALSE(memcmp(&(result.sample), &assignment, sizeof(struct assignment)));
+
+    return 0;
+}
+
+UT_TEST(result_update_case2) {
+    struct result result = new_stack_result();
+    struct assignment assignment = new_stack_assignment();
+    uint8_t new_maxsat_value_2 = 5;
+
+    result_set_maxsat_value(&result, 6);
+    result_update(&result, new_maxsat_value_2, assignment);
+
+    UT_ASSERT_TRUE(result.na == 0 && result.maxsat_value == 6);
+    UT_ASSERT_FALSE(memcmp(&(result.sample), &assignment, sizeof(struct assignment)));
+
+    return 0;
+}
+
 
 UT_ENDTEST
