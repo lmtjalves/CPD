@@ -33,7 +33,7 @@ struct clauses {
 
 	// Amount of clauses who's value is unknown yet
 	uint16_t num_unknown_clauses;
-}
+};
 
 /* Returns the maxsat of the given group of clauses.
  */
