@@ -13,7 +13,7 @@
 struct clauses {
 	// The clauses representation
 	struct clauses_repr* clauses_repr;
-	
+
 	// An assignment to the variables in the clause
 	struct assignment assignment;
 
@@ -30,7 +30,7 @@ struct clauses {
 
 	// Amount of clauses evaluated to false
 	uint16_t num_false_clauses;
-	
+
 	// Amount of clauses who's value is unknown yet
 	uint16_t num_unknown_clauses;
 }

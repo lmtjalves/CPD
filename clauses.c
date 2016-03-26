@@ -12,7 +12,7 @@ enum {
 struct clauses *new_stack_clauses(struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
 	ASSERT_NON_NULL(clauses_repr);
 
-	uint16_t num_clauses = clauses_repr_get_num_clauses(clauses_repr);
+	uint16_t num_clauses = clauses_repr_num_clauses(clauses_repr);
 
 	struct clauses *ret = (struct clauses *) malloc(sizeof(struct clauses));
 	ret->clauses_repr = clauses_repr;
@@ -35,7 +35,7 @@ on_error:
  */
 void free_clauses(struct clauses *clauses) {
 	ASSERT_NON_NULL(clauses.calculated_clauses_filter);
-	
+
 	free(clauses.calculated_clauses_filter);
 	free(clauses);
 
@@ -61,7 +61,7 @@ struct result maxsat(struct clauses_repr *clauses_repr) {
 	uint64_t num_chunks = 1 << num_initialized_vars;
 	#pragma omp parallel for schedule(dybamic)
 	for(int i = 0; i < num_chunks; i++) {
-		struct assignment = new_stack_assignment(i, 0);
+		struct assignment = new_stack_assignment_from_num({i, 0});
 		struct clauses *clauses = new_stack_clauses(clauses_repr, assignment, num_initialized_vars);
 
 		partial_maxsat(clauses, &result, 1);
@@ -75,15 +75,15 @@ on_error:
 }
 
 
-/* Calculate the maxsat for the partial assigment to the variables in the clauses_repr. 
+/* Calculate the maxsat for the partial assigment to the variables in the clauses_repr.
  */
 void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test) {
 	ASSERT_NON_NULL(clauses);
 	ASSERT_NON_NULL(result);
-	
-	if(var_to_test > clauses_repr_get_num_vars(clauses->clauses_repr)) {
+
+	if(var_to_test > clauses_repr_num_vars(clauses->clauses_repr)) {
 		// Trivial case were all the variables are assigned
-		// Check if we achieved a maxsat value or not and update if so update the 
+		// Check if we achieved a maxsat value or not and update if so update the
 		result_update(result, clauses->num_true_clauses, assignment);
 	} else if(var_to_test < clauses->last_assigned_var) {
 		// The variable as already a fixed value assigned, don't branch, just evaluate
@@ -108,7 +108,7 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 
 			// Go to the next variable
 			partial_maxsat(clauses, result, var_to_test + 1);
-			
+
 			// Rollback to undo the effects of this assignment
 			rollback_assignment_to_var(clauses, var_to_test);
 			clauses->last_assigned_var--;
@@ -141,14 +141,14 @@ on_error:
  */
 void rollback_assignment_to_var(struct clauses *clauses, uint8_t var) {
 	ASSERT_NON_NULL(clauses);
-	
+
 	// All the clauses who's values may be determined by var
 	struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
 
 	for(uint16_t i = 0; i < var_clauses.len; i++) {
 		uint16_t clause_id = var_clauses.first[i];
 		int8_t clause_filter_value = clauses->calculated_clauses_filter[clause_id];
-		
+
 		if(abs(clauses_filter_value) == var) {
 			// The variable is the one that is determining the value of the clause
 			clauses->num_unknown_clauses++;
@@ -157,7 +157,7 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var) {
 				clauses->num_false_clauses--;
 			} else {
 				clauses->num_true_clauses--;
-			}	
+			}
 		}
 	}
 
@@ -168,12 +168,12 @@ on_error:
 }
 
 
-/* Evaluates all the clauses where the var appears. Updates the internal counter and 
+/* Evaluates all the clauses where the var appears. Updates the internal counter and
  * the filter accordingly.
  */
 void eval_var_clauses(struct clauses *clauses, uint8_t var) {
 	ASSERT_NON_NULL(clauses);
-	
+
 	struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
 
 	// FIXME Possible enhancement, stop when it wont improve the maxsat (aka prunning)
@@ -188,9 +188,9 @@ on_error:
 }
 
 
-/* Evaluates a clause based on the variables assignments and on whether the 
+/* Evaluates a clause based on the variables assignments and on whether the
  * clause was already true or not (this should not happen, but it's just for safety).
- * Updates the clauses internal counters and updates the calculated_clauses_filter 
+ * Updates the clauses internal counters and updates the calculated_clauses_filter
  * accordingly.
  */
 void clause_value eval_clause(struct clauses *clauses, unit16_t clause_id) {
@@ -208,7 +208,7 @@ void clause_value eval_clause(struct clauses *clauses, unit16_t clause_id) {
 	enum clause_value ret = FALSE;
 	for(int i = 0; i < clause.len; i++) {
 		int8_t var = clause.first[i];
-		
+
 		if(abs(var) > clauses->last_assigned_var) {
 			// If the variable has no value assigned yet, then the clause value
 			// can no longer be FALSE, only TRUE or UNKNOWN
@@ -219,12 +219,12 @@ void clause_value eval_clause(struct clauses *clauses, unit16_t clause_id) {
 			// to update the filter of calculated clauses meaning that the variable
 			// contributes to the clause to be evaluated as true
 			clauses->calculated_clauses_filter[clause_id] = abs(var);
-			
+
 			// Update the counters
 			clauses->num_true_clauses++;
 			clauses->num_unknown_clauses--;
 
-			return;	
+			return;
 		}
 	}
 
