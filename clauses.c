@@ -10,7 +10,7 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
 void eval_var_clauses(struct clauses *clauses, uint8_t var);
 void eval_clause(struct clauses *clauses, uint16_t clause_id);
 
-struct clauses *new_stack_clauses(struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
+struct clauses *new_clauses(struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
 	ASSERT_NON_NULL(clauses_repr);
 
 	uint16_t num_clauses = clauses_repr_num_clauses(clauses_repr);
@@ -33,10 +33,10 @@ on_error:
 
 
 void free_clauses(struct clauses *clauses) {
-	ASSERT_NON_NULL(clauses->calculated_clauses_filter);
+	ASSERT_NON_NULL(clauses);
 
-	free(clauses->calculated_clauses_filter);
-	free(clauses);
+	ASSERT_FREE(clauses->calculated_clauses_filter);
+	ASSERT_FREE(clauses);
 
 	return;
 
@@ -62,7 +62,7 @@ struct result maxsat(struct clauses_repr *clauses_repr) {
 	for(uint64_t i = 0; i < num_chunks; i++) {
 		uint64_t initial_assignment[2] = {0, i};
 		struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
-		struct clauses *clauses = new_stack_clauses(clauses_repr, assignment, num_initialized_vars);
+		struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
 
 		partial_maxsat(clauses, &result, 1);
 		free_clauses(clauses);
@@ -227,7 +227,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
 	// Assume it's value is false
 	enum clause_value ret = FALSE;
 	int8_t var = 0;
-	for(int8_t i = 0; i < clause.len; i++) {
+	for(size_t i = 0; i < clause.len; i++) {
 		var = clause.first[i];
 
 		if(abs(var) > clauses->last_assigned_var) {

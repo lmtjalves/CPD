@@ -11,7 +11,7 @@ UT_TEST(create_clauses) {
   struct result result = maxsat(clauses_repr);
 
   printf("%d\n", result_get_maxsat_value(&result));
-  printf("%llu\n", result_get_na(&result));
+  printf("%"PRIu64 "\n", result_get_na(&result));
 
   for(int i = 1; i <= clauses_repr_num_vars(clauses_repr); i++) {
     if(assignment_get_var(result.sample, i) == false) {
