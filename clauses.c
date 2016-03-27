@@ -79,10 +79,10 @@ on_error:
 /* Free clauses.
  */
 void free_clauses(struct clauses *clauses) {
-	ASSERT_NON_NULL(clauses->calculated_clauses_filter);
+	ASSERT_NON_NULL(clauses);
 
-	free(clauses->calculated_clauses_filter);
-	free(clauses);
+	ASSERT_FREE(clauses->calculated_clauses_filter);
+	ASSERT_FREE(clauses);
 
 	return;
 
@@ -291,6 +291,8 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
 			// Notice that we are relying on the C defined behaviour that:
 			// "The result is one if the operands are in the given relation to one another. The result is zero otherwise."
 
+			// Another observation, the only variable that can perform this is the clauses->last_assigned_var
+
 			// If the value is true, then the clause is true, we therefore need
 			// to update the filter of calculated clauses meaning that the variable
 			// contributes to the clause to be evaluated as true
@@ -306,8 +308,10 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
 	if(ret == FALSE) {
 		// Update the filter, it is usefull to compensate the counters once we want to undo the assignment
 		// Store with the negative value
+		// The last variable that was evaluated in this clause was the clauses->last_assigned_var
+		// therefore it's the one responsible by setting the clause value to false
 		int8_t decisive_variable = clauses->last_assigned_var;
-		clauses->calculated_clauses_filter[clause_id] = - decisive_variable;
+		clauses->calculated_clauses_filter[clause_id] = -decisive_variable;
 
 		// Update the counters
 		clauses->num_false_clauses++;
