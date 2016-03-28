@@ -6,27 +6,7 @@
 #include "result.h"
 #include <stdlib.h>
 
-int main(int argc, const char * argv[]){
-
-    if(argc != 2) {
-        printf("Invalid number of arguments!");
-        exit(EXIT_FAILURE);
-    }
-
-    //number of arguments given is 2: program name and input file path.
-    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
-    
-    if(!clauses_repr_from_file.success){
-        exit(EXIT_FAILURE);
-    }
-
-    //clauses_repr_from_file created successfully
-    struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
-
-    struct result result = new_stack_result();
-
-    result = maxsat(clauses_repr);
-
+void print_result(struct clauses_repr *clauses_repr, struct result result) {
     //FIXME não tem espaço antes do newline
     printf("%" PRIu16 " %" PRIu64 "\n", result.maxsat_value, result.na);
 
@@ -42,7 +22,37 @@ int main(int argc, const char * argv[]){
     }
     
     printf("\n"); //FIXME não sei se tem /n no final da ultima linha ou não...
+}
+
+int main(int argc, const char * argv[]){
+
+    /*Used to free on_error. We must do it like this so we know what to free while doing on_error*/
+    struct new_clauses_repr_from_file *clauses_repr_from_filep = NULL;
+
+    ASSERT_MSG(argc == 2, "Invalid number of arguments! We only accept a filename");
+
+    //number of arguments given is 2: program name and input file path.
+    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
+    clauses_repr_from_filep = &clauses_repr_from_file;
     
-return 0;
+    ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
+
+    //clauses_repr_from_file created successfully
+    struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
+
+    struct result result = maxsat(clauses_repr);
+
+    print_result(clauses_repr, result);
+
+    free_clauses_repr(clauses_repr_from_filep->clauses_repr);
+
+    return 0;
+
+on_error:
+    if(clauses_repr_from_filep) {
+        free_clauses_repr(clauses_repr_from_filep->clauses_repr);
+    }
+
+    return 1;
 
 }
