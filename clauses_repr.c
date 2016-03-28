@@ -69,11 +69,12 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
      * The first time we find out the total number of varibles, clauses, etc
      * Then we alloc the memory, 
      * The second time we fill the data structures*/
+    FILE * file = NULL; 
+
     struct new_clauses_repr_from_file ret = {.success = true};
     ASSERT_MALLOC(struct clauses_repr, ret.clauses_repr, 1);
 
-
-    FILE *file = fopen(file_path, "r");
+    file = fopen(file_path, "r");
     ASSERT_MSG(file != NULL, "Failed to open file.");
 
     struct var_clause_count var_clause_count_ret = var_clause_count(file);

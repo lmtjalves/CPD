@@ -275,7 +275,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
 
 	// Assume it's value is false
 	enum clause_value ret = FALSE;
-	for(int8_t i = 0; i < clause.len; i++) {
+	for(size_t i = 0; i < clause.len; i++) {
 		int8_t var = clause.first[i]; // may be > 0 or < 0 if should be negated (~)
 		int8_t var_id = abs(var);
 
