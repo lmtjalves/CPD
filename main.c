@@ -6,13 +6,11 @@
 #include "result.h"
 #include <stdlib.h>
 
-void print_result(struct clauses_repr *clauses_repr, struct result result) {
-    //FIXME não tem espaço antes do newline
+void print_result(struct clauses_repr *clauses_repr, struct result result) { 
     printf("%" PRIu16 " %" PRIu64 "\n", result.maxsat_value, result.na);
 
     uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
 
-    //FIXME não sei se há problema de ter um espaço antes do ultimo newline
     for(int i = 1; i < num_vars; ++i) { 
         if(assignment_get_var(result.sample, i)) {
             printf("%d ", i);
@@ -20,8 +18,6 @@ void print_result(struct clauses_repr *clauses_repr, struct result result) {
             printf("-%d ", i);
         }
     }
-    
-    printf("\n"); //FIXME não sei se tem /n no final da ultima linha ou não...
 }
 
 int main(int argc, const char * argv[]){
