@@ -4,6 +4,7 @@
 #include "clauses.h"
 #include "project_specific.h"
 #include "result.h"
+#include "debug.h"
 #include <stdlib.h>
 
 void print_result(struct clauses_repr *clauses_repr, struct result result) { 
@@ -25,10 +26,12 @@ int main(int argc, const char * argv[]){
     /*Used to free on_error. We must do it like this so we know what to free while doing on_error*/
     struct new_clauses_repr_from_file *clauses_repr_from_filep = NULL;
 
+    //number of arguments given is 2: program name and input file path.
     ASSERT_MSG(argc == 2, "Invalid number of arguments! We only accept a filename");
 
-    //number of arguments given is 2: program name and input file path.
+    double start_time = omp_get_wtime();
     struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
+    LOG_DEBUG("parse time: %fs", omp_get_wtime() - start_time);
     clauses_repr_from_filep = &clauses_repr_from_file;
     
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
@@ -36,12 +39,9 @@ int main(int argc, const char * argv[]){
     //clauses_repr_from_file created successfully
     struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
 		
-		double start = omp_get_wtime();
+    start_time = omp_get_wtime();
     struct result result = maxsat(clauses_repr);
-		double end = omp_get_wtime();
-		
-		// Show the execution time in seconds
-		ASSERT_LOG_GENERIC_VA("[DEBUG]", "execution time: %f (seconds)", end - start);
+    LOG_DEBUG("maxsat time: %fs", omp_get_wtime() - start_time);
 		
     print_result(clauses_repr, result);
 
