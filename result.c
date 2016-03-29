@@ -12,8 +12,8 @@ struct result new_stack_result(void){
 
 uint16_t result_get_maxsat_value (struct result *result){
   ASSERT_NON_NULL(result);
-
-  return result->maxsat_value;
+	
+	return result->maxsat_value;
 
   on_error:
   ASSERT_EXIT();
@@ -70,26 +70,23 @@ void result_set_assignment_sample(struct result *result, struct assignment new_s
   ASSERT_EXIT();
 }
 
-bool result_update(struct result *result, uint16_t new_maxsat_value, struct assignment new_sample){
+void result_update(struct result *result, uint16_t new_maxsat_value, struct assignment new_sample){
   ASSERT_NON_NULL(result);
+	
+	#pragma omp critical
+	{
+		if (new_maxsat_value == result->maxsat_value){
+    	(result->na)++;
+  	} else if (new_maxsat_value > result->maxsat_value){
+    	{
+      	result->maxsat_value = new_maxsat_value;
+      	result->sample = new_sample;
+      	result->na = 1;
+    	}
+  	}
+	}
 
-  if (new_maxsat_value == result->maxsat_value){
-    //#pragma omp atomic FIXME
-    (result->na)++;
-  } else if (new_maxsat_value > result->maxsat_value){
-
-    //#pragma omp critical FIXME
-    {
-      result->maxsat_value = new_maxsat_value;
-      result->sample = new_sample;
-      result->na = 1;
-    }
-  } else {
-    return false;
-  }
-
-  return true;
-
+	return;
   on_error:
-  ASSERT_EXIT();
+  	ASSERT_EXIT();
 }

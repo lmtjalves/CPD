@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 3.3)
 project(cpd)
-
-set(CC "clang")
+set(CC "gcc")
 
 set(WARNING_FLAGS "-Wall -Wextra  -Wshadow -Wstrict-aliasing -Wundef -Wpointer-arith -Wcast-align -Wwrite-strings \
                    -Winit-self -Wuninitialized")
 set(COMMON_FLAGS "${WARNING_FLAGS} -std=c11 -Werror -pedantic")
 
+set (OMP_FLAGS "-fopenmp")
+
+set(CMAKE_C_FLAGS "${OMP_FLAGS}")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${COMMON_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${COMMON_FLAGS} -O0 -g -fno-inline -fsanitize=address,undefined")
 

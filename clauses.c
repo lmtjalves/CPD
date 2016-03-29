@@ -100,18 +100,20 @@ struct result maxsat(struct clauses_repr *clauses_repr) {
 	struct result result = new_stack_result();
 
 	// Use the NUM_INITIALIZED_VARS to set the number of initialized vars for each thread
-	uint8_t num_initialized_vars = NUM_INITIALIZED_VARS;
+	uint8_t num_initialized_vars = NUM_INITIALIZED_VARS(clauses_repr_num_vars(clauses_repr));
 
 	// For each variable it can have 2 values, therefore with num_initialized_vars we
 	// can have 2^num_initialized_vars possible combinations.
-	uint64_t num_chunks = 1 << num_initialized_vars;
-
-	//#pragma omp parallel for schedule(dynamic)
+	uint64_t num_chunks = 1 << (num_initialized_vars);
+	
+	#pragma omp parallel for schedule(dynamic)
 	for(uint64_t i = 0; i < num_chunks; i++) {
 		// Note that i in binary are the initial assignments for the fixed variables.
-		uint64_t initial_assignment[2] = {0, i};
+		uint64_t initial_assignment[2] = {0, i<<1};
 		struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
 		struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
+
+		ASSERT_LOG_GENERIC_VA("[DEBUG]", "thread number: %d", omp_get_thread_num());
 
 		// Solve the maxsat for this chunk
 		// Note that the first variable to test is the first one
@@ -160,7 +162,7 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 			assignment_set_var(&(clauses->assignment), var_to_test, i);
 			// Keep tracking of the varaibles with assigned values
 			clauses->last_assigned_var++;
-
+			
 			eval_var_clauses(clauses, var_to_test);
 
 			// Don't follow this assignment if there's a better result already
@@ -171,7 +173,6 @@ void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_
 			// Undo all the changes to the clauses internal state by performing the assignment
 			rollback_assignment_to_var(clauses, var_to_test);
 			clauses->last_assigned_var--;
-
 		}
 	}
 

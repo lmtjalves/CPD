@@ -32,9 +32,8 @@ struct assignment new_stack_assignment_from_num(uint64_t num[2]) {
 bool assignment_get_var(struct assignment assignment, uint8_t var) {
     ASSERT(var <= MAX_VAR);
     //ASSERT(var <= assignment.cur_var);
- 
     
-    /*We want 0 if var < 64, and 1 if var >= 64, so we extract the 6th bit since 64 = 0100 0000 */
+		/*We want 0 if var < 64, and 1 if var >= 64, so we extract the 6th bit since 64 = 0100 0000 */
     size_t index = GET_BIT(var, 6);
    
     return GET_BIT(assignment.vars[index], UINT8_MASK(var)) == 1;

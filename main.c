@@ -11,7 +11,7 @@ void print_result(struct clauses_repr *clauses_repr, struct result result) {
 
     uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
 
-    for(int i = 1; i < num_vars; ++i) { 
+    for(int i = 1; i <= num_vars; i++) { 
         if(assignment_get_var(result.sample, i)) {
             printf("%d ", i);
         } else {
@@ -35,9 +35,14 @@ int main(int argc, const char * argv[]){
 
     //clauses_repr_from_file created successfully
     struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
-
+		
+		double start = omp_get_wtime();
     struct result result = maxsat(clauses_repr);
-
+		double end = omp_get_wtime();
+		
+		// Show the execution time in seconds
+		ASSERT_LOG_GENERIC_VA("[DEBUG]", "execution time: %f (seconds)", end - start);
+		
     print_result(clauses_repr, result);
 
     free_clauses_repr(clauses_repr_from_filep->clauses_repr);

@@ -22,7 +22,6 @@ void result_set_na (struct result *result, uint64_t number_assignments);
 struct assignment result_get_assignment_sample(struct result *result);
 void result_set_assignment_sample(struct result *result, struct assignment new_sample);
 
-//returns true if something was updated, returns false otherwise
-bool result_update(struct result *result, uint16_t new_maxsat_value, struct assignment new_sample);
+void result_update(struct result *result, uint16_t new_maxsat_value, struct assignment new_sample);
 
 #endif /*RESULT_H__*/
