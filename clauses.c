@@ -1,9 +1,10 @@
 #include "clauses.h"
 #include "project_specific.h"
 #include "assignment.h"
-#include "math.h"
 #include "assert.h"
+#include "debug.h"
 
+#include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -108,12 +109,14 @@ struct result maxsat(struct clauses_repr *clauses_repr) {
 	
 	#pragma omp parallel for schedule(dynamic)
 	for(uint64_t i = 0; i < num_chunks; i++) {
+
+    LOG_DEBUG("Running with %d threads.", omp_get_num_threads());
 		// Note that i in binary are the initial assignments for the fixed variables.
 		uint64_t initial_assignment[2] = {0, i<<1};
 		struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
 		struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
 
-		ASSERT_LOG_GENERIC_VA("[DEBUG]", "thread number: %d", omp_get_thread_num());
+		LOG_DEBUG("thread %d doing %" PRIu64, omp_get_thread_num(), i);
 
 		// Solve the maxsat for this chunk
 		// Note that the first variable to test is the first one
