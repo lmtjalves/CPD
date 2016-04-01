@@ -26,8 +26,14 @@ int main(int argc, const char * argv[]){
     /*Used to free on_error. We must do it like this so we know what to free while doing on_error*/
     struct new_clauses_repr_from_file *clauses_repr_from_filep = NULL;
 
+    bool parse_only = false;
+    if (argc == 3 && strcmp(argv[1], "--parse-only") == 0) {
+        parse_only = true;
+        argc--; argv++; /*could be cleaner...*/
+    }
+
     //number of arguments given is 2: program name and input file path.
-    ASSERT_MSG(argc == 2, "Invalid number of arguments! We only accept a filename");
+    ASSERT_MSG(argc == 2, "Invalid number of arguments! We only accept a filename or --parse-only");
 
     double start_time = omp_get_wtime();
     struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
@@ -35,6 +41,10 @@ int main(int argc, const char * argv[]){
     clauses_repr_from_filep = &clauses_repr_from_file;
     
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
+
+    if (parse_only) {
+        return 0;
+    }
 
     //clauses_repr_from_file created successfully
     struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
@@ -53,7 +63,5 @@ on_error:
     if(clauses_repr_from_filep) {
         free_clauses_repr(clauses_repr_from_filep->clauses_repr);
     }
-
     return 1;
-
 }
