@@ -185,14 +185,13 @@ on_error:
  */
 static struct file_read file_read(FILE *file, char *buf, size_t buf_size) {
     struct file_read ret = {.num_read = 0, .success = true, .eof = false, .error = false };
+    size_t back_count = 0;
 
     ret.num_read = fread(buf, 1, buf_size, file);
-    LOG_DEBUG("file_read: read %zu buf_size %zu", ret.num_read, buf_size);
     if (ret.num_read != 0 && ret.num_read == buf_size) { /*we read something, and it's the end? so we just return backing up until last whitespace*/
         buf[ret.num_read] = '\0';
 
         const char *cur_buf_pos = buf + ret.num_read - 1;
-        size_t back_count = 0;
         while ( ret.num_read > 0 && (*cur_buf_pos != ' ' && *cur_buf_pos != '\n')) {
             --cur_buf_pos;
             --(ret.num_read);
@@ -216,6 +215,8 @@ static struct file_read file_read(FILE *file, char *buf, size_t buf_size) {
             ret.eof = true;
         }
     }
+
+    LOG_DEBUG("file_read: success:%d read:%zu buf_size:%zu back_count:%zu", ret.success, ret.num_read, buf_size, back_count);
 
     return ret;
 }
@@ -334,20 +335,19 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
         }
 
         struct parse_long parse_long_ret = parse_long(cur_buf_pos);
-        if(!parse_long_ret.success) { /*FIXME: better way to do this?*/
-            if (*(cur_buf_pos + 1) == '\0') {
-                ++cur_buf_pos;
-                continue;
-            } else if (*(cur_buf_pos + 2) == '\0') {
-                cur_buf_pos += 2;
-                continue;
-            } else if (*(cur_buf_pos + 3) == '\0') {
-                cur_buf_pos += 3;
-                continue;
-            } else if (*(cur_buf_pos + 4) == '\0') {
-                cur_buf_pos += 4;
-                continue;
+        if(!parse_long_ret.success) {
+            /*We always read until a space or a newline. It could be the case that after reading the last number
+             * in the buffer, we're at a space or newline and can't read any more numbers, but we're not at an \0 yet.
+             *In this situation parse_long_ret.success is false, but we aren't in an error condition if the 
+             * remainin read size is smaller than a number*/
+            size_t num_chars_remaining = file_read_ret.num_read - (cur_buf_pos - buf);
+            if (num_chars_remaining >= MAX_VAR_STR_SIZE) {
+                ASSERT_ERROR("couldn't parse a number and there are too many chars remaining!");
             }
+            LOG_DEBUG("Failed to read number, but near buf end, so skipping '%zu' chars", num_chars_remaining);
+            cur_buf_pos += num_chars_remaining; /*skip to \0*/
+            continue;
+
         }
         ASSERT_MSG(parse_long_ret.success , "Failed to parse variable in clause");
         ASSERT_MSG(parse_long_ret.value <= INT8_MAX && parse_long_ret.value >= INT8_MIN, \
