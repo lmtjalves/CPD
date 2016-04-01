@@ -71,8 +71,10 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
      * The second time we fill the data structures*/
     FILE * file = NULL; 
 
-    struct new_clauses_repr_from_file ret = {.success = true};
+    struct new_clauses_repr_from_file ret = {.success = true, .clauses_repr = NULL};
     ASSERT_MALLOC(struct clauses_repr, ret.clauses_repr, 1);
+
+    ret.clauses_repr->var_clauses_index = NULL;
 
     file = fopen(file_path, "r");
     ASSERT_MSG(file != NULL, "Failed to open file.");
@@ -98,23 +100,34 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
         memset(var_count, 0, sizeof(var_count)); /*error: variable-sized object may not be initialized :(*/ 
         struct parse_maxsat parse_maxsat_ret = parse_maxsat(file, var_clause_count_ret, var_count);
         ASSERT_MSG(parse_maxsat_ret.success, "Failed parsing clauses from file.");
-
         ret.clauses_repr->clause_num_index = parse_maxsat_ret.clause_num_index;
         ret.clauses_repr->clause_num_index_clauses = parse_maxsat_ret.clause_num_index_clauses;
+
+        fclose(file);
+        file = NULL;
+
         struct var_clauses_index var_clauses_index_ret = var_clauses_index(var_clause_count_ret, ret.clauses_repr->clause_num_index, ret.clauses_repr->clause_num_index_clauses, var_count);
-        ASSERT_MSG(var_clauses_index_ret.success, "Failed to build the var_clause_index.");
+        if(!var_clauses_index_ret.success) {
+            ASSERT_FREE(ret.clauses_repr->clause_num_index);
+            ASSERT_FREE(ret.clauses_repr->clause_num_index_clauses);
+            ASSERT_ERROR("Failed to build the var_clause_index.");
+        }
         ret.clauses_repr->var_clauses_index = var_clauses_index_ret.var_clauses_index;
         ret.clauses_repr->var_clauses_index_clauses = var_clauses_index_ret.var_clauses_index_clauses;
     }
 
     ret.clauses_repr->num_vars = var_clause_count_ret.num_vars;
     ret.clauses_repr->num_clauses = var_clause_count_ret.num_clauses;
+
     
     return ret;
 
 on_error:
     if (file) {
         fclose(file);
+    }
+    if (ret.clauses_repr != NULL) {
+        free(ret.clauses_repr); /*not using free_clauses_repr because we're inside constructor, and on_error some fieldsmight not be initilized*/
     }
     ret.success = false;
     return ret;
@@ -297,7 +310,7 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
     char buf[buf_size + 1];
     const char *cur_buf_pos;
     struct file_read file_read_ret;
-    struct parse_maxsat ret = {.success = true};
+    struct parse_maxsat ret = {.success = true, .clause_num_index = NULL, .clause_num_index_clauses = NULL};
 
     /*Alloc clauses_repr memory*/
     ASSERT_MALLOC_CREATE_VAR(uint32_t, cur_clause_num_index, var_clause_count.num_clauses + 1); /* +1 because we index with clause_num_index[i] and [i+1] */
@@ -378,6 +391,12 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
     return ret;
 on_error:
     ret.success = false;
+    if(ret.clause_num_index != NULL) {
+        free(ret.clause_num_index);
+    }
+    if(ret.clause_num_index_clauses != NULL) {
+        free(ret.clause_num_index_clauses);
+    }
     return ret;
 }
 
@@ -386,7 +405,7 @@ on_error:
  *We implement as a pair of arrays like clause_num_index.
  */
 static struct var_clauses_index var_clauses_index(struct var_clause_count var_clause_count, const uint32_t *clause_num_index, const int8_t *clause_num_index_clauses, const size_t *var_count) {
-    struct var_clauses_index ret = {.success = true};
+    struct var_clauses_index ret = {.success = true, .var_clauses_index = NULL, .var_clauses_index_clauses = NULL};
 
     /* +1 because we don't use var 0 and +1 reason above . Not name cur_ because we don't change it.*/
     ASSERT_MALLOC_CREATE_VAR(uint32_t, var_clauses_index, var_clause_count.num_vars + 2); 
@@ -426,6 +445,12 @@ static struct var_clauses_index var_clauses_index(struct var_clause_count var_cl
 
 on_error:
     ret.success = false;
+    if(ret.var_clauses_index != NULL) {
+        free(ret.var_clauses_index);
+    }
+    if(ret.var_clauses_index_clauses != NULL) {
+        free(ret.var_clauses_index_clauses);
+    }
     return ret;
 }
 

@@ -23,8 +23,6 @@ void print_result(struct clauses_repr *clauses_repr, struct result result) {
 
 int main(int argc, const char * argv[]){
 
-    /*Used to free on_error. We must do it like this so we know what to free while doing on_error*/
-    struct new_clauses_repr_from_file *clauses_repr_from_filep = NULL;
 
     bool parse_only = false;
     if (argc == 3 && strcmp(argv[1], "--parse-only") == 0) {
@@ -38,8 +36,6 @@ int main(int argc, const char * argv[]){
     double start_time = omp_get_wtime();
     struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
     LOG_DEBUG("parse time: %fs", omp_get_wtime() - start_time);
-    clauses_repr_from_filep = &clauses_repr_from_file;
-    
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
 
     if (parse_only) {
@@ -47,7 +43,7 @@ int main(int argc, const char * argv[]){
     }
 
     //clauses_repr_from_file created successfully
-    struct clauses_repr * clauses_repr = clauses_repr_from_file.clauses_repr;
+    struct clauses_repr *clauses_repr = clauses_repr_from_file.clauses_repr;
 		
     start_time = omp_get_wtime();
     struct result result = maxsat(clauses_repr);
@@ -55,13 +51,10 @@ int main(int argc, const char * argv[]){
 		
     print_result(clauses_repr, result);
 
-    free_clauses_repr(clauses_repr_from_filep->clauses_repr);
+    free_clauses_repr(clauses_repr_from_file.clauses_repr);
 
     return 0;
 
 on_error:
-    if(clauses_repr_from_filep) {
-        free_clauses_repr(clauses_repr_from_filep->clauses_repr);
-    }
     return 1;
 }
