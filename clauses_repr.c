@@ -58,7 +58,7 @@ static struct file_read file_read(FILE *file, char *buf, size_t buf_size);
 static struct var_clause_count var_clause_count(FILE *file);
 static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_clause_count, size_t *var_count);
 static struct var_clauses_index var_clauses_index(struct var_clause_count var_clause_count, const uint32_t *clause_num_index, const int8_t *clause_num_index_clauses, const size_t *var_count);
-static int8_t var_index_from_var(int8_t var);
+static uint8_t var_index_from_var(int8_t var);
 
 /*
  * Implementation of public functions
@@ -332,6 +332,7 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
     ++cur_buf_pos; /*skip new line*/
 
     /*read clauses*/
+    size_t num_vars_clause = 0;
     while (true) {
         if (*cur_buf_pos == '\0') {
             file_read_ret = file_read(file, buf, buf_size);
@@ -354,20 +355,23 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
              * remainin read size is smaller than a number*/
             size_t num_chars_remaining = file_read_ret.num_read - (cur_buf_pos - buf);
             if (num_chars_remaining >= MAX_VAR_STR_SIZE) {
-                ASSERT_ERROR("couldn't parse a number and there are too many chars remaining!");
+                ASSERT_ERROR("Couldn't parse a number and there are too many chars remaining!");
             }
             LOG_DEBUG("Failed to read number, but near buf end, so skipping '%zu' chars", num_chars_remaining);
             cur_buf_pos += num_chars_remaining; /*skip to \0*/
             continue;
 
         }
-        ASSERT_MSG(parse_long_ret.success , "Failed to parse variable in clause");
         ASSERT_MSG(parse_long_ret.value <= INT8_MAX && parse_long_ret.value >= INT8_MIN, \
-                "Parsed variable not within expected project bounds");
+                "Parsed variable too big. Doesn't fit in byte");
 
         cur_buf_pos = parse_long_ret.str_next_pos;
         if (parse_long_ret.value != 0) { /*Same clause*/
             ASSERT_MSG(var_clause_count.total_num_vars > 0, "Read more vars than expected.");
+            ASSERT_MSG(var_index_from_var(parse_long_ret.value) >= 1
+                    && var_index_from_var(parse_long_ret.value) <= var_clause_count.num_vars, "Variable bigger than num_vars");
+            ++num_vars_clause;
+            ASSERT_MSG(num_vars_clause <= MAX_NUM_VARS_CLAUSE, "Too many vars in clause");
             --(var_clause_count.total_num_vars);
 
             *cur_clause_num_index_clauses = parse_long_ret.value;
@@ -375,13 +379,15 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
             ++var_count[var_index_from_var(parse_long_ret.value)];
 
         } else { /*Changing clauses*/
-            ASSERT_MSG(var_clause_count.num_clauses > 0, "Read more vars than expected.");
+            ASSERT_MSG(var_clause_count.num_clauses > 0, "Read more clauses than expected.");
+            num_vars_clause = 0;
             --(var_clause_count.num_clauses);
 
             /*clause start index in clause_num_index_clauses*/
             *cur_clause_num_index = (cur_clause_num_index_clauses - ret.clause_num_index_clauses); 
             ++cur_clause_num_index;
-            if(var_clause_count.num_clauses == 0) { /*FIXME: maybe?*/
+            if(var_clause_count.num_clauses == 0) {
+                LOG_DEBUG("Found number of expected clauses, exiting. %s", "");
                 break;
             }
         }
@@ -453,7 +459,7 @@ on_error:
     return ret;
 }
 
-static int8_t var_index_from_var(int8_t var) {
+static uint8_t var_index_from_var(int8_t var) {
     if (var < 0) {
         var = -1 * var;
     }
