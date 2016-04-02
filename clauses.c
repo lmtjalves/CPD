@@ -48,6 +48,7 @@ bool should_prune(struct clauses *clauses, struct result *result);
 void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
 void eval_var_clauses(struct clauses *clauses, uint8_t var);
 void eval_clause(struct clauses *clauses, uint16_t clause_id);
+uint8_t num_bit_len(int num);
 
 /* Create an instance of struct clauses with a complete or incomplete assignment (indicated by the last_assigned_var).
 */
@@ -91,6 +92,14 @@ on_error:
     ASSERT_EXIT();
 }
 
+uint8_t num_bit_len(int num) {
+    uint8_t cur_bit = 0;
+    while(num) {
+        num >>= 1;
+        ++cur_bit;
+    }
+    return cur_bit;
+}
 
 /* Calculate the maxsat result for the clauses_repr.
 */
@@ -100,31 +109,53 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
     // The maxsat result
     struct result result = new_stack_result();
 
-    // Use the NUM_INITIALIZED_VARS to set the number of initialized vars for each thread
-    uint8_t num_initialized_vars = NUM_INITIALIZED_VARS(clauses_repr_num_vars(clauses_repr));
 
-    // For each variable it can have 2 values, therefore with num_initialized_vars we
-    // can have 2^num_initialized_vars possible combinations.
-    uint64_t num_chunks = 1 << (num_initialized_vars);
 
-#pragma omp parallel for schedule(dynamic)
-    for(uint64_t i = 0; i < num_chunks; i++) {
+#pragma omp parallel
+    {
+        const uint8_t num_vars_per_thread = 6; /*We would like that each thread have 64 problems*/
+        const uint8_t min_num_vars_per_thread = 4; /*We want that each thread has at least 16 problems*/
+        const uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
 
-        LOG_DEBUG("Running with %d threads.", omp_get_num_threads());
-        // Note that i in binary are the initial assignments for the fixed variables.
-        uint64_t initial_assignment[2] = {0, i<<1};
-        struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
-        struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
+        /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
+        uint8_t num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
 
-        LOG_DEBUG("thread %d doing %" PRIu64, omp_get_thread_num(), i);
+        if (omp_get_thread_num() == 0) {
+            LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), num_initialized_vars, clauses_repr_num_vars(clauses_repr));
+        }
 
-        // Solve the maxsat for this chunk
-        // Note that the first variable to test is the first one
-        // At this point we know that all the variables between 1 and clauses->last_assigned_var
-        // have a fixed value. So we could calculate the impact of their assignment in the clauses here.
-        // Instead we calculate it in the partial_maxsat, but the logic remains the same.
-        partial_maxsat(clauses, &result, 1);
-        free_clauses(clauses);
+        if ( num_vars - num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
+            if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
+                num_initialized_vars = num_vars - min_num_vars_per_thread;
+            } else { /*problem really small*/
+                num_initialized_vars = 1;
+            }
+            if (omp_get_thread_num() == 0) {
+                LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, num_initialized_vars);
+            }
+        }
+
+        // For each variable it can have 2 values, therefore with num_initialized_vars we can have 2^num_initialized_vars possible combinations.
+        const uint64_t num_problems= 1 << (num_initialized_vars);
+
+#pragma omp for schedule(dynamic)
+        for(uint64_t i = 0; i < num_problems; i++) {
+
+            // Note that i in binary are the initial assignments for the fixed variables.
+            uint64_t initial_assignment[2] = {0, i<<1};
+            struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
+            struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
+
+            LOG_DEBUG("thread %d of %d doing assignment %" PRIu64, omp_get_thread_num(), omp_get_num_threads(), i);
+
+            // Solve the maxsat for this chunk
+            // Note that the first variable to test is the first one
+            // At this point we know that all the variables between 1 and clauses->last_assigned_var
+            // have a fixed value. So we could calculate the impact of their assignment in the clauses here.
+            // Instead we calculate it in the partial_maxsat, but the logic remains the same.
+            partial_maxsat(clauses, &result, 1);
+            free_clauses(clauses);
+        }
     }
 
     return result;
