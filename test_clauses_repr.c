@@ -1,4 +1,3 @@
-
 #include "unit_test.h"
 #include "clauses_repr.h"
 

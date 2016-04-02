@@ -1,4 +1,3 @@
-
 #ifndef PARSE_LONG_H__
 #define PARSE_LONG_H__
 

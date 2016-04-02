@@ -1,14 +1,12 @@
-
 #ifndef ASSERT_H__
 #define ASSERT_H__
+
+#include "debug.h"
 
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "debug.h"
-
 
 
 #define ASSERT_MSG_VA(EXPR, MSG, ...) \

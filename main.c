@@ -2,9 +2,10 @@
 #include "assignment.h"
 #include "clauses_repr.h"
 #include "clauses.h"
-#include <omp.h>
 #include "result.h"
 #include "debug.h"
+
+#include <omp.h>
 #include <stdlib.h>
 
 void print_result(struct clauses_repr *clauses_repr, struct result result) { 

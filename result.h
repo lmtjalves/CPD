@@ -2,6 +2,7 @@
 #define RESULT_H__
 
 #include "assignment.h"
+
 #include <stdio.h>
 #include <string.h>
 

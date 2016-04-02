@@ -1,9 +1,9 @@
 #include "clauses_repr.h"
-
-#include <stdio.h>
 #include "assert.h"
 #include "parse_long.h"
 #include "debug.h"
+
+#include <stdio.h>
 
 #define MAX_VAR 127
 /* == MAX_VAR because vars start at 1*/

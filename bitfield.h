@@ -1,5 +1,3 @@
-
-
 #ifndef BITFIELD_H__
 #define BITFIELD_H__
 

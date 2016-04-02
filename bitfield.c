@@ -1,5 +1,3 @@
-
-
 #include "assert.h"
 #include "bitfield.h"
 

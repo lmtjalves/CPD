@@ -1,7 +1,6 @@
-/* Inspired in c.learncodethehardway.org/book/ex20.html */
-
 #ifndef DEBUG_H__
 #define DEBUG_H__
+/* Inspired in c.learncodethehardway.org/book/ex20.html */
 
 #include <stdio.h>
 #include <errno.h>

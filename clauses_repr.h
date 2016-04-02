@@ -1,5 +1,3 @@
-
-
 #ifndef CLAUSES_REPR_H__
 #define CLAUSES_REPR_H__
 
