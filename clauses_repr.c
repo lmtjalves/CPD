@@ -250,7 +250,6 @@ static struct var_clause_count var_clause_count(FILE *file) {
 
     file_read_ret = file_read(file, buf, buf_size);
     ASSERT_MSG_VA(file_read_ret.success, "Failed read. error '%d' eof '%d'", file_read_ret.error, file_read_ret.eof);
-    cur_buf_pos = buf;
 
     /*Assuming buffer is big enough to read the first line without having to read again, otherwise we error out*/
     struct parse_long parsed_long = parse_long(buf);

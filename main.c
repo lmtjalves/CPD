@@ -39,6 +39,7 @@ int main(int argc, const char * argv[]){
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
 
     if (parse_only) {
+        free_clauses_repr(clauses_repr_from_file.clauses_repr);
         return 0;
     }
 
