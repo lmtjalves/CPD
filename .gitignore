@@ -1,1 +1,8 @@
 build/
+sa_build/
+*swp
+callgrind*
+cachegrind*
+*pyc
+test/parse/random/
+
