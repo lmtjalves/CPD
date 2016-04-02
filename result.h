@@ -6,7 +6,7 @@
 #include <string.h>
 
 struct result {
-	uint16_t maxsat_value; //FIXME depends on MAX_NUM_CLAUSES
+	uint16_t maxsat_value; //FIXME depends on MAX_NUM_CLAUSES. see clauses_repr.c
 	uint64_t na; //number of complete variable assignments that achieve MAXSAT
 	struct assignment sample; //one sample of the assignments that achieve MAXSAT
 };

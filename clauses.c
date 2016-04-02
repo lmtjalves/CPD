@@ -1,9 +1,9 @@
 #include "clauses.h"
-#include "project_specific.h"
 #include "assignment.h"
 #include "assert.h"
 #include "debug.h"
 
+#include <omp.h>
 #include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
@@ -106,7 +106,7 @@ uint8_t num_bit_len(int num) {
 struct result maxsat(const struct clauses_repr *clauses_repr) {
     ASSERT_NON_NULL(clauses_repr);
 
-    // The maxsat result
+    // The maxsat result. This is shared by all threads
     struct result result = new_stack_result();
 
 

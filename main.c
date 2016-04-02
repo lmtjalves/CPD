@@ -2,7 +2,7 @@
 #include "assignment.h"
 #include "clauses_repr.h"
 #include "clauses.h"
-#include "project_specific.h"
+#include <omp.h>
 #include "result.h"
 #include "debug.h"
 #include <stdlib.h>

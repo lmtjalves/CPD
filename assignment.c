@@ -1,11 +1,9 @@
-
 #include "assignment.h"
 #include "assert.h"
-#include "project_specific.h"
 
 #define GET_BIT(value, bit_num) (((value) >> (bit_num)) & 1)
 #define UINT8_MASK(value) ((var) & 0x3F)
-
+#define MAX_BIT 127
 
 struct assignment new_stack_assignment(void) {
     struct assignment ret = { .vars = {0,0}};
@@ -30,7 +28,7 @@ struct assignment new_stack_assignment_from_num(uint64_t num[2]) {
 }
 
 bool assignment_get_var(struct assignment assignment, uint8_t var) {
-    ASSERT(var <= MAX_VAR);
+    ASSERT(var <= MAX_BIT);
     //ASSERT(var <= assignment.cur_var);
 
     /*We want 0 if var < 64, and 1 if var >= 64, so we extract the 6th bit since 64 = 0100 0000 */
@@ -44,7 +42,7 @@ on_error:
 
 void assignment_set_var(struct assignment *assignment, uint8_t var, bool bool_value) {
     ASSERT_NON_NULL(assignment);
-    ASSERT(var <= MAX_VAR);
+    ASSERT(var <= MAX_BIT);
     //ASSERT(var == assignment->cur_var);
 
     uint64_t value = bool_value ? 1 : 0;
@@ -58,3 +56,7 @@ void assignment_set_var(struct assignment *assignment, uint8_t var, bool bool_va
 on_error:
     ASSERT_EXIT();
 }
+
+#undef GET_BIT
+#undef UINT8_MASK
+#undef MAX_BIT
