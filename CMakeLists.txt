@@ -12,7 +12,7 @@ set (OMP_FLAGS "-fopenmp")
 set(COMMON_FLAGS "${WARNING_FLAGS} ${OMP_FLAGS} -std=c11 -Werror -pedantic")
 
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${COMMON_FLAGS}")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${COMMON_FLAGS} -O0 -g -DDEBUG_LOG_LEVEL=DEBUG_LEVEL_INFO")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${COMMON_FLAGS} -DDEBUG_LOG_LEVEL=DEBUG_LEVEL_DEBUG -O0 -g -fno-inline -fsanitize=address,undefined")
 
 add_executable(test_assignment test_assignment.c assignment.c)

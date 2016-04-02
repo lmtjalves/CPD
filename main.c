@@ -36,7 +36,7 @@ int main(int argc, const char * argv[]){
 
     double start_time = omp_get_wtime();
     struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
-    LOG_DEBUG("parse time: %fs", omp_get_wtime() - start_time);
+    LOG_INFO("parse time: %fs", omp_get_wtime() - start_time);
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
 
     if (parse_only) {
@@ -49,7 +49,7 @@ int main(int argc, const char * argv[]){
 
     start_time = omp_get_wtime();
     struct result result = maxsat(clauses_repr);
-    LOG_DEBUG("maxsat time: %fs", omp_get_wtime() - start_time);
+    LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
 
     print_result(clauses_repr, result);
 
