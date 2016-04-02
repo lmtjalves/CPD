@@ -45,11 +45,11 @@ int main(int argc, const char * argv[]){
 
     //clauses_repr_from_file created successfully
     struct clauses_repr *clauses_repr = clauses_repr_from_file.clauses_repr;
-		
+
     start_time = omp_get_wtime();
     struct result result = maxsat(clauses_repr);
     LOG_DEBUG("maxsat time: %fs", omp_get_wtime() - start_time);
-		
+
     print_result(clauses_repr, result);
 
     free_clauses_repr(clauses_repr_from_file.clauses_repr);

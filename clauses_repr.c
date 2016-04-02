@@ -119,7 +119,7 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
     ret.clauses_repr->num_vars = var_clause_count_ret.num_vars;
     ret.clauses_repr->num_clauses = var_clause_count_ret.num_clauses;
 
-    
+
     return ret;
 
 on_error:

@@ -337,9 +337,9 @@ int main(void) {
 #define UT_PRINTF(FORMAT, ...) do { fprintf(stderr, "    " FORMAT "\n", __VA_ARGS__);} while (0)
 
 #define UT_ENDTEST \
-struct UNIT_TEST_test UNIT_TEST_CAT(UNIT_TEST_get_test, __COUNTER__)(void) { \
-    struct UNIT_TEST_test t = { "last_test", UNIT_TEST_test_last_test, NULL}; \
-    return t; \
-}
+    struct UNIT_TEST_test UNIT_TEST_CAT(UNIT_TEST_get_test, __COUNTER__)(void) { \
+        struct UNIT_TEST_test t = { "last_test", UNIT_TEST_test_last_test, NULL}; \
+        return t; \
+    }
 
 #endif /*UNIT_TEST_H__*/

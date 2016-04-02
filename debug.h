@@ -22,18 +22,18 @@
 #define DEBUG_CLEAN_ERRNO() (errno == 0 ? "None" : strerror(errno))
 
 #define DEBUG_REAL_LOG_GENERIC(LOG_TYPE, MESSAGE, ...) \
-do {\
-    fprintf(stderr, LOG_TYPE " (%s:%d: errno: %s) " MESSAGE "\n", __FILE__, __LINE__, DEBUG_CLEAN_ERRNO(), __VA_ARGS__);\
-} while(0)
+    do {\
+        fprintf(stderr, LOG_TYPE " (%s:%d: errno: %s) " MESSAGE "\n", __FILE__, __LINE__, DEBUG_CLEAN_ERRNO(), __VA_ARGS__);\
+    } while(0)
 
 
 /*Defined so we don't have to put "" at the end of every LOG*. It's used to allow for no arguments*/
 #define DEBUG_LOG_GENERIC(LOG_TYPE, LEVEL, MESSAGE, ...) \
-do { \
-    if ( LEVEL <= DEBUG_LOG_LEVEL) { \
-        DEBUG_REAL_LOG_GENERIC(LOG_TYPE, MESSAGE "%s", __VA_ARGS__, " "); \
-    } \
-} while(0)
+    do { \
+        if ( LEVEL <= DEBUG_LOG_LEVEL) { \
+            DEBUG_REAL_LOG_GENERIC(LOG_TYPE, MESSAGE "%s", __VA_ARGS__, " "); \
+        } \
+    } while(0)
 
 
 
