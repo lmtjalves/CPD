@@ -73,20 +73,17 @@ void result_set_assignment_sample(struct result *result, struct assignment new_s
 void result_update(struct result *result, uint16_t new_maxsat_value, struct assignment new_sample){
   ASSERT_NON_NULL(result);
 	
-	#pragma omp critical
-	{
-		if (new_maxsat_value == result->maxsat_value){
-    	(result->na)++;
-  	} else if (new_maxsat_value > result->maxsat_value){
-    	{
-      	result->maxsat_value = new_maxsat_value;
-      	result->sample = new_sample;
-      	result->na = 1;
-    	}
-  	}
-	}
+  if (new_maxsat_value == result->maxsat_value){
+      (result->na)++;
+  } else if (new_maxsat_value > result->maxsat_value){
+      {
+      	  result->maxsat_value = new_maxsat_value;
+      	  result->sample = new_sample;
+      	  result->na = 1;
+      }
+  }
 
-	return;
+  return;
   on_error:
   	ASSERT_EXIT();
 }

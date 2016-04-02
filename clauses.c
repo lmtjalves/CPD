@@ -43,54 +43,37 @@ struct clauses {
     uint16_t num_unknown_clauses;
 };
 
+struct maxsat_prob_division {
+    size_t num_problems;
+    uint8_t num_initialized_vars;
+};
+
+uint8_t num_bit_len(int num);
+struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clauses_repr);
 void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test);
 bool should_prune(struct clauses *clauses, struct result *result);
 void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
 void eval_var_clauses(struct clauses *clauses, uint8_t var);
 void eval_clause(struct clauses *clauses, uint16_t clause_id);
-uint8_t num_bit_len(int num);
 
-/* Create an instance of struct clauses with a complete or incomplete assignment (indicated by the last_assigned_var).
-*/
-struct clauses *new_clauses(const struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
-    ASSERT_NON_NULL(clauses_repr);
+/*Initing/allocing clauses like this so we don't have to care about malloc/free*/
+/*Not insied do{}while(0) because that'd release the array memory*/
+#define ALLOC_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR) \
+int8_t calculated_clauses_filter_ ## CLAUSES [clauses_repr_num_clauses(CLAUSES_REPR)];\
+CLAUSES.calculated_clauses_filter = calculated_clauses_filter_ ## CLAUSES
 
-    uint16_t num_clauses = clauses_repr_num_clauses(clauses_repr);
+#define INIT_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR, ASSIGNMENT, LAST_ASSIGNED_VAR) \
+do { \
+    CLAUSES.clauses_repr = CLAUSES_REPR; \
+    CLAUSES.assignment = ASSIGNMENT; \
+    CLAUSES.last_assigned_var = LAST_ASSIGNED_VAR; \
+    memset(CLAUSES.calculated_clauses_filter, 0 , clauses_repr_num_clauses(CLAUSES_REPR) * sizeof(int8_t)); \
+    CLAUSES.num_true_clauses = 0; \
+    CLAUSES.num_false_clauses = 0; \
+    CLAUSES.num_unknown_clauses = clauses_repr_num_clauses(CLAUSES_REPR); \
+} while(0)
 
-    struct clauses *ret = NULL;
-    ASSERT_MALLOC(struct clauses, ret, 1);
 
-    // Initialize struct components
-    ret->clauses_repr        = clauses_repr;
-    ret->assignment              = assignment;
-    ret->last_assigned_var = last_assigned_var;
-
-    ASSERT_MALLOC(int8_t, ret->calculated_clauses_filter, num_clauses);
-    memset(ret->calculated_clauses_filter, 0, num_clauses * sizeof(int8_t));
-
-    ret->num_true_clauses = 0;
-    ret->num_false_clauses = 0;
-    ret->num_unknown_clauses = num_clauses;
-
-    return ret;
-
-on_error:
-    ASSERT_EXIT();
-}
-
-/* Free clauses.
-*/
-void free_clauses(struct clauses *clauses) {
-    ASSERT_NON_NULL(clauses);
-
-    ASSERT_FREE(clauses->calculated_clauses_filter);
-    ASSERT_FREE(clauses);
-
-    return;
-
-on_error:
-    ASSERT_EXIT();
-}
 
 uint8_t num_bit_len(int num) {
     uint8_t cur_bit = 0;
@@ -101,6 +84,42 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
+struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clauses_repr) {
+    ASSERT_NON_NULL(clauses_repr);
+
+    struct maxsat_prob_division ret;
+
+    const uint8_t num_vars_per_thread = 6; /*We would like that each thread have 64 problems*/
+    const uint8_t min_num_vars_per_thread = 4; /*We want that each thread has at least 16 problems*/
+    const uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
+
+    /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
+    ret.num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
+
+    if (omp_get_thread_num() == 0) {
+        LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), ret.num_initialized_vars, num_vars);
+    }
+
+    if ( num_vars - ret.num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
+        if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
+            ret.num_initialized_vars = num_vars - min_num_vars_per_thread;
+        } else { /*problem really small*/
+            ret.num_initialized_vars = 1;
+        }
+        if (omp_get_thread_num() == 0) {
+            LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, ret.num_initialized_vars);
+        }
+    }
+
+    // For each variable it can have 2 values, therefore with num_initialized_vars we can have 2^num_initialized_vars possible combinations.
+    ret.num_problems= 1 << (ret.num_initialized_vars);
+
+    return ret;
+
+on_error:
+    ASSERT_EXIT();
+}
+
 /* Calculate the maxsat result for the clauses_repr.
 */
 struct result maxsat(const struct clauses_repr *clauses_repr) {
@@ -109,52 +128,45 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
     // The maxsat result. This is shared by all threads
     struct result result = new_stack_result();
 
-
-
-#pragma omp parallel
+    /*We don't declare any variable private because they're already private by being in a new block.
+     * Only result is shared.*/
+#pragma omp parallel 
     {
-        const uint8_t num_vars_per_thread = 6; /*We would like that each thread have 64 problems*/
-        const uint8_t min_num_vars_per_thread = 4; /*We want that each thread has at least 16 problems*/
-        const uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
-
-        /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
-        uint8_t num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
-
-        if (omp_get_thread_num() == 0) {
-            LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), num_initialized_vars, clauses_repr_num_vars(clauses_repr));
-        }
-
-        if ( num_vars - num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
-            if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
-                num_initialized_vars = num_vars - min_num_vars_per_thread;
-            } else { /*problem really small*/
-                num_initialized_vars = 1;
-            }
-            if (omp_get_thread_num() == 0) {
-                LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, num_initialized_vars);
-            }
-        }
-
-        // For each variable it can have 2 values, therefore with num_initialized_vars we can have 2^num_initialized_vars possible combinations.
-        const uint64_t num_problems= 1 << (num_initialized_vars);
+        struct result local_result = new_stack_result();
+        struct clauses clauses;
+        ALLOC_LOCAL_CLAUSES(clauses, clauses_repr);
+        const struct maxsat_prob_division prob_division = maxsat_prob_division(clauses_repr);
 
 #pragma omp for schedule(dynamic)
-        for(uint64_t i = 0; i < num_problems; i++) {
-
+        for(uint64_t i = 0; i < prob_division.num_problems; i++) {
             // Note that i in binary are the initial assignments for the fixed variables.
-            uint64_t initial_assignment[2] = {0, i<<1};
-            struct assignment assignment = new_stack_assignment_from_num(initial_assignment);
-            struct clauses *clauses = new_clauses(clauses_repr, assignment, num_initialized_vars);
+            struct assignment assignment = new_stack_assignment_from_num( (uint64_t [2]){0, i<<1});
+            result_set_na(&local_result, 0);
 
-            LOG_DEBUG("thread %d of %d doing assignment %" PRIu64, omp_get_thread_num(), omp_get_num_threads(), i);
+            INIT_LOCAL_CLAUSES(clauses, clauses_repr, assignment, prob_division.num_initialized_vars);
+
 
             // Solve the maxsat for this chunk
             // Note that the first variable to test is the first one
             // At this point we know that all the variables between 1 and clauses->last_assigned_var
             // have a fixed value. So we could calculate the impact of their assignment in the clauses here.
             // Instead we calculate it in the partial_maxsat, but the logic remains the same.
-            partial_maxsat(clauses, &result, 1);
-            free_clauses(clauses);
+            partial_maxsat(&clauses, &local_result, 1);
+
+            LOG_DEBUG("thread: %d assignment:%"PRIu64 " maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, result_get_maxsat_value(&local_result), result_get_na(&local_result));
+
+#pragma omp critical 
+            {
+                if (result_get_maxsat_value(&result) == result_get_maxsat_value(&local_result)) {
+                    result_set_na(&result, result_get_na(&result) + result_get_na(&local_result));
+                } else if (result_get_maxsat_value(&result) < result_get_maxsat_value(&local_result)) {
+                    result_set_maxsat_value(&result, result_get_maxsat_value(&local_result));
+                    result_set_assignment_sample(&result, result_get_assignment_sample(&local_result));
+                    result_set_na(&result, result_get_na(&local_result));
+                } else {
+                    result_set_maxsat_value(&local_result, result_get_maxsat_value(&result));
+                }
+            }
         }
     }
 
