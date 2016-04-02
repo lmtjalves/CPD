@@ -11,7 +11,7 @@
 // Struct used to represent an instance of clauses_repr
 struct clauses {
     // The clauses representation
-    struct clauses_repr* clauses_repr;
+    const struct clauses_repr* clauses_repr;
 
     // An assignment to the variables in the clause
     // Note: the assignment may not be complete
@@ -51,7 +51,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id);
 
 /* Create an instance of struct clauses with a complete or incomplete assignment (indicated by the last_assigned_var).
 */
-struct clauses *new_clauses(struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
+struct clauses *new_clauses(const struct clauses_repr *clauses_repr, struct assignment assignment, uint8_t last_assigned_var) {
     ASSERT_NON_NULL(clauses_repr);
 
     uint16_t num_clauses = clauses_repr_num_clauses(clauses_repr);
@@ -94,7 +94,7 @@ on_error:
 
 /* Calculate the maxsat result for the clauses_repr.
 */
-struct result maxsat(struct clauses_repr *clauses_repr) {
+struct result maxsat(const struct clauses_repr *clauses_repr) {
     ASSERT_NON_NULL(clauses_repr);
 
     // The maxsat result

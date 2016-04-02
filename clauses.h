@@ -6,6 +6,6 @@
 
 /* Returns the maxsat of the given group of clauses.
 */
-struct result maxsat(struct clauses_repr *clauses_repr);
+struct result maxsat(const struct clauses_repr *clauses_repr);
 
 #endif /*CLAUSES_H__*/
