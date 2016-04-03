@@ -22,20 +22,32 @@ void print_result(struct clauses_repr *clauses_repr, struct result result) {
     }
 }
 
-int main(int argc, const char * argv[]){
+int main(int argc, char * argv[]){
 
 
     bool parse_only = false;
-    if (argc == 3 && strcmp(argv[1], "--parse-only") == 0) {
-        parse_only = true;
-        argc--; argv++; /*could be cleaner...*/
+    bool debug = false;
+    char * filename = NULL;
+    ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug] filename");
+    for (int i = 1; i < argc; ++i) {
+        if ((strcmp(argv[i], "--parse-only") == 0) && !parse_only) {
+            parse_only = true;
+        } else if ( (strcmp(argv[i], "--debug") == 0) && !debug) {
+            debug = true;
+        } else if (filename == NULL) {
+            filename = argv[i];
+        } else {
+            ASSERT_ERROR("Failed to parse arguments. You could have duplicate flags, miss a filename, or mispelled the flags.");
+        }
+    }
+    ASSERT_MSG(filename != NULL, "No filename given.");
+
+    if(debug) {
+        DEBUG_SET_LEVEL(DEBUG_LEVEL_DEBUG);
     }
 
-    //number of arguments given is 2: program name and input file path.
-    ASSERT_MSG(argc == 2, "Invalid number of arguments! We only accept a filename or --parse-only");
-
     double start_time = omp_get_wtime();
-    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(argv[1]);
+    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(filename);
     LOG_INFO("parse time: %fs", omp_get_wtime() - start_time);
     ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
 

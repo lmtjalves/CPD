@@ -13,10 +13,21 @@
 #define DEBUG_LEVEL_INFO 20
 #define DEBUG_LEVEL_DEBUG 30
 
-#ifndef DEBUG_LOG_LEVEL
-#define DEBUG_LOG_LEVEL DEBUG_LEVEL_ERROR
-#endif
 
+/*if DEBUG_LOG_LEVEL is not defined at compile time we assume runtime debug option.*/
+#ifndef DEBUG_LOG_LEVEL
+extern int debug_log_level;
+#define DEBUG_LOG_LEVEL debug_log_level
+/*maybe we should do some checking*/
+#define DEBUG_SET_LEVEL(LEVEL) \
+do { \
+    debug_log_level = LEVEL; \
+} while(0)
+
+#else 
+/*no need to define DEBUG_LOG_LEVEL because it's already defined*/
+#define DEBUG_SET_LEVEL(LEVEL) LOG_ERROR("Trying to set debug level when debug is compile time set.%s", "")
+#endif
 
 #define DEBUG_CLEAN_ERRNO() (errno == 0 ? "None" : strerror(errno))
 
