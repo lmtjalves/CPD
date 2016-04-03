@@ -11,7 +11,7 @@
 #define MAX_NUM_VARS_CLAUSE 20
 /* 4 because MAX_VAR is 127 and could be -127*/
 #define MAX_VAR_STR_SIZE 4
-#define MAX_NUM_CLAUSES 65536
+#define MAX_NUM_CLAUSES 65535
 
 /*These fixme just mark the spot where "project specific" cosntraints are abused to optimized space
  *FIXME: var_clauses_index depends on MAX_NUM_VARS_CLAUSE MAX_NUM_CLAUSES

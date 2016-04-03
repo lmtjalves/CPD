@@ -288,7 +288,7 @@ void eval_var_clauses(struct clauses *clauses, uint8_t var) {
 
     struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
 
-    for(uint16_t i = 0; i < var_clauses.len; i++) {
+    for(size_t i = 0; i < var_clauses.len; i++) {
         eval_clause(clauses, var_clauses.first[i]);
     }
 
