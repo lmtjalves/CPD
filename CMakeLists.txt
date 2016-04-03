@@ -21,3 +21,4 @@ add_executable(test_clauses_repr test_clauses_repr.c clauses_repr.c parse_long.c
 add_executable(test_clauses test_clauses.c clauses.c clauses_repr.c parse_long.c assignment.c result.c debug.c)
 add_executable(main main.c clauses.c clauses_repr.c parse_long.c assignment.c result.c debug.c)
 add_executable(maxsat-omp maxsat-omp.c)
+add_executable(maxsat-serial maxsat-serial.c)
