@@ -151,8 +151,8 @@ void assignment_set_var(struct assignment *assignment, uint8_t var, bool value);
 
 /******************************Start of assignment.c*******************************/
 
-#define GET_BIT(value, bit_num) (((value) >> (bit_num)) & 1)
-#define UINT8_MASK(value) ((var) & 0x3F)
+#define GET_BIT(VALUE, BIT_NUM) (((VALUE) >> (BIT_NUM)) & 1)
+#define UINT8_MASK(VALUE) ((VALUE) & 0x3F)
 #define MAX_BIT 127
 
 struct assignment new_stack_assignment(void) {
@@ -162,7 +162,7 @@ struct assignment new_stack_assignment(void) {
 
 /* Assumes big_num = num[0] num[1], so v0 = num[1][0], v1 = num[1][1], ... v63=num[1][63]*/
 struct assignment new_stack_assignment_from_num(uint64_t num[2]) {
-    struct assignment ret;
+    struct assignment ret = new_stack_assignment();
 
     size_t var = 0;
     int num_i; /*int :'(*/
@@ -1005,9 +1005,10 @@ struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clau
     /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
     ret.num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
 
-    if (omp_get_thread_num() == 0) {
+#pragma omp master
+    {
         LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), ret.num_initialized_vars, num_vars);
-    }
+    } 
 
     if ( num_vars - ret.num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
         if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
@@ -1015,7 +1016,8 @@ struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clau
         } else { /*problem really small*/
             ret.num_initialized_vars = 1;
         }
-        if (omp_get_thread_num() == 0) {
+#pragma omp master
+        {
             LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, ret.num_initialized_vars);
         }
     }
@@ -1037,6 +1039,9 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
     // The maxsat result. This is shared by all threads
     struct result result = new_stack_result();
 
+    const double start_time = omp_get_wtime();
+    double first_finish_time = -1;
+    double last_finish_time = 0;
     /*We don't declare any variable private because they're already private by being in a new block.
      * Only result is shared.*/
 #pragma omp parallel 
@@ -1046,7 +1051,12 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
         ALLOC_LOCAL_CLAUSES(clauses, clauses_repr);
         const struct maxsat_prob_division prob_division = maxsat_prob_division(clauses_repr);
 
-#pragma omp for schedule(dynamic)
+
+        /*schedule(dynamic) guarantees that all threads keep running for the same approximate ammount of time, because they keep getting 
+         * new problems if they finish earlt.
+         *nowait is useful so the log_debugs after the loop have meaning, otherwise there'd be and implicit barrier after the loop, and the
+         * debug information would say that all the threads finished at the same time*/
+#pragma omp for schedule(dynamic) nowait
         for(uint64_t i = 0; i < prob_division.num_problems; i++) {
             // Note that i in binary are the initial assignments for the fixed variables.
             struct assignment assignment = new_stack_assignment_from_num( (uint64_t [2]){0, i<<1});
@@ -1077,7 +1087,19 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
                 }
             }
         }
+
+        const double thread_finish_time = omp_get_wtime() - start_time;
+#pragma omp critical
+        {
+            if (first_finish_time < 0) {
+                first_finish_time = thread_finish_time;
+            }
+            last_finish_time = thread_finish_time;
+        }
+        LOG_DEBUG("thread: %d finished after %f", omp_get_thread_num(), thread_finish_time);
     }
+
+    LOG_DEBUG("first_finish_time:%f last_finish_time:%f delta:%f", first_finish_time, last_finish_time, last_finish_time - first_finish_time);
 
     return result;
 
