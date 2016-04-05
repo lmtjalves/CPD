@@ -162,7 +162,7 @@ struct assignment new_stack_assignment(void) {
 
 /* Assumes big_num = num[0] num[1], so v0 = num[1][0], v1 = num[1][1], ... v63=num[1][63]*/
 struct assignment new_stack_assignment_from_num(uint64_t num[2]) {
-    struct assignment ret;
+    struct assignment ret = new_stack_assignment();
 
     size_t var = 0;
     int num_i; /*int :'(*/
