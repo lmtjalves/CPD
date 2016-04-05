@@ -96,9 +96,10 @@ struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clau
     /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
     ret.num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
 
-    if (omp_get_thread_num() == 0) {
+#pragma omp master
+    {
         LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), ret.num_initialized_vars, num_vars);
-    }
+    } 
 
     if ( num_vars - ret.num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
         if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
@@ -106,7 +107,8 @@ struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clau
         } else { /*problem really small*/
             ret.num_initialized_vars = 1;
         }
-        if (omp_get_thread_num() == 0) {
+#pragma omp master
+        {
             LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, ret.num_initialized_vars);
         }
     }
