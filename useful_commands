@@ -1,0 +1,27 @@
+
+valgrind callgrind
+valgrind --tool=callgrind --dump-instr=yes --collect-jumps=yes
+
+flags
+static-build: export LDFLAGS="-static"
+
+static-analyzer
+scan-build CC=clang cmake -DCMAKE_BUILD_TYPE=Debug ../
+scan-build make
+
+ompp (possivelmente é necessário remover o -Werror)
+CC="kinst-ompp gcc" cmake ../
+
+
+check parsing errors
+for f in test/*in; do ./build/main --parse-only $f; if ! [[ $? -eq 0 ]]; then _echo_red "error on $f"; fi; done 2>/dev/null
+
+check parser (correctness and memory)
+for f in test/parse/*; do ./build/main --parse-only $f; if ! [[ $? -eq 0 ]]; then _echo_red "error on $f"; fi; done 2>/dev/null
+for f in test/parse/*; do valgrind ./build/main --parse-only $f 2>&1 | fgrep "in use at exit: 8 bytes in 1 blocks" > /dev/null; if ! [[ $? -eq 0 ]]; then _echo_red "error on $f"; fi; done 2> /dev/null
+
+gen_parse_tests
+for i in {0..1000}; do python scripts/gen_random_big_parse_tests.py 20 127 100 65535 1 20 > test/parse/random_parse_test${i}; done
+
+valgrind parser
+valgrind --leak-check=full --show-leak-kinds=all ./build/main --parse-only
