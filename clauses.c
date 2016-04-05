@@ -130,6 +130,9 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
     // The maxsat result. This is shared by all threads
     struct result result = new_stack_result();
 
+    const double start_time = omp_get_wtime();
+    double first_finish_time = -1;
+    double last_finish_time = 0;
     /*We don't declare any variable private because they're already private by being in a new block.
      * Only result is shared.*/
 #pragma omp parallel 
@@ -139,7 +142,12 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
         ALLOC_LOCAL_CLAUSES(clauses, clauses_repr);
         const struct maxsat_prob_division prob_division = maxsat_prob_division(clauses_repr);
 
-#pragma omp for schedule(dynamic)
+
+        /*schedule(dynamic) guarantees that all threads keep running for the same approximate ammount of time, because they keep getting 
+         * new problems if they finish earlt.
+         *nowait is useful so the log_debugs after the loop have meaning, otherwise there'd be and implicit barrier after the loop, and the
+         * debug information would say that all the threads finished at the same time*/
+#pragma omp for schedule(dynamic) nowait
         for(uint64_t i = 0; i < prob_division.num_problems; i++) {
             // Note that i in binary are the initial assignments for the fixed variables.
             struct assignment assignment = new_stack_assignment_from_num( (uint64_t [2]){0, i<<1});
@@ -170,7 +178,19 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
                 }
             }
         }
+
+        const double thread_finish_time = omp_get_wtime() - start_time;
+#pragma omp critical
+        {
+            if (first_finish_time < 0) {
+                first_finish_time = thread_finish_time;
+            }
+            last_finish_time = thread_finish_time;
+        }
+        LOG_DEBUG("thread: %d finished after %f", omp_get_thread_num(), thread_finish_time);
     }
+
+    LOG_DEBUG("first_finish_time:%f last_finish_time:%f delta:%f", first_finish_time, last_finish_time, last_finish_time - first_finish_time);
 
     return result;
 
