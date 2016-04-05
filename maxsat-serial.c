@@ -151,8 +151,8 @@ void assignment_set_var(struct assignment *assignment, uint8_t var, bool value);
 
 /******************************Start of assignment.c*******************************/
 
-#define GET_BIT(value, bit_num) (((value) >> (bit_num)) & 1)
-#define UINT8_MASK(value) ((var) & 0x3F)
+#define GET_BIT(VALUE, BIT_NUM) (((VALUE) >> (BIT_NUM)) & 1)
+#define UINT8_MASK(VALUE) ((VALUE) & 0x3F)
 #define MAX_BIT 127
 
 struct assignment new_stack_assignment(void) {
