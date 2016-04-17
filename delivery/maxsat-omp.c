@@ -1072,7 +1072,7 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
             // Instead we calculate it in the partial_maxsat, but the logic remains the same.
             partial_maxsat(&clauses, &local_result, 1);
 
-            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%"PRIu64 " maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, prob_division.num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
+            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%zu maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, prob_division.num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
 
 #pragma omp critical 
             {
