@@ -17,6 +17,7 @@
 
 /*Implementation*/
 
+#define DEBUG_LEVEL_NO_DEBUG -10
 #define DEBUG_LEVEL_ERROR 0
 #define DEBUG_LEVEL_WARN 10
 #define DEBUG_LEVEL_INFO 20
@@ -70,7 +71,7 @@ do { \
 
 /*********************************Start of debug.c*********************************/
 
-int debug_log_level = DEBUG_LEVEL_INFO;
+int debug_log_level = DEBUG_LEVEL_NO_DEBUG;
 
 /**********************************End of debug.c**********************************/
 
@@ -1226,13 +1227,16 @@ int main(int argc, char * argv[]){
 
     bool parse_only = false;
     bool debug = false;
+    bool info = false;
     char * filename = NULL;
-    ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug] filename");
+    ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug|--info] filename");
     for (int i = 1; i < argc; ++i) {
         if ((strcmp(argv[i], "--parse-only") == 0) && !parse_only) {
             parse_only = true;
-        } else if ( (strcmp(argv[i], "--debug") == 0) && !debug) {
+        } else if ( (strcmp(argv[i], "--debug") == 0) && !debug && !info) {
             debug = true;
+        } else if ( (strcmp(argv[i], "--info") == 0) && !debug && !info) {
+            info = true;
         } else if (filename == NULL) {
             filename = argv[i];
         } else {
@@ -1243,6 +1247,8 @@ int main(int argc, char * argv[]){
 
     if(debug) {
         DEBUG_SET_LEVEL(DEBUG_LEVEL_DEBUG);
+    } else if(info) {
+        DEBUG_SET_LEVEL(DEBUG_LEVEL_INFO);
     }
 
     double start_time = omp_get_wtime();

@@ -8,6 +8,7 @@
 
 /*Implementation*/
 
+#define DEBUG_LEVEL_NO_DEBUG -10
 #define DEBUG_LEVEL_ERROR 0
 #define DEBUG_LEVEL_WARN 10
 #define DEBUG_LEVEL_INFO 20
