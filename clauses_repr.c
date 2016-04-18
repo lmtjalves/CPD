@@ -79,7 +79,8 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
     FILE * file = NULL; 
 
     struct new_clauses_repr_from_file ret = {.success = true, .clauses_repr = NULL};
-    ASSERT_MALLOC(struct clauses_repr, ret.clauses_repr, 1);
+    ret.clauses_repr = malloc(sizeof(*(ret.clauses_repr)) * 1);
+    ASSERT_NON_NULL(ret.clauses_repr);
 
     ret.clauses_repr->var_clauses_index = NULL;
 
