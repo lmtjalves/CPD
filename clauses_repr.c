@@ -115,8 +115,12 @@ struct new_clauses_repr_from_file new_clauses_repr_from_file(const char *file_pa
 
         struct var_clauses_index var_clauses_index_ret = var_clauses_index(var_clause_count_ret, ret.clauses_repr->clause_num_index, ret.clauses_repr->clause_num_index_clauses, var_count);
         if(!var_clauses_index_ret.success) {
-            ASSERT_FREE(ret.clauses_repr->clause_num_index);
-            ASSERT_FREE(ret.clauses_repr->clause_num_index_clauses);
+            if (ret.clauses_repr->clause_num_index != NULL) {
+                free(ret.clauses_repr->clause_num_index);
+            }
+            if (ret.clauses_repr->clause_num_index_clauses != NULL) {
+                free(ret.clauses_repr->clause_num_index_clauses);
+            }
             ASSERT_ERROR("Failed to build the var_clause_index.");
         }
         ret.clauses_repr->var_clauses_index = var_clauses_index_ret.var_clauses_index;
@@ -168,11 +172,16 @@ struct clauses_repr_clause clauses_repr_clause(const struct clauses_repr *clause
 
 void free_clauses_repr(struct clauses_repr *clauses_repr) {
     ASSERT_NON_NULL(clauses_repr);
-    ASSERT_FREE(clauses_repr->var_clauses_index);
-    ASSERT_FREE(clauses_repr->var_clauses_index_clauses);
-    ASSERT_FREE(clauses_repr->clause_num_index);
-    ASSERT_FREE(clauses_repr->clause_num_index_clauses);
-    ASSERT_FREE(clauses_repr);
+    ASSERT_NON_NULL(clauses_repr->var_clauses_index);
+    ASSERT_NON_NULL(clauses_repr->var_clauses_index_clauses);
+    ASSERT_NON_NULL(clauses_repr->clause_num_index);
+    ASSERT_NON_NULL(clauses_repr->clause_num_index_clauses);
+
+    free(clauses_repr->var_clauses_index);
+    free(clauses_repr->var_clauses_index_clauses);
+    free(clauses_repr->clause_num_index);
+    free(clauses_repr->clause_num_index_clauses);
+    free(clauses_repr);
 
     return;
 on_error:
@@ -319,12 +328,15 @@ static struct parse_maxsat parse_maxsat(FILE *file, struct var_clause_count var_
     struct parse_maxsat ret = {.success = true, .clause_num_index = NULL, .clause_num_index_clauses = NULL};
 
     /*Alloc clauses_repr memory*/
-    ASSERT_MALLOC_CREATE_VAR(uint32_t, cur_clause_num_index, var_clause_count.num_clauses + 1); /* +1 because we index with clause_num_index[i] and [i+1] */
+    /* +1 because we index with clause_num_index[i] and [i+1] */
+    uint32_t *cur_clause_num_index = malloc(sizeof(*cur_clause_num_index) * (var_clause_count.num_clauses + 1));
+    ASSERT_NON_NULL(cur_clause_num_index);
     ret.clause_num_index = cur_clause_num_index;
     *cur_clause_num_index = 0;
     ++cur_clause_num_index;
 
-    ASSERT_MALLOC_CREATE_VAR(int8_t, cur_clause_num_index_clauses, var_clause_count.total_num_vars);
+    int8_t *cur_clause_num_index_clauses  = malloc(sizeof(*cur_clause_num_index_clauses) * (var_clause_count.total_num_vars));
+    ASSERT_NON_NULL(cur_clause_num_index_clauses);
     ret.clause_num_index_clauses = cur_clause_num_index_clauses;
 
     file_read_ret = file_read(file, buf, buf_size);
@@ -420,7 +432,8 @@ static struct var_clauses_index var_clauses_index(struct var_clause_count var_cl
     struct var_clauses_index ret = {.success = true, .var_clauses_index = NULL, .var_clauses_index_clauses = NULL};
 
     /* +1 because we don't use var 0 and +1 reason above . Not name cur_ because we don't change it.*/
-    ASSERT_MALLOC_CREATE_VAR(uint32_t, var_clauses_index, var_clause_count.num_vars + 2); 
+    uint32_t *var_clauses_index = malloc(sizeof(*var_clauses_index) * (var_clause_count.num_vars + 2));
+    ASSERT_NON_NULL(var_clauses_index);
     ret.var_clauses_index = var_clauses_index;
     ret.var_clauses_index[0] = 0; /*skip var 0*/
     ret.var_clauses_index[1] = 0; /*var 1 start at position 0*/
@@ -433,7 +446,8 @@ static struct var_clauses_index var_clauses_index(struct var_clause_count var_cl
     }
 
     /*Not name cur_ because we don't change it.*/
-    ASSERT_MALLOC_CREATE_VAR(uint16_t, var_clauses_index_clauses, var_clause_count.total_num_vars);
+    uint16_t *var_clauses_index_clauses = malloc(sizeof(*var_clauses_index_clauses) * (var_clause_count.total_num_vars));
+    ASSERT_NON_NULL(var_clauses_index_clauses);
     ret.var_clauses_index_clauses = var_clauses_index_clauses;
 
     { /*error: jump into scope of identifier with variably modified type*/
