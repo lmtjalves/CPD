@@ -2,10 +2,10 @@
 #define CLAUSES_H__
 
 #include "result.h"
-#include "clauses_repr.h"
+#include "crepr.h"
 
 /* Returns the maxsat of the given group of clauses.
 */
-struct result maxsat(const struct clauses_repr *clauses_repr);
+struct result maxsat(const struct crepr *crepr);
 
 #endif /*CLAUSES_H__*/

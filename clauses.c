@@ -8,10 +8,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Struct used to represent an instance of clauses_repr
+// Struct used to represent an instance of crepr
 struct clauses {
     // The clauses representation
-    const struct clauses_repr* clauses_repr;
+    const struct crepr* crepr;
 
     // An assignment to the variables in the clause
     // Note: the assignment may not be complete
@@ -49,7 +49,7 @@ struct maxsat_prob_division {
 };
 
 uint8_t num_bit_len(int num);
-struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clauses_repr);
+struct maxsat_prob_division maxsat_prob_division(const struct crepr *crepr);
 void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test);
 bool should_prune(struct clauses *clauses, struct result *result);
 void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
@@ -59,18 +59,18 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id);
 /*Initing/allocing clauses like this so we don't have to care about malloc/free*/
 /*Not insied do{}while(0) because that'd release the array memory*/
 #define ALLOC_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR) \
-int8_t calculated_clauses_filter_ ## CLAUSES [clauses_repr_num_clauses(CLAUSES_REPR)];\
+int8_t calculated_clauses_filter_ ## CLAUSES [crepr_num_clauses(CLAUSES_REPR)];\
 CLAUSES.calculated_clauses_filter = calculated_clauses_filter_ ## CLAUSES
 
 #define INIT_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR, ASSIGNMENT, LAST_ASSIGNED_VAR) \
 do { \
-    CLAUSES.clauses_repr = CLAUSES_REPR; \
+    CLAUSES.crepr = CLAUSES_REPR; \
     CLAUSES.assignment = ASSIGNMENT; \
     CLAUSES.last_assigned_var = LAST_ASSIGNED_VAR; \
-    memset(CLAUSES.calculated_clauses_filter, 0 , clauses_repr_num_clauses(CLAUSES_REPR) * sizeof(int8_t)); \
+    memset(CLAUSES.calculated_clauses_filter, 0 , crepr_num_clauses(CLAUSES_REPR) * sizeof(int8_t)); \
     CLAUSES.num_true_clauses = 0; \
     CLAUSES.num_false_clauses = 0; \
-    CLAUSES.num_unknown_clauses = clauses_repr_num_clauses(CLAUSES_REPR); \
+    CLAUSES.num_unknown_clauses = crepr_num_clauses(CLAUSES_REPR); \
 } while(0)
 
 
@@ -84,14 +84,14 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
-struct maxsat_prob_division maxsat_prob_division(const struct clauses_repr *clauses_repr) {
-    ASSERT_NON_NULL(clauses_repr);
+struct maxsat_prob_division maxsat_prob_division(const struct crepr *crepr) {
+    ASSERT_NON_NULL(crepr);
 
     struct maxsat_prob_division ret;
 
     const uint8_t num_vars_per_thread = 6; /*We would like that each thread have 64 problems*/
     const uint8_t min_num_vars_per_thread = 4; /*We want that each thread has at least 16 problems*/
-    const uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
+    const uint8_t num_vars = crepr_num_vars(crepr);
 
     /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
     ret.num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
@@ -122,10 +122,10 @@ on_error:
     ASSERT_EXIT();
 }
 
-/* Calculate the maxsat result for the clauses_repr.
+/* Calculate the maxsat result for the crepr.
 */
-struct result maxsat(const struct clauses_repr *clauses_repr) {
-    ASSERT_NON_NULL(clauses_repr);
+struct result maxsat(const struct crepr *crepr) {
+    ASSERT_NON_NULL(crepr);
 
     // The maxsat result. This is shared by all threads
     struct result result = new_stack_result();
@@ -139,8 +139,8 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
     {
         struct result local_result = new_stack_result();
         struct clauses clauses;
-        ALLOC_LOCAL_CLAUSES(clauses, clauses_repr);
-        const struct maxsat_prob_division prob_division = maxsat_prob_division(clauses_repr);
+        ALLOC_LOCAL_CLAUSES(clauses, crepr);
+        const struct maxsat_prob_division prob_division = maxsat_prob_division(crepr);
 
 
         /*schedule(dynamic) guarantees that all threads keep running for the same approximate ammount of time, because they keep getting 
@@ -153,7 +153,7 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
             struct assignment assignment = new_stack_assignment_from_num( (uint64_t [2]){0, i<<1});
             result_set_na(&local_result, 0);
 
-            INIT_LOCAL_CLAUSES(clauses, clauses_repr, assignment, prob_division.num_initialized_vars);
+            INIT_LOCAL_CLAUSES(clauses, crepr, assignment, prob_division.num_initialized_vars);
 
 
             // Solve the maxsat for this chunk
@@ -163,7 +163,7 @@ struct result maxsat(const struct clauses_repr *clauses_repr) {
             // Instead we calculate it in the partial_maxsat, but the logic remains the same.
             partial_maxsat(&clauses, &local_result, 1);
 
-            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%"PRIu64 " maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, prob_division.num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
+            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%zu maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, prob_division.num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
 
 #pragma omp critical 
             {
@@ -199,13 +199,13 @@ on_error:
 }
 
 
-/* Calculate the maxsat for the partial assigment to the variables in the clauses_repr.
+/* Calculate the maxsat for the partial assigment to the variables in the crepr.
 */
 void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test) {
     ASSERT_NON_NULL(clauses);
     ASSERT_NON_NULL(result);
 
-    if(var_to_test > clauses_repr_num_vars(clauses->clauses_repr)) {
+    if(var_to_test > crepr_num_vars(clauses->crepr)) {
         // Trivial case were all the variables are assigned
         // Just try to update the maxsat value (or increment the number of occurences if it's the same)
         result_update(result, clauses->num_true_clauses, clauses->assignment);
@@ -272,7 +272,7 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var) {
     ASSERT_NON_NULL(clauses);
 
     // All the clauses who's values may be determined by var
-    struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
+    struct crepr_clauses_of var_clauses = crepr_clauses_of(clauses->crepr, var);
 
     for(uint16_t i = 0; i < var_clauses.len; i++) {
         uint16_t clause_id = var_clauses.first[i];
@@ -308,7 +308,7 @@ on_error:
 void eval_var_clauses(struct clauses *clauses, uint8_t var) {
     ASSERT_NON_NULL(clauses);
 
-    struct clauses_repr_clauses_of var_clauses = clauses_repr_clauses_of(clauses->clauses_repr, var);
+    struct crepr_clauses_of var_clauses = crepr_clauses_of(clauses->crepr, var);
 
     for(size_t i = 0; i < var_clauses.len; i++) {
         eval_clause(clauses, var_clauses.first[i]);
@@ -340,7 +340,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
     if(clauses->calculated_clauses_filter[clause_id] !=  0) return;
 
     // Get the clause we want to evaluate
-    struct clauses_repr_clause clause = clauses_repr_clause(clauses->clauses_repr, clause_id);
+    struct crepr_clause clause = crepr_clause(clauses->crepr, clause_id);
 
     // Assume it's value is false
     enum clause_value ret = FALSE;

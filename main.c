@@ -1,6 +1,6 @@
 #include "assert.h"
 #include "assignment.h"
-#include "clauses_repr.h"
+#include "crepr.h"
 #include "clauses.h"
 #include "result.h"
 #include "debug.h"
@@ -10,7 +10,7 @@
 
 static struct parse_args parse_args(int argc, char **argv);
 static void set_debug_level(struct parse_args args);
-static void print_result(struct clauses_repr *clauses_repr, struct result result);
+static void print_result(struct crepr *crepr, struct result result);
 
 
 struct parse_args {
@@ -29,27 +29,27 @@ int main(int argc, char **argv) {
 
     /*Parse file*/
     double start_time = omp_get_wtime();
-    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(args.filename);
+    struct new_crepr new_crepr_result = new_crepr(args.filename);
     LOG_INFO("parse time: %fs", omp_get_wtime() - start_time);
-    ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
+    ASSERT_MSG(new_crepr_result.success, "Couldn't parse given filename");
+    struct crepr *crepr = new_crepr_result.crepr;
 
     if (args.parse_only) {
-        free_clauses_repr(clauses_repr_from_file.clauses_repr);
+        free_crepr(crepr);
         return 0;
     }
 
 
     /*Calculate maxsat*/
-    struct clauses_repr *clauses_repr = clauses_repr_from_file.clauses_repr;
     start_time = omp_get_wtime();
-    struct result result = maxsat(clauses_repr);
+    struct result result = maxsat(crepr);
     LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
 
-    print_result(clauses_repr, result);
+    print_result(crepr, result);
 
 
     /*Finalization*/
-    free_clauses_repr(clauses_repr_from_file.clauses_repr);
+    free_crepr(crepr);
 
     return 0;
 
@@ -99,10 +99,10 @@ static void set_debug_level(struct parse_args args) {
     }
 }
 
-static void print_result(struct clauses_repr *clauses_repr, struct result result) { 
+static void print_result(struct crepr *crepr, struct result result) { 
     printf("%" PRIu16 " %" PRIu64 "\n", result.maxsat_value, result.na);
 
-    uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
+    uint8_t num_vars = crepr_num_vars(crepr);
 
     for(int i = 1; i <= num_vars; i++) { 
         if(assignment_get_var(result.sample, i)) {
