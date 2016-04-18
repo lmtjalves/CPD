@@ -8,7 +8,98 @@
 #include <omp.h>
 #include <stdlib.h>
 
-void print_result(struct clauses_repr *clauses_repr, struct result result) { 
+static struct parse_args parse_args(int argc, char **argv);
+static void set_debug_level(struct parse_args args);
+static void print_result(struct clauses_repr *clauses_repr, struct result result);
+
+
+struct parse_args {
+    bool debug, info, parse_only, success;
+    const char *filename;
+};
+
+/* Public functions*/
+
+int main(int argc, char **argv) {
+    struct parse_args args = parse_args(argc, argv);
+    ASSERT_MSG(args.success, "");
+
+    set_debug_level(args);
+
+
+    /*Parse file*/
+    double start_time = omp_get_wtime();
+    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(args.filename);
+    LOG_INFO("parse time: %fs", omp_get_wtime() - start_time);
+    ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
+
+    if (args.parse_only) {
+        free_clauses_repr(clauses_repr_from_file.clauses_repr);
+        return 0;
+    }
+
+
+    /*Calculate maxsat*/
+    struct clauses_repr *clauses_repr = clauses_repr_from_file.clauses_repr;
+    start_time = omp_get_wtime();
+    struct result result = maxsat(clauses_repr);
+    LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
+
+    print_result(clauses_repr, result);
+
+
+    /*Finalization*/
+    free_clauses_repr(clauses_repr_from_file.clauses_repr);
+
+    return 0;
+
+on_error:
+    return 1;
+}
+
+
+
+/* Private functions*/
+
+static struct parse_args parse_args(int argc, char **argv) {
+    struct parse_args ret = {.parse_only = false,
+                             .debug = false,
+                             .info = false,
+                             .filename = NULL};
+    
+    ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug|--info] filename");
+    for (int i = 1; i < argc; ++i) {
+        if ((strcmp(argv[i], "--parse-only") == 0) && !ret.parse_only) {
+            ret.parse_only = true;
+        } else if ( (strcmp(argv[i], "--debug") == 0) && !ret.debug && !ret.info) {
+            ret.debug = true;
+        } else if ( (strcmp(argv[i], "--info") == 0) && !ret.debug && !ret.info) {
+            ret.info = true;
+        } else if (ret.filename == NULL) {
+            ret.filename = argv[i];
+        } else {
+            ASSERT_ERROR("Failed to parse arguments. You could have duplicate flags, miss a filename, or mispelled the flags.");
+        }
+    }
+    ASSERT_MSG(ret.filename != NULL, "No filename given.");
+
+    ret.success = true;
+    return ret;
+
+on_error:
+    ret.success = false;
+    return ret;
+}
+
+static void set_debug_level(struct parse_args args) {
+    if(args.debug) {
+        DEBUG_SET_LEVEL(DEBUG_LEVEL_DEBUG);
+    } else if(args.info) {
+        DEBUG_SET_LEVEL(DEBUG_LEVEL_INFO);
+    }
+}
+
+static void print_result(struct clauses_repr *clauses_repr, struct result result) { 
     printf("%" PRIu16 " %" PRIu64 "\n", result.maxsat_value, result.na);
 
     uint8_t num_vars = clauses_repr_num_vars(clauses_repr);
@@ -20,60 +111,4 @@ void print_result(struct clauses_repr *clauses_repr, struct result result) {
             printf("-%d ", i);
         }
     }
-}
-
-int main(int argc, char * argv[]){
-
-
-    bool parse_only = false;
-    bool debug = false;
-    bool info = false;
-    char * filename = NULL;
-    ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug|--info] filename");
-    for (int i = 1; i < argc; ++i) {
-        if ((strcmp(argv[i], "--parse-only") == 0) && !parse_only) {
-            parse_only = true;
-        } else if ( (strcmp(argv[i], "--debug") == 0) && !debug && !info) {
-            debug = true;
-        } else if ( (strcmp(argv[i], "--info") == 0) && !debug && !info) {
-            info = true;
-        } else if (filename == NULL) {
-            filename = argv[i];
-        } else {
-            ASSERT_ERROR("Failed to parse arguments. You could have duplicate flags, miss a filename, or mispelled the flags.");
-        }
-    }
-    ASSERT_MSG(filename != NULL, "No filename given.");
-
-    if(debug) {
-        DEBUG_SET_LEVEL(DEBUG_LEVEL_DEBUG);
-    } else if(info) {
-        DEBUG_SET_LEVEL(DEBUG_LEVEL_INFO);
-    }
-
-    double start_time = omp_get_wtime();
-    struct new_clauses_repr_from_file clauses_repr_from_file = new_clauses_repr_from_file(filename);
-    LOG_INFO("parse time: %fs", omp_get_wtime() - start_time);
-    ASSERT_MSG(clauses_repr_from_file.success, "Couldn't parse given filename");
-
-    if (parse_only) {
-        free_clauses_repr(clauses_repr_from_file.clauses_repr);
-        return 0;
-    }
-
-    //clauses_repr_from_file created successfully
-    struct clauses_repr *clauses_repr = clauses_repr_from_file.clauses_repr;
-
-    start_time = omp_get_wtime();
-    struct result result = maxsat(clauses_repr);
-    LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
-
-    print_result(clauses_repr, result);
-
-    free_clauses_repr(clauses_repr_from_file.clauses_repr);
-
-    return 0;
-
-on_error:
-    return 1;
 }
