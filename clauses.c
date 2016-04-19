@@ -58,19 +58,19 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id);
 
 /*Initing/allocing clauses like this so we don't have to care about malloc/free*/
 /*Not insied do{}while(0) because that'd release the array memory*/
-#define ALLOC_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR) \
-int8_t calculated_clauses_filter_ ## CLAUSES [crepr_num_clauses(CLAUSES_REPR)];\
+#define ALLOC_LOCAL_CLAUSES(CLAUSES, CREPR) \
+int8_t calculated_clauses_filter_ ## CLAUSES [crepr_num_clauses(CREPR)];\
 CLAUSES.calculated_clauses_filter = calculated_clauses_filter_ ## CLAUSES
 
-#define INIT_LOCAL_CLAUSES(CLAUSES, CLAUSES_REPR, ASSIGNMENT, LAST_ASSIGNED_VAR) \
+#define INIT_LOCAL_CLAUSES(CLAUSES, CREPR, ASSIGNMENT, LAST_ASSIGNED_VAR) \
 do { \
-    CLAUSES.crepr = CLAUSES_REPR; \
+    CLAUSES.crepr = CREPR; \
     CLAUSES.assignment = ASSIGNMENT; \
     CLAUSES.last_assigned_var = LAST_ASSIGNED_VAR; \
-    memset(CLAUSES.calculated_clauses_filter, 0 , crepr_num_clauses(CLAUSES_REPR) * sizeof(int8_t)); \
+    memset(CLAUSES.calculated_clauses_filter, 0 , crepr_num_clauses(CREPR) * sizeof(int8_t)); \
     CLAUSES.num_true_clauses = 0; \
     CLAUSES.num_false_clauses = 0; \
-    CLAUSES.num_unknown_clauses = crepr_num_clauses(CLAUSES_REPR); \
+    CLAUSES.num_unknown_clauses = crepr_num_clauses(CREPR); \
 } while(0)
 
 
