@@ -25,7 +25,7 @@
 
 #define ASSERT_EXIT() \
     do { \
-        ASSERT_MSG(false, "Reached point of no return. Exiting."); \
+        LOG_ERROR("Reached point of no return. Exiting.%s", ""); \
         exit(1); \
     } while(0)
 
