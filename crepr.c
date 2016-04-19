@@ -6,6 +6,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
+#include <mpi.h>
 
 #define MAX_VAR 127
 /* == MAX_VAR because vars start at 1*/
@@ -38,10 +39,10 @@ struct crepr {
 /*Structs for internal functions*/
 
 struct var_count {
-    size_t num_vars;
-    size_t *var_uses;
-    size_t total_num_vars;
-    size_t num_clauses;
+    uint8_t num_vars;
+    size_t *var_uses; /*size because we don't send over openmpi*/
+    uint64_t total_num_vars;
+    uint16_t num_clauses;
     bool success;
 };
 
@@ -70,41 +71,75 @@ struct new_crepr new_crepr (const char *file_path) {
     struct new_crepr ret = {.success = true, .crepr = NULL};
     char *file_text = NULL;
     struct var_count var_count_ret = {.var_uses = NULL};
+    int mpi_ret, mpi_rank, mpi_size;
 
+    mpi_ret = MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_rank.");
+    LOG_DEBUG("mpi_rank:%d", mpi_rank);
+
+
+    mpi_ret = MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_size.");
+    LOG_DEBUG("mpi_size:%d", mpi_size);
 
     /*This is done by everyone*/
     ret.crepr = malloc(sizeof(*(ret.crepr)) * 1);
     ASSERT_NON_NULL(ret.crepr);
 
-    /*Done by rank 0*/
-    file_text = file_to_string(file_path);
-    ASSERT_NON_NULL(file_text);
+    if(mpi_rank == 0) {
+        file_text = file_to_string(file_path);
+        ASSERT_NON_NULL(file_text);
 
-    var_count_ret = var_count(file_text); 
-    ASSERT_MSG(var_count_ret.success, "");
+        var_count_ret = var_count(file_text); 
+        ASSERT_MSG(var_count_ret.success, "");
+
+    }
+
+    mpi_ret = MPI_Bcast(&(var_count_ret.num_vars), 1, MPI_UINT8_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast num_vars");
+
+    MPI_Bcast(&(var_count_ret.num_clauses), 1, MPI_UINT16_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast num_clauses");
+
+    MPI_Bcast(&(var_count_ret.total_num_vars), 1, MPI_UINT64_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast total_num_vars");
+
     (ret.crepr)->num_vars = var_count_ret.num_vars;
     (ret.crepr)->num_clauses = var_count_ret.num_clauses;
+    LOG_DEBUG("after bcast num_vars:%" PRIu8 " num_clauses:%" PRIu16 " total_num_vars:%" PRIu64,
+              (ret.crepr)->num_vars,
+              (ret.crepr)->num_clauses,
+              var_count_ret.total_num_vars);
 
-    /*BROADCAST var_count num_vars, total_num_vars and num_clauses*/
-
-    /*This is done by everyone*/
     ASSERT_MSG(allocate_crepr_arrays(ret.crepr, var_count_ret), "");
 
 
-    /*This is done by rank 0*/
-    parse_clauses(file_text, ret.crepr->clauses_index, ret.crepr->clauses);
-    fill_var_clauses_index(var_count_ret,
-                           ret.crepr->clauses_index,
-                           ret.crepr->clauses,
-                           ret.crepr->var_clauses_index,
-                           ret.crepr->var_clauses);
+    if (mpi_rank == 0) {
+        parse_clauses(file_text, ret.crepr->clauses_index, ret.crepr->clauses);
+        fill_var_clauses_index(var_count_ret,
+                               ret.crepr->clauses_index,
+                               ret.crepr->clauses,
+                               ret.crepr->var_clauses_index,
+                               ret.crepr->var_clauses);
+    }
+
+    MPI_Bcast((ret.crepr)->clauses, var_count_ret.total_num_vars, MPI_INT8_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast clauses");
+
+    MPI_Bcast((ret.crepr)->clauses_index, var_count_ret.num_clauses + 1, MPI_UINT32_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast clauses_index");
+
+    MPI_Bcast((ret.crepr)->var_clauses, var_count_ret.total_num_vars, MPI_UINT16_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast clauses");
+
+    MPI_Bcast((ret.crepr)->var_clauses_index, var_count_ret.num_vars + 2, MPI_UINT32_T, 0, MPI_COMM_WORLD);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast clauses_index");
 
 
-    /*BROADCAST arrays*/
-
-    /*rank 0 only*/
-    free(file_text);
-    free(var_count_ret.var_uses);
+    if (mpi_rank == 0) {
+        free(file_text);
+        free(var_count_ret.var_uses);
+    }
 
     return ret;
 
@@ -242,7 +277,7 @@ static struct var_count var_count(const char *file_text) {
                   "Number of variables not within bounds: num_vars '%zu'",
                   parsed_long.value);
     ret.num_vars = parsed_long.value;
-    LOG_DEBUG("num_vars: %zu", ret.num_vars);
+    LOG_DEBUG("read num_vars: %"PRIu8, ret.num_vars);
 
     parsed_long = parse_long(parsed_long.str_next_pos);
     ASSERT_MSG(parsed_long.success, "Failed to parse num clauses");
@@ -251,7 +286,7 @@ static struct var_count var_count(const char *file_text) {
                   "Number of clauses not within bounds: expected_num_clauses '%zu'",
                   parsed_long.value);
     ret.num_clauses = parsed_long.value;
-    LOG_DEBUG("num_clauses: %zu", ret.num_clauses);
+    LOG_DEBUG("read num_clauses: %"PRIu16, ret.num_clauses);
 
     ret.var_uses = calloc(ret.num_vars + 1, sizeof(*(ret.var_uses)));
     ASSERT_NON_NULL(ret.var_uses);
@@ -288,7 +323,7 @@ static struct var_count var_count(const char *file_text) {
 
 
     ASSERT_MSG_VA(ret.num_clauses == seen_num_clauses,
-                  "Counted num clauses differs from read. counted:'%zu' read:'%zu'",
+                  "Counted num clauses differs from read. counted:'%zu' read:'%" PRIu16 "'",
                   seen_num_clauses,
                   ret.num_clauses);
 

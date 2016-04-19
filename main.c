@@ -6,6 +6,7 @@
 #include "debug.h"
 
 #include <omp.h>
+#include <mpi.h>
 #include <stdlib.h>
 
 static struct parse_args parse_args(int argc, char **argv);
@@ -21,6 +22,11 @@ struct parse_args {
 /* Public functions*/
 
 int main(int argc, char **argv) {
+    int mpi_ret;
+
+    mpi_ret = MPI_Init(&argc, &argv);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to init OpenMPI.");
+
     struct parse_args args = parse_args(argc, argv);
     ASSERT_MSG(args.success, "");
 
@@ -50,6 +56,8 @@ int main(int argc, char **argv) {
 
     /*Finalization*/
     free_crepr(crepr);
+
+    MPI_Finalize();
 
     return 0;
 
