@@ -44,10 +44,15 @@ do { \
 } while(0)
 
 /*private functions*/
+void do_maxsat(const struct crepr *crepr, struct result *result);
 uint8_t num_bit_len(int num);
 void maxsat_prob_division(const struct crepr *crepr,
                           size_t *num_problems,
                           uint8_t *num_initialized_vars);
+void update_global_result(struct result *result, struct result *local_result);
+void count_thread_time(double start_time,
+                        double *first_finish_time,
+                        double *last_finish_time);
 void partial_maxsat(struct clauses *clauses, struct result *result);
 void do_partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var);
 bool should_prune(struct clauses *clauses, struct result *result);
@@ -60,13 +65,8 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id);
 
 /* Public functions */
 
-/* Calculate the maxsat result for the crepr. 
- * schedule(dynamic) guarantees that all threads keep running for the
- * same approximate ammount of time, because they keep getting 
- * new problems if they finish early(vs static schedule).
- *nowait is used to measure the time difference between first and last
- * thread finishing. Without nowait there'd be a barrier before 
- * measuring the time*/ 
+/*This is a wrapper that counts the time the threads take and
+ * allocates in the stack the global result.*/
 struct result maxsat(const struct crepr *crepr) {
     ASSERT_NON_NULL(crepr);
 
@@ -77,67 +77,65 @@ struct result maxsat(const struct crepr *crepr) {
     double last_finish_time = 0;
 
     /*result is shared, other variables are declared inside block -> private*/
-#pragma omp parallel 
+    #pragma omp parallel 
     {
-        struct result local_result = new_stack_result();
-        struct clauses clauses;
-        ALLOC_LOCAL_CLAUSES(clauses, crepr);
+        do_maxsat(crepr, &result);
 
-        size_t num_problems;
-        uint8_t num_initialized_vars;
-        maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);
-
-#pragma omp for schedule(dynamic) nowait
-        for(uint64_t i = 0; i < num_problems; i++) {
-            /*the least num_initialized_vars least significant bits of i
-             * have the assignments for the num_initialized_vars least sig bits*/
-            struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, i<<1});
-            result_set_na(&local_result, 0);
-
-            INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
-
-            /*Solve the partial problem starting with num_initialized_vars
-             * assigned*/
-            partial_maxsat(&clauses, &local_result);
-
-            LOG_DEBUG("thread: %d assignment:%"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
-                      omp_get_thread_num(),
-                      i,
-                      num_problems,
-                      result_get_maxsat_value(&local_result),
-                      result_get_na(&local_result));
-
-#pragma omp critical 
-            {
-                if (result_get_maxsat_value(&result) == result_get_maxsat_value(&local_result)) {
-                    result_set_na(&result, result_get_na(&result) + result_get_na(&local_result));
-                } else if (result_get_maxsat_value(&result) < result_get_maxsat_value(&local_result)) {
-                    result_set_maxsat_value(&result, result_get_maxsat_value(&local_result));
-                    result_set_assignment_sample(&result, result_get_assignment_sample(&local_result));
-                    result_set_na(&result, result_get_na(&local_result));
-                } else {
-                    result_set_maxsat_value(&local_result, result_get_maxsat_value(&result));
-                }
-            }
-        }
-
-        const double thread_finish_time = omp_get_wtime() - start_time;
-#pragma omp critical
-        {
-            if (first_finish_time < 0) {
-                first_finish_time = thread_finish_time;
-            }
-            last_finish_time = thread_finish_time;
-        }
-        LOG_DEBUG("thread: %d finished after %f", omp_get_thread_num(), thread_finish_time);
+        #pragma omp critical
+        count_thread_time(start_time, &first_finish_time, &last_finish_time);
     }
 
-    LOG_DEBUG("first_finish_time:%f last_finish_time:%f delta:%f", first_finish_time, last_finish_time, last_finish_time - first_finish_time);
+    LOG_DEBUG("first_finish_time:%f last_finish_time:%f delta:%f",
+              first_finish_time,
+              last_finish_time,
+              last_finish_time - first_finish_time);
 
     return result;
 
 on_error:
     ASSERT_EXIT();
+}
+
+
+/* Calculate the maxsat result for the crepr. 
+ * schedule(dynamic) guarantees that all threads keep running for the
+ * same approximate ammount of time, because they keep getting 
+ * new problems if they finish early(vs static schedule).
+ *nowait is used to measure the time difference between first and last
+ * thread finishing. Without nowait there'd be a barrier before 
+ * measuring the time*/ 
+void do_maxsat(const struct crepr *crepr, struct result *result) {
+    struct result local_result = new_stack_result();
+    struct clauses clauses;
+    ALLOC_LOCAL_CLAUSES(clauses, crepr);
+
+    size_t num_problems;
+    uint8_t num_initialized_vars;
+    maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);
+
+    #pragma omp for schedule(dynamic) nowait
+    for(uint64_t i = 0; i < num_problems; i++) {
+        /*the least num_initialized_vars least significant bits of i
+         * have the assignments for the num_initialized_vars least sig bits*/
+        struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, i<<1});
+        result_set_na(&local_result, 0);
+
+        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
+
+        /*Solve the partial problem starting with num_initialized_vars
+         * assigned*/
+        partial_maxsat(&clauses, &local_result);
+
+        LOG_DEBUG("thread: %d assignment:%"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
+                omp_get_thread_num(),
+                i,
+                num_problems,
+                result_get_maxsat_value(&local_result),
+                result_get_na(&local_result));
+
+        #pragma omp critical 
+        update_global_result(result, &local_result);
+    }
 }
 
 
@@ -177,13 +175,11 @@ void maxsat_prob_division(const struct crepr *crepr,
      *  there is only 1 thread.*/
     *num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
 
-#pragma omp master
-    {
-        LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 ,
-                  omp_get_num_threads(),
-                  *num_initialized_vars,
-                  num_vars);
-    } 
+    #pragma omp master
+    LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 ,
+            omp_get_num_threads(),
+            *num_initialized_vars,
+            num_vars);
 
     if ( num_vars - *num_initialized_vars < min_num_vars_per_thread) {
         /*too few vars in problem*/
@@ -194,14 +190,42 @@ void maxsat_prob_division(const struct crepr *crepr,
             /*problem really small*/
             *num_initialized_vars = 1;
         }
-#pragma omp master
-        {
-            LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, *num_initialized_vars);
-        }
+        #pragma omp master
+        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, *num_initialized_vars);
     }
 
     *num_problems= 1 << (*num_initialized_vars);
     return;
+}
+
+
+/*Update result if local_result has better maxsat,
+ * adds the number of assignments in local_result to result, if maxsat is equal,
+ * changes the maxsat of local_result to that of result, otherwise*/
+void update_global_result(struct result *result, struct result *local_result) {
+    if (result_get_maxsat_value(result) == result_get_maxsat_value(local_result)) {
+        result_set_na(result, result_get_na(result) + result_get_na(local_result));
+    } else if (result_get_maxsat_value(result) < result_get_maxsat_value(local_result)) {
+        result_set_maxsat_value(result, result_get_maxsat_value(local_result));
+        result_set_assignment_sample(result, result_get_assignment_sample(local_result));
+        result_set_na(result, result_get_na(local_result));
+    } else {
+        result_set_maxsat_value(local_result, result_get_maxsat_value(result));
+    }
+}
+
+void count_thread_time(double start_time,
+                       double *first_finish_time,
+                       double *last_finish_time) {
+    const double thread_finish_time = omp_get_wtime() - start_time;
+    if (*first_finish_time < 0) {
+        *first_finish_time = thread_finish_time;
+    }
+
+    *last_finish_time = thread_finish_time;
+    LOG_DEBUG("thread: %d finished after %f",
+              omp_get_thread_num(),
+              thread_finish_time);
 }
 
 
