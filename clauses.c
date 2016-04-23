@@ -43,13 +43,10 @@ struct clauses {
     uint16_t num_unknown_clauses;
 };
 
-struct maxsat_prob_division {
-    size_t num_problems;
-    uint8_t num_initialized_vars;
-};
-
 uint8_t num_bit_len(int num);
-struct maxsat_prob_division maxsat_prob_division(const struct crepr *crepr);
+void maxsat_prob_division(const struct crepr *crepr,
+                          size_t *num_problems,
+                          uint8_t *num_initialized_vars);
 void partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var_to_test);
 bool should_prune(struct clauses *clauses, struct result *result);
 void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
@@ -84,42 +81,48 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
-struct maxsat_prob_division maxsat_prob_division(const struct crepr *crepr) {
-    ASSERT_NON_NULL(crepr);
-
-    struct maxsat_prob_division ret;
-
-    const uint8_t num_vars_per_thread = 6; /*We would like that each thread have 64 problems*/
-    const uint8_t min_num_vars_per_thread = 4; /*We want that each thread has at least 16 problems*/
+void maxsat_prob_division(const struct crepr *crepr,
+                          size_t *num_problems,
+                          uint8_t *num_initialized_vars) {
+    /*num_problems is the value of the number of problems,
+     * num_initialized variables is the number of bits in num_problems
+     * that's why we use we add values to num_initiliazed variables, because
+     * when we use << to assign num_problems, all the + are turned in * */
+    /*We would like that each thread have 64(log2(64)=6) problems.*/
+    const uint8_t num_vars_per_thread = 6; 
+    /*We want that each thread has at least 16 problems*/
+    const uint8_t min_num_vars_per_thread = 4; 
     const uint8_t num_vars = crepr_num_vars(crepr);
 
-    /* 6 so we approximately 2^6 problems per thread. num_bit_len() - 1 just multiplies by the binary length of the number of threads when we << below*/
-    ret.num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
+    /* num_bit_len() - 1 because we don't want num_threads to contribute, when
+     *  there is only 1 thread.*/
+    *num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
 
 #pragma omp master
     {
-        LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 , omp_get_num_threads(), ret.num_initialized_vars, num_vars);
+        LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 ,
+                  omp_get_num_threads(),
+                  *num_initialized_vars,
+                  num_vars);
     } 
 
-    if ( num_vars - ret.num_initialized_vars < min_num_vars_per_thread) { /*too few vars in problem*/
-        if (num_vars >= min_num_vars_per_thread) { /* problems size too small*/
-            ret.num_initialized_vars = num_vars - min_num_vars_per_thread;
-        } else { /*problem really small*/
-            ret.num_initialized_vars = 1;
+    if ( num_vars - *num_initialized_vars < min_num_vars_per_thread) {
+        /*too few vars in problem*/
+        if (num_vars >= min_num_vars_per_thread) {
+            /* problems size too small*/
+            *num_initialized_vars = num_vars - min_num_vars_per_thread;
+        } else {
+            /*problem really small*/
+            *num_initialized_vars = 1;
         }
 #pragma omp master
         {
-            LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, ret.num_initialized_vars);
+            LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, *num_initialized_vars);
         }
     }
 
-    // For each variable it can have 2 values, therefore with num_initialized_vars we can have 2^num_initialized_vars possible combinations.
-    ret.num_problems= 1 << (ret.num_initialized_vars);
-
-    return ret;
-
-on_error:
-    ASSERT_EXIT();
+    *num_problems= 1 << (*num_initialized_vars);
+    return;
 }
 
 /* Calculate the maxsat result for the crepr.
@@ -140,7 +143,9 @@ struct result maxsat(const struct crepr *crepr) {
         struct result local_result = new_stack_result();
         struct clauses clauses;
         ALLOC_LOCAL_CLAUSES(clauses, crepr);
-        const struct maxsat_prob_division prob_division = maxsat_prob_division(crepr);
+        size_t num_problems;
+        uint8_t num_initialized_vars;
+        maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);
 
 
         /*schedule(dynamic) guarantees that all threads keep running for the same approximate ammount of time, because they keep getting 
@@ -148,12 +153,12 @@ struct result maxsat(const struct crepr *crepr) {
          *nowait is useful so the log_debugs after the loop have meaning, otherwise there'd be and implicit barrier after the loop, and the
          * debug information would say that all the threads finished at the same time*/
 #pragma omp for schedule(dynamic) nowait
-        for(uint64_t i = 0; i < prob_division.num_problems; i++) {
+        for(uint64_t i = 0; i < num_problems; i++) {
             // Note that i in binary are the initial assignments for the fixed variables.
             struct assignment assignment = new_stack_assignment_from_num( (uint64_t [2]){0, i<<1});
             result_set_na(&local_result, 0);
 
-            INIT_LOCAL_CLAUSES(clauses, crepr, assignment, prob_division.num_initialized_vars);
+            INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
 
 
             // Solve the maxsat for this chunk
@@ -163,7 +168,7 @@ struct result maxsat(const struct crepr *crepr) {
             // Instead we calculate it in the partial_maxsat, but the logic remains the same.
             partial_maxsat(&clauses, &local_result, 1);
 
-            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%zu maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, prob_division.num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
+            LOG_DEBUG("thread: %d assignment:%"PRIu64 "/%zu maxsat:%" PRIu16 " na:%"PRIu64, omp_get_thread_num(), i, num_problems, result_get_maxsat_value(&local_result), result_get_na(&local_result));
 
 #pragma omp critical 
             {
