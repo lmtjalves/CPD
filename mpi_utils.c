@@ -1,29 +1,39 @@
 #include "mpi_utils.h"
+#include "assert.h"
 
-bool is_master() {
-  return !get_rank();
+#include <mpi.h>
+
+bool is_mpi_master() {
+  return mpi_rank() == 0;
 }
 
-bool is_slave() {
-  return get_rank();
+bool is_mpi_slave() {
+  return mpi_rank() != 0;
 }
 
-int get_rank() {
-  int mpi_rank;
-  int mpi_ret = MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+size_t mpi_rank() {
+    int mpi_ret, mpi_rank;
 
-  ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_rank.");
-  LOG_DEBUG("mpi_rank:%d", mpi_rank);
+    mpi_ret = MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS && mpi_rank >= 0, "Failed to get mpi_rank.");
 
-  return mpi_rank;
+    return mpi_rank;
+
+on_error:
+    ASSERT_EXIT();
 }
 
-int get_size() {
-  int mpi_size;
-  int mpi_ret = MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+size_t mpi_size() {
+    int mpi_ret, mpi_size;
+    mpi_ret = MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS && mpi_size > 0, "Failed to get mpi_size.");
 
-  ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_size.");
-  LOG_DEBUG("mpi_size:%d", mpi_size);
+    return mpi_size;
 
-  return mpi_size;
+on_error:
+    ASSERT_EXIT();
+}
+
+size_t mpi_master() {
+    return 0;
 }

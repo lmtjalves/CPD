@@ -1,17 +1,15 @@
-#ifndef MPI_UTILS__
-#define MPI_UTILS__
+#ifndef MPI_UTILS_H
+#define MPI_UTILS_H
 
-#include "assert.h"
-#include "debug.h"
-
-#include <mpi.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 // Utilitary functions to make the code more readable.
-bool is_master();
-bool is_slave();
+bool is_mpi_master();
+bool is_mpi_slave();
 
-// Just some utilitary functions that wrap MPI functions with asserts.
-int get_rank();
-int get_size();
+size_t mpi_rank();
+size_t mpi_size();
+size_t mpi_master();
 
 #endif
