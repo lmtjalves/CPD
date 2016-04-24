@@ -34,7 +34,12 @@ do { \
 
 #define DEBUG_REAL_LOG_GENERIC(LOG_TYPE, MESSAGE, ...) \
     do {\
-        fprintf(stderr, LOG_TYPE " (%s:%d: errno: %s) " MESSAGE "\n", __FILE__, __LINE__, DEBUG_CLEAN_ERRNO(), __VA_ARGS__);\
+        if (errno == 0) { \
+            fprintf(stderr, LOG_TYPE " (%s:%5d) " MESSAGE "\n", __FILE__, __LINE__,  __VA_ARGS__);\
+        } else { \
+            fprintf(stderr, LOG_TYPE " (%s:%5d: errno: %s) " MESSAGE "\n", __FILE__, __LINE__, DEBUG_CLEAN_ERRNO(), __VA_ARGS__);\
+            errno = 0; \
+        } \
     } while(0)
 
 
