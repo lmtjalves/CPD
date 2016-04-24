@@ -13,32 +13,32 @@ UT_TEST(result_zero_initialized) {
     return 0;
 }
 
-UT_TEST(result_set_maxsat_value_) {
+UT_TEST(result_set_maxsat) {
     struct result result = new_stack_result();
 
-    result_set_maxsat_value(&result, 0);
+    result_set_maxsat(&result, 0);
     UT_ASSERT_TRUE(result_is_zero(result));
 
-    result_set_maxsat_value(&result, 1);
+    result_set_maxsat(&result, 1);
     UT_ASSERT_TRUE(result.maxsat_value == 1);
 
     return 0;
 }
 
 
-UT_TEST(result_set_maxsat_value_get_maxsat_value) {
+UT_TEST(result_set_maxsat_result_maxsat) {
     struct result result = new_stack_result();
 
-    result_set_maxsat_value(&result, 0);
-    UT_ASSERT_FALSE(result_get_maxsat_value(&result));
+    result_set_maxsat(&result, 0);
+    UT_ASSERT_FALSE(result_maxsat(&result));
 
-    result_set_maxsat_value(&result, 10);
-    UT_ASSERT_TRUE(result_get_maxsat_value(&result) == 10);
+    result_set_maxsat(&result, 10);
+    UT_ASSERT_TRUE(result_maxsat(&result) == 10);
 
     return 0;
 }
 
-UT_TEST(result_set_na_) {
+UT_TEST(result_set_na) {
     struct result result = new_stack_result();
 
     result_set_na(&result, 0);
@@ -51,19 +51,19 @@ UT_TEST(result_set_na_) {
 }
 
 
-UT_TEST(result_set_na_get_na) {
+UT_TEST(result_set_na_result_na) {
     struct result result = new_stack_result();
 
     result_set_na(&result, 0);
-    UT_ASSERT_FALSE(result_get_na(&result));
+    UT_ASSERT_FALSE(result_na(&result));
 
     result_set_na(&result, 10);
-    UT_ASSERT_TRUE(result_get_na(&result) == 10);
+    UT_ASSERT_TRUE(result_na(&result) == 10);
 
     return 0;
 }
 
-UT_TEST(result_set_assignment_sample_) {
+UT_TEST(result_set_assignment) {
     struct result result = new_stack_result();
     struct assignment assignment = new_stack_assignment();
 
@@ -76,14 +76,14 @@ UT_TEST(result_set_assignment_sample_) {
         }
     }
 
-    result_set_assignment_sample(&result, assignment);
+    result_set_assignment(&result, assignment);
     UT_ASSERT_FALSE(memcmp( &(result.sample), &assignment, sizeof(struct assignment)));
 
     return 0;
 }
 
 
-UT_TEST(result_set_assignment_sample_get_assignment_sample) {
+UT_TEST(result_set_assignment_result_assignment) {
     struct result result = new_stack_result();
     struct assignment assignment = new_stack_assignment();
 
@@ -96,8 +96,8 @@ UT_TEST(result_set_assignment_sample_get_assignment_sample) {
         }
     }
 
-    result_set_assignment_sample(&result, assignment);
-    struct assignment sample = result_get_assignment_sample(&result);
+    result_set_assignment(&result, assignment);
+    struct assignment sample = result_assignment(&result);
 
     UT_ASSERT_FALSE(memcmp(&sample, &assignment, sizeof(struct assignment)));
 
@@ -140,7 +140,7 @@ UT_TEST(result_update_case2) {
     struct assignment assignment = new_stack_assignment();
     uint8_t new_maxsat_value_2 = 5;
 
-    result_set_maxsat_value(&result, 6);
+    result_set_maxsat(&result, 6);
     result_update(&result, new_maxsat_value_2, assignment);
 
     UT_ASSERT_TRUE(result.na == 0 && result.maxsat_value == 6);
