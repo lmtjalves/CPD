@@ -219,40 +219,47 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
     LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
 
     double total_req_time = 0, total_computation_time = 0, total_thread_wait_time = 0;
+    double start_computation_time;
 
-    /*#pragma omp parallel*/
+    /*prob must be shared so the other threads can exit if it is UINT64_MAX.
+     * it's only written by master while the others are waiting
+     *the same for num_initialized_vars*/
+    uint64_t prob, num_initialized_vars; 
+    #pragma omp parallel
     while (true) {
         const double start_time = omp_get_wtime();
         double first_finish_time = -1, last_finish_time = 0;
-        uint64_t prob, num_initialized_vars;
 
-        /*#pragma omp master
-        {*/
-        double req_time = omp_get_wtime();
-        slave_request_problem(&slave_result, &prob, &num_initialized_vars);
-        total_req_time += omp_get_wtime() - req_time;
+        #pragma omp master
+        {
+            double req_time = omp_get_wtime();
+            slave_request_problem(&slave_result, &prob, &num_initialized_vars);
+            total_req_time += omp_get_wtime() - req_time;
 
-        /*We only want to keep track of a single problem na, so we clean it after
-         * sending it.*/
-        result_set_na(&slave_result, 0);
-        /*}*/
+            /*We only want to keep track of a single problem na,
+             * so we clean it after sending it.*/
+            result_set_na(&slave_result, 0);
 
-        /*#pragma omp barrier*/
+            start_computation_time = omp_get_wtime();
+        }
+
+        #pragma omp barrier
 
         if(prob == UINT64_MAX) {
             break;
         }
 
-        double start_computation_time = omp_get_wtime();
-        /*#pragma omp master
-          {*/
         do_maxsat(crepr, &slave_result, num_initialized_vars, prob);
 
-        /*#pragma omp critical*/
+        #pragma omp critical
         count_thread_time(start_time, &first_finish_time, &last_finish_time);
-        /*}*/
-        total_computation_time += omp_get_wtime() - start_computation_time;
-        total_thread_wait_time += (last_finish_time - first_finish_time);
+
+
+        #pragma omp master
+        {
+            total_computation_time += omp_get_wtime() - start_computation_time;
+            total_thread_wait_time += (last_finish_time - first_finish_time);
+        }
     }
 
     LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs",
@@ -394,30 +401,35 @@ void master_sync_maxsat(struct result *result) {
  * measuring the time*/ 
 void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_initialized_vars, uint64_t prob) {
     struct result thread_result = new_stack_result();
-
     #pragma omp critical
     result_set_maxsat(&thread_result, result_maxsat(result));
 
-    struct clauses clauses;
-    ALLOC_LOCAL_CLAUSES(clauses, crepr);
+    size_t subprob;
+    #pragma omp for schedule(dynamic) nowait
+    for(subprob = 0; subprob < 8; ++subprob) {
+        struct clauses clauses;
+        ALLOC_LOCAL_CLAUSES(clauses, crepr);
 
-    /*the least num_initialized_vars least significant bits of prob
-     * have the assignments for the num_initialized_vars least sig bits*/
-    struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, prob<<1});
+        /*the least num_initialized_vars least significant bits of prob
+         * have the assignments for the num_initialized_vars least sig bits*/
+        struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, (prob << 1) + (subprob << (num_initialized_vars + 1))});
 
-    INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
+        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars + 3);
 
-    /*Solve the partial problem starting with num_initialized_vars
-     * assigned*/
-    partial_maxsat(&clauses, &thread_result);
+        /*Solve the partial problem starting with num_initialized_vars
+         * assigned*/
+        partial_maxsat(&clauses, &thread_result);
 
-    LOG_DEBUG("mpi:%zu thread:%d assignment:%"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
-            mpi_rank(),
-            omp_get_thread_num(),
-            prob,
-            (((size_t)1 << num_initialized_vars)  - 1),
-            result_maxsat(&thread_result),
-            result_na(&thread_result));
+        LOG_DEBUG("thread:%d assignment:%zu/7 of %"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
+                omp_get_thread_num(),
+                subprob,
+                prob,
+                (((size_t)1 << num_initialized_vars)  - 1),
+                result_maxsat(&thread_result),
+                result_na(&thread_result));
+
+    }
+
 
     #pragma omp critical 
     sync_result(result, &thread_result);

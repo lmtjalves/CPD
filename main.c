@@ -22,10 +22,11 @@ struct parse_args {
 /* Public functions*/
 
 int main(int argc, char **argv) {
-    int mpi_ret;
+    int mpi_ret, mpi_provided;
 
-    mpi_ret = MPI_Init(&argc, &argv);
-    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to init OpenMPI.");
+
+    mpi_ret = MPI_Init_thread(&argc, &argv, MPI_THREAD_FUNNELED, &mpi_provided);
+    ASSERT_MSG(mpi_ret == MPI_SUCCESS && mpi_provided == MPI_THREAD_FUNNELED, "Failed to init OpenMPI.");
 
     struct parse_args args = parse_args(argc, argv);
     ASSERT_MSG(args.success, "");
