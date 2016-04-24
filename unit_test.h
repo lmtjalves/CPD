@@ -283,15 +283,15 @@ struct UNIT_TEST_test {
 /*Forward declare next get_test function*/\
 struct UNIT_TEST_test UNIT_TEST_CAT(UNIT_TEST_get_test, UNIT_TEST_INC(NUM)) (void);\
 /*Forward declare user test function so we can return it in the get_test function*/\
-int FUNCTION (void);\
+int UNIT_TEST_CAT(test_, FUNCTION) (void);\
 /*Define get_test function that returns the test function to run and points to the next get_test function*/\
 struct UNIT_TEST_test UNIT_TEST_CAT(UNIT_TEST_get_test, NUM) (void) { \
-    struct UNIT_TEST_test t = { #FUNCTION, FUNCTION, UNIT_TEST_CAT(UNIT_TEST_get_test, UNIT_TEST_INC(NUM)) }; \
+    struct UNIT_TEST_test t = { "test_" #FUNCTION, UNIT_TEST_CAT(test_, FUNCTION), UNIT_TEST_CAT(UNIT_TEST_get_test, UNIT_TEST_INC(NUM)) }; \
     UNIT_TEST_ASSERT(NUM < MAX_NUM_TESTS); \
     return t; \
 } \
 /*Test function definition. We just give the function declaration part.*/\
-int FUNCTION (void) 
+int UNIT_TEST_CAT(test_, FUNCTION) (void) 
 
 
 struct UNIT_TEST_test UNIT_TEST_get_test0(void);
