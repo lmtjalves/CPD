@@ -119,7 +119,19 @@ on_error:
 }
 
 
-/*Private functions*/
+/*
+ *
+ * Private functions
+ *
+ */
+
+
+
+/*
+ *
+ * ways to solve maxsat
+ *
+ */
 
 /*Solves the maxsat withotu using mpi*/
 void maxsat_single(const struct crepr *crepr, struct result *result) {
@@ -247,7 +259,15 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
 }
 
 
-/*master/slave communication*/
+/*
+ * master/slave communication
+ */
+
+/*
+ *
+ * problem step
+ *
+ */
 void maxsat_problem_send(uint64_t *msg, int dest) {
     int mpi_ret = MPI_Send(msg,
                        PROBLEM_REQUEST_LEN,
@@ -325,7 +345,13 @@ void master_give_problem(struct result *result,
     maxsat_problem_send(msg_buf, requester);
 }
 
-/*sync maxsat step*/
+
+
+/*
+ *
+ * sync maxsat step
+ *
+ */
 void slave_sync_maxsat(struct result *result) {
     uint64_t msg_buf[MAXSAT_SYNC_LEN];
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
@@ -386,6 +412,14 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
 }
 
 
+
+
+/*
+ *
+ * problem splitting
+ *
+ */
+
 /*counts the number of bits in the representation of num.
  * e.g. num_bit_len(3) = 2
  *      num_bit_len(15) = 4*/
@@ -443,6 +477,13 @@ void maxsat_prob_division(const struct crepr *crepr,
 }
 
 
+
+/*
+ *
+ * ancillary
+ *
+ */
+
 /*If sync_result is better than result, result is set to sync_result,
  * if they have the same maxsat, sync_result na is added to result
  * if sync_result is worse than, sync_result's maxsat is to to result*/
@@ -471,6 +512,11 @@ void count_thread_time(double start_time,
 
 
 
+/*
+ *
+ * maxsat solving functions
+ *
+ */
 
 /* Calculate the maxsat for the partial assigment to the variables in the crepr.*/
 void partial_maxsat(struct clauses *clauses, struct result *result) {
