@@ -2,6 +2,7 @@
 #include "assert.h"
 #include "parse_long.h"
 #include "debug.h"
+#include "mpi_utils.h"
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -71,22 +72,13 @@ struct new_crepr new_crepr (const char *file_path) {
     struct new_crepr ret = {.success = true, .crepr = NULL};
     char *file_text = NULL;
     struct var_count var_count_ret = {.var_uses = NULL};
-    int mpi_ret, mpi_rank, mpi_size;
-
-    mpi_ret = MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
-    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_rank.");
-    LOG_DEBUG("mpi_rank:%d", mpi_rank);
-
-
-    mpi_ret = MPI_Comm_size(MPI_COMM_WORLD, &mpi_size);
-    ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to get mpi_size.");
-    LOG_DEBUG("mpi_size:%d", mpi_size);
+    int mpi_ret;
 
     /*This is done by everyone*/
     ret.crepr = malloc(sizeof(*(ret.crepr)) * 1);
     ASSERT_NON_NULL(ret.crepr);
 
-    if(mpi_rank == 0) {
+    if(is_mpi_master()) {
         file_text = file_to_string(file_path);
         ASSERT_NON_NULL(file_text);
 
@@ -114,7 +106,7 @@ struct new_crepr new_crepr (const char *file_path) {
     ASSERT_MSG(allocate_crepr_arrays(ret.crepr, var_count_ret), "");
 
 
-    if (mpi_rank == 0) {
+    if (is_mpi_master()) {
         parse_clauses(file_text, ret.crepr->clauses_index, ret.crepr->clauses);
         fill_var_clauses_index(var_count_ret,
                                ret.crepr->clauses_index,
@@ -136,7 +128,7 @@ struct new_crepr new_crepr (const char *file_path) {
     ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed to broadcast clauses_index");
 
 
-    if (mpi_rank == 0) {
+    if (is_mpi_master()) {
         free(file_text);
         free(var_count_ret.var_uses);
     }
