@@ -67,7 +67,7 @@ void master_give_problem(struct result *result,
                          uint64_t *best_maxsat_mpi_rank);
 /*sync maxsat step*/
 void slave_sync_maxsat(struct result *result);
-void master_sync_maxsat(struct result *result, uint64_t best_maxsat_mpi_rank);
+void master_sync_maxsat(struct result *result);
 
 
 /*problem splitting*/
@@ -91,10 +91,7 @@ void rollback_assignment_to_var(struct clauses *clauses, uint8_t var);
 void eval_var_clauses(struct clauses *clauses, uint8_t var);
 void eval_clause(struct clauses *clauses, uint16_t clause_id);
 
-const int PROBLEM_REQUEST_LEN = 3; /* |rank|maxsat|na| or |prob|vars|maxsat|*/
-const int PROBLEM_REQUEST_TAG = 1000;
-const int MAXSAT_SYNC_LEN = 3; /* |maxsat|na|best_rank|*/
-const int MAXSAT_SYNC_TAG = 2000;
+
 
 
 
@@ -140,18 +137,19 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
 
 /* The protocol is the following:
  * 
- * A slave sends a request to master, in the format: |maxsat|na|mpi_rank|
+ * A slave sends a request to master, in the format: |mpi_rank|maxsat|na|a[0]|a[1]|
+ *  mpi_rank is it's mpi_rank, so the master know who to send the problem to.
  *  maxsat is it's current best maxsat,
  *  na is the number of assignments it for that maxsat it got in the last problem.
- *  mpi_rank is it's mpi_rank, so the master know who to send the problem to.
+ *  a is a maxsat assignment
  *
- * The master answers a request in the format: |prob|num_initialized_vars|maxsat|
+ * The master answers a request in the format: |prob|num_initialized_vars|maxsat|0|0|
  *  prob is the problem the slave must solve
  *  num_initialized_vars is self explanatory
  *  maxsat is the value of the best maxsat it has seen until now.
  *
- * Master uses sync_result to sync the the maxsat and na given by the slave
- *  with it's result.
+ * Master uses sync_result to sync the the maxsat, na and assignment given by 
+ *  the slave with it's result.
  * Slave registers the maxsat if it's better than the one it has.
  * The master takes note of who was the last slave to improve the maxsat.
  *
@@ -162,16 +160,22 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  * When all slaves are signaled, the master goes to the maxsat synchronization
  *  step.
  *
- * When on the maxsat sync step, the master broadcasts: |maxsat|na|mpi_rank|
+ * When on the maxsat sync step, the master broadcasts: |maxsat|na|a[0]|a[1]|
  *  maxsat is the best maxsat obtained
  *  na is the total number of assignments for that maxsat
- *  mpi_rank is the rank of the slave that improved maxsat to that value
+ *  a is a maxsat assignment
  *
- * Finally the slave with mpi_rank of the last broadcast send: |assignment|
- *  assignment an assignment that has maxsat true clasuses.
- * 
  * Now everyone has a valid result.
  * */
+
+/* slave:  |rank|maxsat|na|assignment[0]|assignment[1]|
+ * master: |prob|vars|maxsat|0|0| the 0s are so that we use the same len*/
+const int PROBLEM_REQUEST_LEN = 5;
+const int PROBLEM_REQUEST_TAG = 1000;
+
+/* no tag needed since it's a broadcast
+ * |maxsat|na|assignment[0]|assignment[1]*/
+const int MAXSAT_SYNC_LEN = 4; 
 
 void maxsat_master(const struct crepr *crepr, struct result *result) {
     uint64_t best_maxsat_mpi_rank = UINT64_MAX;
@@ -199,7 +203,7 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
 
     ASSERT_MSG(best_maxsat_mpi_rank != UINT64_MAX,
                "Didn't register mpi rank with best maxsat.");
-    master_sync_maxsat(result, best_maxsat_mpi_rank);
+    master_sync_maxsat(result);
 
     LOG_DEBUG("mpi:%zu took %fs to sync.", mpi_rank(), omp_get_wtime() - sync_start_time);
 
@@ -208,6 +212,8 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
 on_error:
     ASSERT_EXIT();
 }
+
+
 void maxsat_slave(const struct crepr *crepr, struct result *result) {
     struct result slave_result = new_stack_result();
     LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
@@ -301,9 +307,11 @@ on_error:
 void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_initialized_vars) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
-    msg_buf[0] = result_maxsat(result);
-    msg_buf[1] = result_na(result);
-    msg_buf[2] = mpi_rank();
+    msg_buf[0] = mpi_rank();
+    msg_buf[1] = result_maxsat(result);
+    msg_buf[2] = result_na(result);
+    msg_buf[3] = result_assignment(result).vars[0]; /*FIXME?*/
+    msg_buf[4] = result_assignment(result).vars[1]; /*FIXME?*/;
 
     maxsat_problem_send(msg_buf, mpi_master());
     maxsat_problem_recv(msg_buf, mpi_master());
@@ -325,9 +333,10 @@ void master_give_problem(struct result *result,
 
     maxsat_problem_recv(msg_buf, MPI_ANY_SOURCE);
 
-    uint64_t slave_maxsat = msg_buf[0];
-    uint64_t slave_na = msg_buf[1];
-    uint64_t requester = msg_buf[2];
+    uint64_t requester = msg_buf[0];
+    uint64_t slave_maxsat = msg_buf[1];
+    uint64_t slave_na = msg_buf[2];
+    struct assignment slave_assignment = new_stack_assignment_from_num(msg_buf + 3);
 
     if(slave_maxsat > result_maxsat(result)) {
         *best_maxsat_mpi_rank = requester;
@@ -336,11 +345,14 @@ void master_give_problem(struct result *result,
     struct result slave_result = new_stack_result();
     result_set_maxsat(&slave_result, slave_maxsat);
     result_set_na(&slave_result, slave_na);
+    result_set_assignment(&slave_result, slave_assignment);
     sync_result(result, &slave_result);
 
     msg_buf[0] = prob;
     msg_buf[1] = num_initialized_vars;
     msg_buf[2] = result_maxsat(result);
+    msg_buf[3] = 0;
+    msg_buf[4] = 0;
 
     maxsat_problem_send(msg_buf, requester);
 }
@@ -358,18 +370,18 @@ void slave_sync_maxsat(struct result *result) {
 
     result_set_maxsat(result, msg_buf[0]);
     result_set_na(result, msg_buf[1]);
-    MPI_Bcast(result->sample.vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
+    struct assignment maxsat_assignment = new_stack_assignment_from_num(msg_buf + 2);
+    result_set_assignment(result, maxsat_assignment);
 }
 
-void master_sync_maxsat(struct result *result, uint64_t best_maxsat_mpi_rank) {
+void master_sync_maxsat(struct result *result) {
     uint64_t msg_buf[MAXSAT_SYNC_LEN];
 
     msg_buf[0] = result_maxsat(result);
     msg_buf[1] = result_na(result);
-    msg_buf[2] = best_maxsat_mpi_rank;
-
+    msg_buf[2] = result_assignment(result).vars[0]; /*FIXME?*/
+    msg_buf[3] = result_assignment(result).vars[1]; /*FIXME?*/;
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
-    MPI_Bcast((result->sample).vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
 }
 
 
