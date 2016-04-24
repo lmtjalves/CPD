@@ -45,17 +45,45 @@ do { \
     CLAUSES.num_unknown_clauses = crepr_num_clauses(CREPR); \
 } while(0)
 
+
+
 /*private functions*/
-void distribute_maxsat_problems(const struct crepr *crepr, struct result *result);
-void do_maxsat(const struct crepr *crepr, struct result *result);
+
+/*ways to solve maxsat*/
+void maxsat_single(const struct crepr *crepr, struct result *result);
+void maxsat_master(const struct crepr *crepr, struct result *result);
+void maxsat_slave(const struct crepr *crepr, struct result *result);
+
+/*master/slave communication*/
+/*problem step*/
+void maxsat_problem_send(uint64_t *msg, int dest);
+void maxsat_problem_recv(uint64_t *msg, int source);
+void slave_request_problem(struct result *result,
+                           uint64_t *prob,
+                           size_t *num_initialized_vars);
+void master_give_problem(struct result *result,
+                         uint64_t prob,
+                         uint64_t num_initialized_vars,
+                         uint64_t *best_maxsat_mpi_rank);
+/*sync maxsat step*/
+void slave_sync_maxsat(struct result *result);
+void master_sync_maxsat(struct result *result, uint64_t best_maxsat_mpi_rank);
+
+
+/*problem splitting*/
 uint8_t num_bit_len(int num);
 void maxsat_prob_division(const struct crepr *crepr,
-                          size_t *num_problems,
-                          uint8_t *num_initialized_vars);
-void update_global_result(struct result *result, struct result *local_result);
+                          uint64_t *num_problems,
+                          uint64_t *num_initialized_vars);
+
+/*ancillary*/
+void sync_result(struct result *result, struct result *sync_result);
 void count_thread_time(double start_time,
                         double *first_finish_time,
                         double *last_finish_time);
+
+/*maxsat solving functions*/
+void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_initialized_vars, uint64_t prob);
 void partial_maxsat(struct clauses *clauses, struct result *result);
 void do_partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var);
 bool should_prune(struct clauses *clauses, struct result *result);
@@ -70,38 +98,19 @@ const int MAXSAT_SYNC_TAG = 2000;
 
 
 
-/* Public functions */
+/* Public function */
 
-/*This is a wrapper that counts the time the threads take and
- * allocates in the stack the global result.*/
 struct result maxsat(const struct crepr *crepr) {
     ASSERT_NON_NULL(crepr);
-
     struct result result = new_stack_result();
 
-    const double start_time = omp_get_wtime();
-    double first_finish_time = -1;
-    double last_finish_time = 0;
-
-    if ( mpi_size() > 1 && is_mpi_master()) {
-        LOG_DEBUG("mpi:%zu Distributing maxsat problems!", mpi_rank());
-        distribute_maxsat_problems(crepr, &result);
+    if (mpi_size() == 1) {
+        maxsat_single(crepr, &result);
+    } else if (is_mpi_master()) {
+        maxsat_master(crepr, &result);
     } else {
-        LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
-        /*#pragma omp parallel */
-        {
-            do_maxsat(crepr, &result);
-
-            #pragma omp critical
-            count_thread_time(start_time, &first_finish_time, &last_finish_time);
-        }
+        maxsat_slave(crepr, &result);
     }
-
-    LOG_DEBUG("mpi:%zu first_finish_time:%f last_finish_time:%f delta:%f",
-              mpi_rank(),
-              first_finish_time,
-              last_finish_time,
-              last_finish_time - first_finish_time);
 
     return result;
 
@@ -109,10 +118,138 @@ on_error:
     ASSERT_EXIT();
 }
 
-void mpi_problem_send(uint64_t *msg, int dest) {
-    LOG_DEBUG("mpi:%zu Problem send: %"PRIu64" %"PRIu64" %"PRIu64, mpi_rank(), msg[0], msg[1], msg[2]);
-    int mpi_ret;
-    mpi_ret = MPI_Send(msg,
+
+/*Private functions*/
+
+/*Solves the maxsat withotu using mpi*/
+void maxsat_single(const struct crepr *crepr, struct result *result) {
+    do_maxsat(crepr, result, 0, 0);
+}
+
+/* The protocol is the following:
+ * 
+ * A slave sends a request to master, in the format: |maxsat|na|mpi_rank|
+ *  maxsat is it's current best maxsat,
+ *  na is the number of assignments it for that maxsat it got in the last problem.
+ *  mpi_rank is it's mpi_rank, so the master know who to send the problem to.
+ *
+ * The master answers a request in the format: |prob|num_initialized_vars|maxsat|
+ *  prob is the problem the slave must solve
+ *  num_initialized_vars is self explanatory
+ *  maxsat is the value of the best maxsat it has seen until now.
+ *
+ * Master uses sync_result to sync the the maxsat and na given by the slave
+ *  with it's result.
+ * Slave registers the maxsat if it's better than the one it has.
+ * The master takes note of who was the last slave to improve the maxsat.
+ *
+ * When there are no more problems, the master answers with UINT_MAX64.
+ * This signals the slave to stop solving problems.
+ * After being signaled the slaves go to maxsat synchronization step.
+ *
+ * When all slaves are signaled, the master goes to the maxsat synchronization
+ *  step.
+ *
+ * When on the maxsat sync step, the master broadcasts: |maxsat|na|mpi_rank|
+ *  maxsat is the best maxsat obtained
+ *  na is the total number of assignments for that maxsat
+ *  mpi_rank is the rank of the slave that improved maxsat to that value
+ *
+ * Finally the slave with mpi_rank of the last broadcast send: |assignment|
+ *  assignment an assignment that has maxsat true clasuses.
+ * 
+ * Now everyone has a valid result.
+ * */
+
+void maxsat_master(const struct crepr *crepr, struct result *result) {
+    uint64_t best_maxsat_mpi_rank = UINT64_MAX;
+    uint64_t num_problems, num_initialized_vars;
+
+    maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);
+
+    LOG_DEBUG("Distributing %"PRIu64 " problems with %"PRIu64" initialized vars.",
+              num_problems,
+              num_initialized_vars);
+
+    uint64_t cur_problem = 0;
+    while(cur_problem < num_problems) {
+        master_give_problem(result, cur_problem, num_initialized_vars, &best_maxsat_mpi_rank);
+        ++cur_problem;
+    }
+
+    double sync_start_time = omp_get_wtime();
+
+    uint64_t num_shutdown_sent = 0;
+    while(num_shutdown_sent < (mpi_size() - 1)) {
+        master_give_problem(result, UINT64_MAX, 0, &best_maxsat_mpi_rank);
+        ++num_shutdown_sent;
+    }
+
+    ASSERT_MSG(best_maxsat_mpi_rank != UINT64_MAX,
+               "Didn't register mpi rank with best maxsat.");
+    master_sync_maxsat(result, best_maxsat_mpi_rank);
+
+    LOG_DEBUG("mpi:%zu took %fs to sync.", mpi_rank(), omp_get_wtime() - sync_start_time);
+
+    return;
+
+on_error:
+    ASSERT_EXIT();
+}
+void maxsat_slave(const struct crepr *crepr, struct result *result) {
+    struct result slave_result = new_stack_result();
+    LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
+
+    double total_req_time = 0, total_computation_time = 0, total_thread_wait_time = 0;
+
+    /*#pragma omp parallel*/
+    while (true) {
+        const double start_time = omp_get_wtime();
+        double first_finish_time = -1, last_finish_time = 0;
+        uint64_t prob, num_initialized_vars;
+
+        /*#pragma omp master
+        {*/
+        double req_time = omp_get_wtime();
+        slave_request_problem(&slave_result, &prob, &num_initialized_vars);
+        total_req_time += omp_get_wtime() - req_time;
+
+        /*We only want to keep track of a single problem na, so we clean it after
+         * sending it.*/
+        result_set_na(&slave_result, 0);
+        /*}*/
+
+        /*#pragma omp barrier*/
+
+        if(prob == UINT64_MAX) {
+            break;
+        }
+
+        double start_computation_time = omp_get_wtime();
+        /*#pragma omp master
+          {*/
+        do_maxsat(crepr, &slave_result, num_initialized_vars, prob);
+
+        /*#pragma omp critical*/
+        count_thread_time(start_time, &first_finish_time, &last_finish_time);
+        /*}*/
+        total_computation_time += omp_get_wtime() - start_computation_time;
+        total_thread_wait_time += (last_finish_time - first_finish_time);
+    }
+
+    LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs",
+              mpi_rank(),
+              total_req_time,
+              total_computation_time,
+              total_thread_wait_time);
+
+    slave_sync_maxsat(result);
+}
+
+
+/*master/slave communication*/
+void maxsat_problem_send(uint64_t *msg, int dest) {
+    int mpi_ret = MPI_Send(msg,
                        PROBLEM_REQUEST_LEN,
                        MPI_UINT64_T,
                        dest,
@@ -125,10 +262,8 @@ on_error:
     ASSERT_EXIT();
 }
 
-void mpi_problem_recv(uint64_t *msg, int source) {
-    int mpi_ret;
-
-    mpi_ret = MPI_Recv(msg,
+void maxsat_problem_recv(uint64_t *msg, int source) {
+    int mpi_ret = MPI_Recv(msg,
                        PROBLEM_REQUEST_LEN,
                        MPI_UINT64_T,
                        source,
@@ -136,8 +271,6 @@ void mpi_problem_recv(uint64_t *msg, int source) {
                        MPI_COMM_WORLD,
                        MPI_STATUS_IGNORE);
     ASSERT_MSG(mpi_ret == MPI_SUCCESS, "Failed mpi recv.");
-    LOG_DEBUG("mpi:%zu Problem recv: %"PRIu64" %"PRIu64" %"PRIu64, mpi_rank(), msg[0], msg[1], msg[2]);
-
     return;
 
 on_error:
@@ -145,84 +278,72 @@ on_error:
 }
 
 
-void distribute_maxsat_problems(const struct crepr *crepr, struct result *result) {
-    uint64_t num_problems, cur_problem;
-    uint64_t best_maxsat_mpi_rank = UINT64_MAX;
+void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_initialized_vars) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
-    num_problems = 64;
+    msg_buf[0] = result_get_maxsat_value(result);
+    msg_buf[1] = result_get_na(result);
+    msg_buf[2] = mpi_rank();
 
-    if(num_problems > ((uint64_t)1 << crepr_num_vars(crepr))) {
-        num_problems = ((uint64_t)1 << crepr_num_vars(crepr));
+    maxsat_problem_send(msg_buf, mpi_master());
+    maxsat_problem_recv(msg_buf, mpi_master());
+
+    *prob = msg_buf[0];
+    *num_initialized_vars = msg_buf[1];
+    uint64_t master_maxsat = msg_buf[2];
+
+    if(master_maxsat > result_get_maxsat_value(result)) {
+        result_set_maxsat_value(result, master_maxsat);
     }
-    uint64_t num_initialized_vars = num_bit_len(num_problems - 1);
+}
 
-    LOG_DEBUG("Distributing %"PRIu64 " problems with %"PRIu64" initialized vars.",
-              num_problems,
-              num_initialized_vars);
+void master_give_problem(struct result *result,
+                         uint64_t prob,
+                         uint64_t num_initialized_vars,
+                         uint64_t *best_maxsat_mpi_rank) {
+    uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
-    cur_problem = 0;
-    while(cur_problem < num_problems) {
-        mpi_problem_recv(msg_buf, MPI_ANY_SOURCE);
+    maxsat_problem_recv(msg_buf, MPI_ANY_SOURCE);
 
-        uint64_t requester = msg_buf[2];
+    uint64_t slave_maxsat = msg_buf[0];
+    uint64_t slave_na = msg_buf[1];
+    uint64_t requester = msg_buf[2];
 
-        if(msg_buf[0] > result_get_maxsat_value(result)) {
-            best_maxsat_mpi_rank = requester;
-        }
-
-        struct result worker_result = new_stack_result();
-        result_set_maxsat_value(&worker_result, msg_buf[0]);
-        result_set_na(&worker_result, msg_buf[1]);
-        update_global_result(result, &worker_result);
-
-        msg_buf[0] = cur_problem;
-        msg_buf[1] = num_initialized_vars;
-        msg_buf[2] = result_get_maxsat_value(result);
-
-        mpi_problem_send(msg_buf, requester);
-
-        ++cur_problem;
+    if(slave_maxsat > result_get_maxsat_value(result)) {
+        *best_maxsat_mpi_rank = requester;
     }
 
-    uint64_t num_shutdown_sent = 0;
-    while(num_shutdown_sent < (mpi_size() - 1)) {
-        mpi_problem_recv(msg_buf, MPI_ANY_SOURCE);
+    struct result slave_result = new_stack_result();
+    result_set_maxsat_value(&slave_result, slave_maxsat);
+    result_set_na(&slave_result, slave_na);
+    sync_result(result, &slave_result);
 
-        uint64_t requester = msg_buf[2];
+    msg_buf[0] = prob;
+    msg_buf[1] = num_initialized_vars;
+    msg_buf[2] = result_get_maxsat_value(result);
 
-        struct result worker_result = new_stack_result();
-        result_set_maxsat_value(&worker_result, msg_buf[0]);
-        result_set_na(&worker_result, msg_buf[1]);
-        update_global_result(result, &worker_result);
+    maxsat_problem_send(msg_buf, requester);
+}
 
-        msg_buf[0] = UINT64_MAX;
-        msg_buf[1] = 0;
-        msg_buf[2] = 0;
+/*sync maxsat step*/
+void slave_sync_maxsat(struct result *result) {
+    uint64_t msg_buf[MAXSAT_SYNC_LEN];
+    MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
 
-        mpi_problem_send(msg_buf, requester);
+    result_set_maxsat_value(result, msg_buf[0]);
+    result_set_na(result, msg_buf[1]);
+    MPI_Bcast(result->sample.vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
+}
 
-        ++num_shutdown_sent;
-    }
-
-    ASSERT_MSG(best_maxsat_mpi_rank != UINT64_MAX,
-               "Didn't register mpi rank with best maxsat.");
+void master_sync_maxsat(struct result *result, uint64_t best_maxsat_mpi_rank) {
+    uint64_t msg_buf[MAXSAT_SYNC_LEN];
 
     msg_buf[0] = result_get_maxsat_value(result);
     msg_buf[1] = result_get_na(result);
     msg_buf[2] = best_maxsat_mpi_rank;
-    LOG_DEBUG("mpi:%zu maxsat:%"PRIu64" na:%"PRIu64" mpi_rank:%"PRIu64,
-              mpi_rank(),
-              msg_buf[0],
-              msg_buf[1],
-              msg_buf[2]);
+
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
     MPI_Bcast((result->sample).vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
-
-    return;
-
-on_error:
-    ASSERT_EXIT();
 }
 
 
@@ -233,74 +354,37 @@ on_error:
  *nowait is used to measure the time difference between first and last
  * thread finishing. Without nowait there'd be a barrier before 
  * measuring the time*/ 
-void do_maxsat(const struct crepr *crepr, struct result *result) {
-    struct result local_result = new_stack_result();
+void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_initialized_vars, uint64_t prob) {
+    struct result thread_result = new_stack_result();
+
+    #pragma omp critical
+    result_set_maxsat_value(&thread_result, result_get_maxsat_value(result));
+
     struct clauses clauses;
     ALLOC_LOCAL_CLAUSES(clauses, crepr);
 
-    /*size_t num_problems;*/
-    uint8_t num_initialized_vars;
-    /*maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);*/
-    /*#pragma omp for schedule(dynamic) nowait if(0)*/
-    /*for(uint64_t i = 0; i < num_problems; i++) {*/
-    while (true) {
-        uint64_t msg_buf[PROBLEM_REQUEST_LEN];
+    /*the least num_initialized_vars least significant bits of prob
+     * have the assignments for the num_initialized_vars least sig bits*/
+    struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, prob<<1});
 
-        msg_buf[0] = result_get_maxsat_value(&local_result);
-        msg_buf[1] = result_get_na(&local_result);
-        msg_buf[2] = mpi_rank();
+    INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
 
-        mpi_problem_send(msg_buf, 0);
-        mpi_problem_recv(msg_buf, 0);
-        uint64_t prob = msg_buf[0];
-        if(prob == UINT64_MAX) {
-            break;
-        }
+    /*Solve the partial problem starting with num_initialized_vars
+     * assigned*/
+    partial_maxsat(&clauses, &thread_result);
 
-        num_initialized_vars = msg_buf[1];
-        if(msg_buf[2] > result_get_maxsat_value(&local_result)) {
-            result_set_maxsat_value(&local_result, msg_buf[2]);
-        }
+    LOG_DEBUG("mpi:%zu thread:%d assignment:%"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
+            mpi_rank(),
+            omp_get_thread_num(),
+            prob,
+            (((size_t)1 << num_initialized_vars)  - 1),
+            result_get_maxsat_value(&thread_result),
+            result_get_na(&thread_result));
 
-        /*the least num_initialized_vars least significant bits of prob
-         * have the assignments for the num_initialized_vars least sig bits*/
-        struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, prob<<1});
-        result_set_na(&local_result, 0);
-
-        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars);
-
-        /*Solve the partial problem starting with num_initialized_vars
-         * assigned*/
-        partial_maxsat(&clauses, &local_result);
-
-        LOG_DEBUG("thread: %d assignment:%"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
-                omp_get_thread_num(),
-                prob,
-                (((size_t)1 << num_initialized_vars)  - 1),
-                result_get_maxsat_value(&local_result),
-                result_get_na(&local_result));
-
-        #pragma omp critical 
-        update_global_result(result, &local_result);
-    }
-    #pragma omp master
-    {
-
-        uint64_t msg_buf[PROBLEM_REQUEST_LEN];
-        MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, 0, MPI_COMM_WORLD);
-
-        result_set_maxsat_value(&local_result, msg_buf[0]);
-        result_set_na(&local_result, msg_buf[1]);
-        MPI_Bcast(local_result.sample.vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
-        result_set_maxsat_value(result, result_get_maxsat_value(&local_result));
-        result_set_na(result, result_get_na(&local_result));
-        result_set_assignment_sample(result, result_get_assignment_sample(&local_result));
-    }
+    #pragma omp critical 
+    sync_result(result, &thread_result);
 }
 
-
-
-/*Private functions*/
 
 /*counts the number of bits in the representation of num.
  * e.g. num_bit_len(3) = 2
@@ -314,29 +398,29 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
-/* Chooses how many num_initialized_vars there should be in function of the
- *  number of omp threads.
+/* Chooses how many num_initialized_vars and problems there should be
+ *  in function of mpi_size()
  *
  * num_problems is the value of the number of problems,
  * num_initialized variables is the number of bits in num_problems
  * that's why we use we add values to num_initiliazed variables, because
  * when we use << to assign num_problems, all the + are turned in * */
 void maxsat_prob_division(const struct crepr *crepr,
-                          size_t *num_problems,
-                          uint8_t *num_initialized_vars) {
+                          uint64_t *num_problems,
+                          uint64_t *num_initialized_vars) {
 
-    /*We would like that each thread have 64(log2(64)=6) problems.*/
+    /*We would like that each process have 64(log2(64)=6) problems.*/
     const uint8_t num_vars_per_thread = 6; 
     /*We want that each thread has at least 16 problems*/
     const uint8_t min_num_vars_per_thread = 4; 
     const uint8_t num_vars = crepr_num_vars(crepr);
 
-    /* num_bit_len() - 1 because we don't want num_threads to contribute, when
-     *  there is only 1 thread.*/
-    *num_initialized_vars = num_vars_per_thread + num_bit_len(omp_get_num_threads()) - 1;
+    /* num_bit_len() - 2 because we don't want num_threads to contribute, when
+     *  there is only 1 slave (the other 1 is the master).*/
+    *num_initialized_vars = num_vars_per_thread + num_bit_len(mpi_size()) - 2;
 
     #pragma omp master
-    LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu8 " of %"PRIu8 ,
+    LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu64 " of %"PRIu8 ,
             omp_get_num_threads(),
             *num_initialized_vars,
             num_vars);
@@ -351,7 +435,7 @@ void maxsat_prob_division(const struct crepr *crepr,
             *num_initialized_vars = 1;
         }
         #pragma omp master
-        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu8, *num_initialized_vars);
+        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu64, *num_initialized_vars);
     }
 
     *num_problems= 1 << (*num_initialized_vars);
@@ -359,18 +443,18 @@ void maxsat_prob_division(const struct crepr *crepr,
 }
 
 
-/*Update result if local_result has better maxsat,
- * adds the number of assignments in local_result to result, if maxsat is equal,
- * changes the maxsat of local_result to that of result, otherwise*/
-void update_global_result(struct result *result, struct result *local_result) {
-    if (result_get_maxsat_value(result) == result_get_maxsat_value(local_result)) {
-        result_set_na(result, result_get_na(result) + result_get_na(local_result));
-    } else if (result_get_maxsat_value(result) < result_get_maxsat_value(local_result)) {
-        result_set_maxsat_value(result, result_get_maxsat_value(local_result));
-        result_set_assignment_sample(result, result_get_assignment_sample(local_result));
-        result_set_na(result, result_get_na(local_result));
+/*If sync_result is better than result, result is set to sync_result,
+ * if they have the same maxsat, sync_result na is added to result
+ * if sync_result is worse than, sync_result's maxsat is to to result*/
+void sync_result(struct result *result, struct result *sync_result) {
+    if(result_get_maxsat_value(result) > result_get_maxsat_value(sync_result)) {
+        result_set_maxsat_value(sync_result, result_get_maxsat_value(result));
+    } else if (result_get_maxsat_value(result) < result_get_maxsat_value(sync_result)) {
+        result_set_maxsat_value(result, result_get_maxsat_value(sync_result));
+        result_set_assignment_sample(result, result_get_assignment_sample(sync_result));
+        result_set_na(result, result_get_na(sync_result));
     } else {
-        result_set_maxsat_value(local_result, result_get_maxsat_value(result));
+        result_set_na(result, result_get_na(result) + result_get_na(sync_result));
     }
 }
 
@@ -383,10 +467,6 @@ void count_thread_time(double start_time,
     }
 
     *last_finish_time = thread_finish_time;
-    LOG_DEBUG("mpi:%zu thread: %d finished after %f",
-              mpi_rank(),
-              omp_get_thread_num(),
-              thread_finish_time);
 }
 
 
