@@ -5,6 +5,9 @@
 #define UINT8_MASK(VALUE) ((VALUE) & 0x3F)
 #define MAX_BIT 127
 
+/* We want 128 bits because there are at most 128 variables.
+ * We save the state of a variable in a bit.*/
+
 struct assignment new_stack_assignment(void) {
     struct assignment ret = { .vars = {0,0}};
     return ret;

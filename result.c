@@ -10,7 +10,7 @@ struct result new_stack_result(void){
   return res;
 }
 
-uint16_t result_get_maxsat_value (struct result *result){
+uint16_t result_maxsat (struct result *result){
   ASSERT_NON_NULL(result);
 	
 	return result->maxsat_value;
@@ -19,7 +19,7 @@ uint16_t result_get_maxsat_value (struct result *result){
   ASSERT_EXIT();
 }
 
-void result_set_maxsat_value (struct result *result, uint16_t new_maxsat_value){
+void result_set_maxsat (struct result *result, uint16_t new_maxsat_value){
   ASSERT_NON_NULL(result);
 
   result->maxsat_value = new_maxsat_value;
@@ -30,7 +30,7 @@ void result_set_maxsat_value (struct result *result, uint16_t new_maxsat_value){
   ASSERT_EXIT();
 }
 
-uint64_t result_get_na (struct result *result){
+uint64_t result_na (struct result *result){
   ASSERT_NON_NULL(result);
 
   return result->na;
@@ -50,7 +50,7 @@ void result_set_na (struct result *result, uint64_t number_assignments){
   ASSERT_EXIT();
 }
 
-struct assignment result_get_assignment_sample(struct result *result){
+struct assignment result_assignment(struct result *result){
   ASSERT_NON_NULL(result);
 
   return result->sample;
@@ -59,7 +59,7 @@ struct assignment result_get_assignment_sample(struct result *result){
   ASSERT_EXIT();
 }
 
-void result_set_assignment_sample(struct result *result, struct assignment new_sample){
+void result_set_assignment(struct result *result, struct assignment new_sample){
   ASSERT_NON_NULL(result);
 
   result->sample = new_sample;

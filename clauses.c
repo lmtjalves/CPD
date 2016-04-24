@@ -281,8 +281,8 @@ on_error:
 void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_initialized_vars) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
-    msg_buf[0] = result_get_maxsat_value(result);
-    msg_buf[1] = result_get_na(result);
+    msg_buf[0] = result_maxsat(result);
+    msg_buf[1] = result_na(result);
     msg_buf[2] = mpi_rank();
 
     maxsat_problem_send(msg_buf, mpi_master());
@@ -292,8 +292,8 @@ void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_in
     *num_initialized_vars = msg_buf[1];
     uint64_t master_maxsat = msg_buf[2];
 
-    if(master_maxsat > result_get_maxsat_value(result)) {
-        result_set_maxsat_value(result, master_maxsat);
+    if(master_maxsat > result_maxsat(result)) {
+        result_set_maxsat(result, master_maxsat);
     }
 }
 
@@ -309,18 +309,18 @@ void master_give_problem(struct result *result,
     uint64_t slave_na = msg_buf[1];
     uint64_t requester = msg_buf[2];
 
-    if(slave_maxsat > result_get_maxsat_value(result)) {
+    if(slave_maxsat > result_maxsat(result)) {
         *best_maxsat_mpi_rank = requester;
     }
 
     struct result slave_result = new_stack_result();
-    result_set_maxsat_value(&slave_result, slave_maxsat);
+    result_set_maxsat(&slave_result, slave_maxsat);
     result_set_na(&slave_result, slave_na);
     sync_result(result, &slave_result);
 
     msg_buf[0] = prob;
     msg_buf[1] = num_initialized_vars;
-    msg_buf[2] = result_get_maxsat_value(result);
+    msg_buf[2] = result_maxsat(result);
 
     maxsat_problem_send(msg_buf, requester);
 }
@@ -330,7 +330,7 @@ void slave_sync_maxsat(struct result *result) {
     uint64_t msg_buf[MAXSAT_SYNC_LEN];
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
 
-    result_set_maxsat_value(result, msg_buf[0]);
+    result_set_maxsat(result, msg_buf[0]);
     result_set_na(result, msg_buf[1]);
     MPI_Bcast(result->sample.vars, 2, MPI_UINT64_T, msg_buf[2], MPI_COMM_WORLD);
 }
@@ -338,8 +338,8 @@ void slave_sync_maxsat(struct result *result) {
 void master_sync_maxsat(struct result *result, uint64_t best_maxsat_mpi_rank) {
     uint64_t msg_buf[MAXSAT_SYNC_LEN];
 
-    msg_buf[0] = result_get_maxsat_value(result);
-    msg_buf[1] = result_get_na(result);
+    msg_buf[0] = result_maxsat(result);
+    msg_buf[1] = result_na(result);
     msg_buf[2] = best_maxsat_mpi_rank;
 
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
@@ -358,7 +358,7 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
     struct result thread_result = new_stack_result();
 
     #pragma omp critical
-    result_set_maxsat_value(&thread_result, result_get_maxsat_value(result));
+    result_set_maxsat(&thread_result, result_maxsat(result));
 
     struct clauses clauses;
     ALLOC_LOCAL_CLAUSES(clauses, crepr);
@@ -378,8 +378,8 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
             omp_get_thread_num(),
             prob,
             (((size_t)1 << num_initialized_vars)  - 1),
-            result_get_maxsat_value(&thread_result),
-            result_get_na(&thread_result));
+            result_maxsat(&thread_result),
+            result_na(&thread_result));
 
     #pragma omp critical 
     sync_result(result, &thread_result);
@@ -447,14 +447,14 @@ void maxsat_prob_division(const struct crepr *crepr,
  * if they have the same maxsat, sync_result na is added to result
  * if sync_result is worse than, sync_result's maxsat is to to result*/
 void sync_result(struct result *result, struct result *sync_result) {
-    if(result_get_maxsat_value(result) > result_get_maxsat_value(sync_result)) {
-        result_set_maxsat_value(sync_result, result_get_maxsat_value(result));
-    } else if (result_get_maxsat_value(result) < result_get_maxsat_value(sync_result)) {
-        result_set_maxsat_value(result, result_get_maxsat_value(sync_result));
-        result_set_assignment_sample(result, result_get_assignment_sample(sync_result));
-        result_set_na(result, result_get_na(sync_result));
+    if(result_maxsat(result) > result_maxsat(sync_result)) {
+        result_set_maxsat(sync_result, result_maxsat(result));
+    } else if (result_maxsat(result) < result_maxsat(sync_result)) {
+        result_set_maxsat(result, result_maxsat(sync_result));
+        result_set_assignment(result, result_assignment(sync_result));
+        result_set_na(result, result_na(sync_result));
     } else {
-        result_set_na(result, result_get_na(result) + result_get_na(sync_result));
+        result_set_na(result, result_na(result) + result_na(sync_result));
     }
 }
 
@@ -520,7 +520,7 @@ void do_partial_maxsat(struct clauses *clauses, struct result *result, uint8_t v
 bool should_prune(struct clauses *clauses, struct result *result) {
     uint16_t max_possible_true_clauses = clauses->num_true_clauses + clauses->num_unknown_clauses;
 
-    return result_get_maxsat_value(result) > max_possible_true_clauses;
+    return result_maxsat(result) > max_possible_true_clauses;
 }
 
 

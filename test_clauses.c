@@ -10,7 +10,7 @@ UT_TEST(create_clauses) {
 
   struct result result = maxsat(crepr);
 
-  printf("%d %" PRIu64 "\n", result_get_maxsat_value(&result), result_get_na(&result));
+  printf("%d %" PRIu64 "\n", result_maxsat(&result), result_na(&result));
 
   for(int i = 1; i <= crepr_num_vars(crepr); i++) {
     if(assignment_get_var(result.sample, i) == false) {
