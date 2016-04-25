@@ -109,6 +109,13 @@ struct result maxsat(const struct crepr *crepr) {
         maxsat_slave(crepr, &result);
     }
 
+    LOG_DEBUG("mpi:%zu finished maxsat. maxsat:%"PRIu16" na:%"PRIu64" assignment:%.16"PRIx64" %.16"PRIx64,
+              mpi_rank(),
+              result_maxsat(&result),
+              result_na(&result),
+              result_assignment(&result).vars[1], /*FIXME?*/
+              result_assignment(&result).vars[0]);
+
     return result;
 
 on_error:
@@ -218,31 +225,39 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
     struct result slave_result = new_stack_result();
     LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
 
+    /*Only accessed my omp master*/
     double total_req_time = 0, total_computation_time = 0, total_thread_wait_time = 0;
     double start_computation_time;
 
-    /*prob must be shared so the other threads can exit if it is UINT64_MAX.
-     * it's only written by master while the others are waiting
-     *the same for num_initialized_vars*/
+    /*These are accessed by all threads at the end of each loop.
+     * They're initialized by the master in the beginning*/
+    double start_time;
+    double first_finish_time = -1, last_finish_time = 0;
+
+    /*these variables are shared, but written only my omp master when the other
+     *  threads are waiting, so no synchronization is used to access them*/
     uint64_t prob, num_initialized_vars; 
     #pragma omp parallel
     while (true) {
-        const double start_time = omp_get_wtime();
-        double first_finish_time = -1, last_finish_time = 0;
-
         #pragma omp master
         {
-            double req_time = omp_get_wtime();
+            start_time = omp_get_wtime();
+            first_finish_time = -1;
+            last_finish_time = 0;
+
+            double req_time = start_time; 
             slave_request_problem(&slave_result, &prob, &num_initialized_vars);
             total_req_time += omp_get_wtime() - req_time;
+    
+            LOG_DEBUG("mpi:%zu received problem:%"PRIu64, mpi_rank(), prob);
 
-            /*We only want to keep track of a single problem na,
-             * so we clean it after sending it.*/
+            /*The na sent is for the problem solved, so we have to clean it*/
             result_set_na(&slave_result, 0);
 
             start_computation_time = omp_get_wtime();
         }
 
+        /*Every thread must wait for master to reach here with a valid prob*/
         #pragma omp barrier
 
         if(prob == UINT64_MAX) {
@@ -260,6 +275,14 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
             total_computation_time += omp_get_wtime() - start_computation_time;
             total_thread_wait_time += (last_finish_time - first_finish_time);
         }
+
+        /*We must synchronize all threads at the the beginning or at the end of
+         * each problem cycle, otherwise a thread that only starts running
+         * from the other barrier in the next cycle, after the master thread
+         * got the order to stop exists without going to the barrier again
+         * and the other threads wait there indefinetely*/
+        #pragma omp barrier
+
     }
 
     LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs",
@@ -362,6 +385,7 @@ void master_give_problem(struct result *result,
     msg_buf[4] = 0;
 
     maxsat_problem_send(msg_buf, requester);
+
 }
 
 
@@ -373,12 +397,14 @@ void master_give_problem(struct result *result,
  */
 void slave_sync_maxsat(struct result *result) {
     uint64_t msg_buf[MAXSAT_SYNC_LEN];
+
     MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
 
     result_set_maxsat(result, msg_buf[0]);
     result_set_na(result, msg_buf[1]);
     struct assignment maxsat_assignment = new_stack_assignment_from_num(msg_buf + 2);
     result_set_assignment(result, maxsat_assignment);
+
 }
 
 void master_sync_maxsat(struct result *result) {
@@ -467,15 +493,15 @@ void maxsat_prob_division(const struct crepr *crepr,
                           uint64_t *num_problems,
                           uint64_t *num_initialized_vars) {
 
-    /*We would like that each process have 64(log2(64)=6) problems.*/
-    const uint8_t num_vars_per_thread = 6; 
+    /*We would like that each process have 32(log2(32)=6) problems.*/
+    const uint8_t num_vars_per_proc  = 5; 
     /*We want that each thread has at least 16 problems*/
-    const uint8_t min_num_vars_per_thread = 4; 
+    const uint8_t min_num_vars_per_proc  = 4; 
     const uint8_t num_vars = crepr_num_vars(crepr);
 
     /* num_bit_len() - 2 because we don't want num_threads to contribute, when
      *  there is only 1 slave (the other 1 is the master).*/
-    *num_initialized_vars = num_vars_per_thread + num_bit_len(mpi_size()) - 2;
+    *num_initialized_vars = num_vars_per_proc  + num_bit_len(mpi_size()) - 2;
 
     #pragma omp master
     LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu64 " of %"PRIu8 ,
@@ -483,11 +509,11 @@ void maxsat_prob_division(const struct crepr *crepr,
             *num_initialized_vars,
             num_vars);
 
-    if ( num_vars - *num_initialized_vars < min_num_vars_per_thread) {
+    if ((num_vars - *num_initialized_vars) < min_num_vars_per_proc ) {
         /*too few vars in problem*/
-        if (num_vars >= min_num_vars_per_thread) {
+        if (num_vars >= min_num_vars_per_proc ) {
             /* problems size too small*/
-            *num_initialized_vars = num_vars - min_num_vars_per_thread;
+            *num_initialized_vars = num_vars - min_num_vars_per_proc ;
         } else {
             /*problem really small*/
             *num_initialized_vars = 1;
