@@ -72,7 +72,9 @@ void master_sync_maxsat(struct result *result);
 
 /*problem splitting*/
 uint8_t num_bit_len(int num);
-void maxsat_prob_division(const struct crepr *crepr,
+
+void maxsat_prob_division(const uint8_t num_vars,
+                          const size_t num_workers,                         
                           uint64_t *num_problems,
                           uint64_t *num_initialized_vars);
 
@@ -188,7 +190,10 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
     uint64_t best_maxsat_mpi_rank = UINT64_MAX;
     uint64_t num_problems, num_initialized_vars;
 
-    maxsat_prob_division(crepr, &num_problems, &num_initialized_vars);
+    maxsat_prob_division(crepr_num_vars(crepr),
+                         mpi_size() - 1, /*-1 because the master isn't a worker*/
+                         &num_problems,
+                         &num_initialized_vars);
 
     LOG_DEBUG("Distributing %"PRIu64 " problems with %"PRIu64" initialized vars.",
               num_problems,
@@ -430,25 +435,31 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
     #pragma omp critical
     result_set_maxsat(&thread_result, result_maxsat(result));
 
-    size_t subprob;
+    uint64_t num_subprob_init_threads, num_subprobs, subprob;
+    maxsat_prob_division(crepr_num_vars(crepr) - num_initialized_vars,
+                         omp_get_num_threads(),
+                         &num_subprobs,
+                         &num_subprob_init_threads);
     #pragma omp for schedule(dynamic) nowait
-    for(subprob = 0; subprob < 8; ++subprob) {
+    for(subprob = 0; subprob < num_subprobs; ++subprob) {
         struct clauses clauses;
         ALLOC_LOCAL_CLAUSES(clauses, crepr);
 
         /*the least num_initialized_vars least significant bits of prob
          * have the assignments for the num_initialized_vars least sig bits*/
-        struct assignment assignment = new_stack_assignment_from_num((uint64_t [2]){0, (prob << 1) + (subprob << (num_initialized_vars + 1))});
+        uint64_t assignment_num[2] = {0, (prob << 1) + (subprob << (num_initialized_vars + 1))};
+        struct assignment assignment = new_stack_assignment_from_num(assignment_num);
 
-        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars + 3);
+        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars + num_subprob_init_threads);
 
         /*Solve the partial problem starting with num_initialized_vars
          * assigned*/
         partial_maxsat(&clauses, &thread_result);
 
-        LOG_DEBUG("thread:%d assignment:%zu/7 of %"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
+        LOG_DEBUG("thread:%d assignment:%zu/%"PRIu64" of %"PRIu64"/%zu maxsat:%"PRIu16" na:%"PRIu64,
                 omp_get_thread_num(),
                 subprob,
+                num_subprobs - 1,
                 prob,
                 (((size_t)1 << num_initialized_vars)  - 1),
                 result_maxsat(&thread_result),
@@ -482,47 +493,47 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
-/* Chooses how many num_initialized_vars and problems there should be
- *  in function of mpi_size()
+/* Chooses how many num_initialized_vars and problems in function of num_vars
+ *  and num_workers
  *
  * num_problems is the value of the number of problems,
  * num_initialized variables is the number of bits in num_problems
  * that's why we use we add values to num_initiliazed variables, because
  * when we use << to assign num_problems, all the + are turned in * */
-void maxsat_prob_division(const struct crepr *crepr,
+void maxsat_prob_division(const uint8_t num_vars,
+                          const size_t num_workers,
                           uint64_t *num_problems,
                           uint64_t *num_initialized_vars) {
 
-    /*We would like that each process have 32(log2(32)=6) problems.*/
-    const uint8_t num_vars_per_proc  = 5; 
-    /*We want that each thread has at least 16 problems*/
-    const uint8_t min_num_vars_per_proc  = 4; 
-    const uint8_t num_vars = crepr_num_vars(crepr);
+    /*We would like that each process have 32(log2(32)=5) problems.*/
+    const uint8_t num_vars_per_worker = 5; 
+    /*we want each subproblem to have at least 4096 evaluations*/
+    const uint8_t min_num_vars_remaining = 12; 
 
-    /* num_bit_len() - 2 because we don't want num_threads to contribute, when
-     *  there is only 1 slave (the other 1 is the master).*/
-    *num_initialized_vars = num_vars_per_proc  + num_bit_len(mpi_size()) - 2;
+    /* num_bit_len() - 1 because when there's only 1 worker, we don't want to
+     *  add more vars.*/
+    *num_initialized_vars = num_vars_per_worker + num_bit_len(num_workers) - 1;
 
     #pragma omp master
-    LOG_DEBUG("maxsat: %d threads, num_initialized_vars %" PRIu64 " of %"PRIu8 ,
-            omp_get_num_threads(),
+    LOG_DEBUG("maxsat: %zu workers, num_initialized_vars %" PRIu64 " of %"PRIu8 ,
+            num_workers,
             *num_initialized_vars,
             num_vars);
-
-    if ((num_vars - *num_initialized_vars) < min_num_vars_per_proc ) {
-        /*too few vars in problem*/
-        if (num_vars >= min_num_vars_per_proc ) {
-            /* problems size too small*/
-            *num_initialized_vars = num_vars - min_num_vars_per_proc ;
-        } else {
-            /*problem really small*/
-            *num_initialized_vars = 1;
-        }
+    
+    /*too many workers for problem size,
+     * would give more init_vars than there are vars*/
+    if (num_vars < min_num_vars_remaining) {
+        *num_initialized_vars = 0;
+        #pragma omp master
+        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu64, *num_initialized_vars);
+    } else if(*num_initialized_vars > num_vars
+       || ((num_vars - *num_initialized_vars) < min_num_vars_remaining) ) {
+        *num_initialized_vars = num_vars - min_num_vars_remaining;
         #pragma omp master
         LOG_DEBUG("Reducing num_initialized_vars to %" PRIu64, *num_initialized_vars);
     }
 
-    *num_problems= 1 << (*num_initialized_vars);
+    *num_problems = 1 << (*num_initialized_vars);
     return;
 }
 
