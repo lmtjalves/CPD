@@ -12,8 +12,8 @@ set (OMP_FLAGS "-fopenmp")
 set(COMMON_FLAGS "${WARNING_FLAGS} ${OMP_FLAGS} -std=c11 -Werror -pedantic")
 
 
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${COMMON_FLAGS} -O0 -g")
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${COMMON_FLAGS} -O0 -g -fno-inline -fsanitize=address,undefined -fstack-protector-all")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${COMMON_FLAGS} -g")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${COMMON_FLAGS} -g -fstack-protector-all")
 
 add_executable(test_assignment test_assignment.c assignment.c debug.c)
 add_executable(test_result assignment.c test_result.c result.c debug.c)
