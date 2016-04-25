@@ -64,10 +64,6 @@ void slave_request_problem(struct result *result,
 void master_give_problem(struct result *result,
                          uint64_t prob,
                          uint64_t num_init_vars);
-/*sync maxsat step*/
-void slave_sync_maxsat(struct result *result);
-void master_sync_maxsat(struct result *result);
-
 
 /*problem splitting*/
 uint8_t num_bit_len(int num);
@@ -156,7 +152,7 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  *  num_init_vars is self explanatory
  *  maxsat is the value of the best maxsat it has seen until now.
  *
- * Master uses sync_result to sync the the maxsat, na and assignment given by
+ * Master uses sync_result to sync the maxsat, na and assignment given by
  *  the slave with it's result.
  * Slave registers the maxsat if it's better than the one it has.
  *
@@ -210,8 +206,6 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
         ++num_shutdown_sent;
     }
 
-    master_sync_maxsat(result);
-
     LOG_DEBUG("mpi:%zu took %fs to sync.", mpi_rank(), omp_get_wtime() - sync_start_time);
 
     return;
@@ -223,7 +217,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
     struct result slave_result = new_stack_result();
     LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
 
-    /*Only accessed my omp master*/
+    /*Only accessed by omp master*/
     double total_req_time = 0, total_computation_time = 0, total_thread_wait_time = 0;
     double start_computation_time;
 
@@ -274,7 +268,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
             total_thread_wait_time += (last_finish_time - first_finish_time);
         }
 
-        /*We must synchronize all threads at the the beginning or at the end of
+        /*We must synchronize all threads at the beginning or at the end of
          * each problem cycle, otherwise a thread that only starts running
          * from the other barrier in the next cycle, after the master thread
          * got the order to stop exists without going to the barrier again
@@ -284,8 +278,6 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
     }
 
     start_time = omp_get_wtime();
-
-    slave_sync_maxsat(result);
 
     LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs sync_time:%fs",
               mpi_rank(),
@@ -382,35 +374,6 @@ void master_give_problem(struct result *result,
 
     maxsat_problem_send(msg_buf, requester);
 
-}
-
-
-
-/*
- *
- * sync maxsat step
- *
- */
-void slave_sync_maxsat(struct result *result) {
-    uint64_t msg_buf[MAXSAT_SYNC_LEN];
-
-    MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
-
-    result_set_maxsat(result, msg_buf[0]);
-    result_set_na(result, msg_buf[1]);
-    struct assignment maxsat_assignment = new_stack_assignment_from_num(msg_buf + 2);
-    result_set_assignment(result, maxsat_assignment);
-
-}
-
-void master_sync_maxsat(struct result *result) {
-    uint64_t msg_buf[MAXSAT_SYNC_LEN];
-
-    msg_buf[0] = result_maxsat(result);
-    msg_buf[1] = result_na(result);
-    msg_buf[2] = result_assignment(result).vars[0]; /*FIXME?*/
-    msg_buf[3] = result_assignment(result).vars[1]; /*FIXME?*/;
-    MPI_Bcast(msg_buf, MAXSAT_SYNC_LEN, MPI_UINT64_T, mpi_master(), MPI_COMM_WORLD);
 }
 
 
