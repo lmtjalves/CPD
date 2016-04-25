@@ -283,13 +283,16 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
 
     }
 
-    LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs",
+    start_time = omp_get_wtime();
+
+    slave_sync_maxsat(result);
+
+    LOG_DEBUG("mpi:%zu total_req_time:%fs total_computation_time:%fs total_thread_wait_time:%fs sync_time:%fs",
               mpi_rank(),
               total_req_time,
               total_computation_time,
-              total_thread_wait_time);
-
-    slave_sync_maxsat(result);
+              total_thread_wait_time,
+              omp_get_wtime() - start_time);
 }
 
 
