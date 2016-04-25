@@ -63,8 +63,7 @@ void slave_request_problem(struct result *result,
                            size_t *num_init_vars);
 void master_give_problem(struct result *result,
                          uint64_t prob,
-                         uint64_t num_init_vars,
-                         uint64_t *best_maxsat_mpi_rank);
+                         uint64_t num_init_vars);
 /*sync maxsat step*/
 void slave_sync_maxsat(struct result *result);
 void master_sync_maxsat(struct result *result);
@@ -74,7 +73,7 @@ void master_sync_maxsat(struct result *result);
 uint8_t num_bit_len(int num);
 
 void maxsat_prob_division(const uint8_t num_vars,
-                          const size_t num_workers,                         
+                          const size_t num_workers,
                           uint64_t *num_problems,
                           uint64_t *num_init_vars);
 
@@ -145,7 +144,7 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
 }
 
 /* The protocol is the following:
- * 
+ *
  * A slave sends a request to master, in the format: |mpi_rank|maxsat|na|a[0]|a[1]|
  *  mpi_rank is it's mpi_rank, so the master know who to send the problem to.
  *  maxsat is it's current best maxsat,
@@ -157,10 +156,9 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  *  num_init_vars is self explanatory
  *  maxsat is the value of the best maxsat it has seen until now.
  *
- * Master uses sync_result to sync the the maxsat, na and assignment given by 
+ * Master uses sync_result to sync the the maxsat, na and assignment given by
  *  the slave with it's result.
  * Slave registers the maxsat if it's better than the one it has.
- * The master takes note of who was the last slave to improve the maxsat.
  *
  * When there are no more problems, the master answers with UINT_MAX64.
  * This signals the slave to stop solving problems.
@@ -184,10 +182,9 @@ const int PROBLEM_REQUEST_TAG = 1000;
 
 /* no tag needed since it's a broadcast
  * |maxsat|na|assignment[0]|assignment[1]*/
-const int MAXSAT_SYNC_LEN = 4; 
+const int MAXSAT_SYNC_LEN = 4;
 
 void maxsat_master(const struct crepr *crepr, struct result *result) {
-    uint64_t best_maxsat_mpi_rank = UINT64_MAX;
     uint64_t num_problems, num_init_vars;
 
     maxsat_prob_division(crepr_num_vars(crepr),
@@ -201,7 +198,7 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
 
     uint64_t cur_problem = 0;
     while(cur_problem < num_problems) {
-        master_give_problem(result, cur_problem, num_init_vars, &best_maxsat_mpi_rank);
+        master_give_problem(result, cur_problem, num_init_vars);
         ++cur_problem;
     }
 
@@ -209,20 +206,16 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
 
     uint64_t num_shutdown_sent = 0;
     while(num_shutdown_sent < (mpi_size() - 1)) {
-        master_give_problem(result, UINT64_MAX, 0, &best_maxsat_mpi_rank);
+        master_give_problem(result, UINT64_MAX, 0);
         ++num_shutdown_sent;
     }
 
-    ASSERT_MSG(best_maxsat_mpi_rank != UINT64_MAX,
-               "Didn't register mpi rank with best maxsat.");
     master_sync_maxsat(result);
 
     LOG_DEBUG("mpi:%zu took %fs to sync.", mpi_rank(), omp_get_wtime() - sync_start_time);
 
     return;
 
-on_error:
-    ASSERT_EXIT();
 }
 
 
@@ -241,7 +234,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
 
     /*these variables are shared, but written only my omp master when the other
      *  threads are waiting, so no synchronization is used to access them*/
-    uint64_t prob, num_init_vars; 
+    uint64_t prob, num_init_vars;
     #pragma omp parallel
     while (true) {
         #pragma omp master
@@ -250,10 +243,10 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
             first_finish_time = -1;
             last_finish_time = 0;
 
-            double req_time = start_time; 
+            double req_time = start_time;
             slave_request_problem(&slave_result, &prob, &num_init_vars);
             total_req_time += omp_get_wtime() - req_time;
-    
+
             LOG_DEBUG("mpi:%zu received problem:%"PRIu64, mpi_rank(), prob);
 
             /*The na sent is for the problem solved, so we have to clean it*/
@@ -362,8 +355,7 @@ void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_in
 
 void master_give_problem(struct result *result,
                          uint64_t prob,
-                         uint64_t num_init_vars,
-                         uint64_t *best_maxsat_mpi_rank) {
+                         uint64_t num_init_vars) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
     maxsat_problem_recv(msg_buf, MPI_ANY_SOURCE);
@@ -372,10 +364,6 @@ void master_give_problem(struct result *result,
     uint64_t slave_maxsat = msg_buf[1];
     uint64_t slave_na = msg_buf[2];
     struct assignment slave_assignment = new_stack_assignment_from_num(msg_buf + 3);
-
-    if(slave_maxsat > result_maxsat(result)) {
-        *best_maxsat_mpi_rank = requester;
-    }
 
     struct result slave_result = new_stack_result();
     result_set_maxsat(&slave_result, slave_maxsat);
@@ -423,13 +411,13 @@ void master_sync_maxsat(struct result *result) {
 }
 
 
-/* Calculate the maxsat result for the crepr. 
+/* Calculate the maxsat result for the crepr.
  * schedule(dynamic) guarantees that all threads keep running for the
- * same approximate ammount of time, because they keep getting 
+ * same approximate ammount of time, because they keep getting
  * new problems if they finish early(vs static schedule).
  *nowait is used to measure the time difference between first and last
- * thread finishing. Without nowait there'd be a barrier before 
- * measuring the time*/ 
+ * thread finishing. Without nowait there'd be a barrier before
+ * measuring the time*/
 void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_init_vars, uint64_t prob) {
     struct result thread_result = new_stack_result();
     #pragma omp critical
@@ -468,7 +456,7 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
     }
 
 
-    #pragma omp critical 
+    #pragma omp critical
     sync_result(result, &thread_result);
 }
 
@@ -506,9 +494,9 @@ void maxsat_prob_division(const uint8_t num_vars,
                           uint64_t *num_init_vars) {
 
     /*We would like that each process have 32(log2(32)=5) problems.*/
-    const uint8_t num_vars_per_worker = 5; 
+    const uint8_t num_vars_per_worker = 5;
     /*we want each subproblem to have at least 4096 evaluations*/
-    const uint8_t min_num_vars_remaining = 12; 
+    const uint8_t min_num_vars_remaining = 12;
 
     /* num_bit_len() - 1 because when there's only 1 worker, we don't want to
      *  add more vars.*/
@@ -519,7 +507,7 @@ void maxsat_prob_division(const uint8_t num_vars,
             num_workers,
             *num_init_vars,
             num_vars);
-    
+
     /*too many workers for problem size,
      * would give more init_vars than there are vars*/
     if (num_vars < min_num_vars_remaining) {
@@ -695,7 +683,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
     enum clause_value ret = FALSE;
     for(size_t i = 0; i < clause.len; i++) {
         // may be > 0 or < 0 if should be negated (~)
-        int8_t var = clause.first[i]; 
+        int8_t var = clause.first[i];
         int8_t var_id = abs(var);
 
         if(var_id > clauses->last_assigned_var) {
@@ -707,7 +695,7 @@ void eval_clause(struct clauses *clauses, uint16_t clause_id) {
         bool var_value =  assignment_get_var(clauses->assignment, var_id);
         if( (var_value && (var > 0)) || (!var_value && (var < 0))) {
             /* clause is true, because:
-             * var is assigned true and var is positive in clause 
+             * var is assigned true and var is positive in clause
              * OR var is assigned false and var is negative in clause*/
 
             /*var_id sets the clause to true, so we write it in the filter*/

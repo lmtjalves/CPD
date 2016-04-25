@@ -55,7 +55,7 @@ static void parse_clauses(const char *file_text,
                           uint32_t *clauses_index,
                           int8_t *clauses);
 static void fill_var_clauses_index(struct var_count var_count,
-                                   const uint32_t *clauses_index, 
+                                   const uint32_t *clauses_index,
                                    const int8_t *clauses,
                                    uint32_t *var_clauses_index,
                                    uint16_t *var_clauses);
@@ -67,7 +67,7 @@ static void fill_var_clauses_index(struct var_count var_count,
 struct new_crepr new_crepr (const char *file_path) {
     /* We read the file two times.
      * The first time we find out the total number of varibles, clauses, etc
-     * Then we alloc the memory, 
+     * Then we alloc the memory,
      * The second time we fill the data structures*/
     struct new_crepr ret = {.success = true, .crepr = NULL};
     char *file_text = NULL;
@@ -82,7 +82,7 @@ struct new_crepr new_crepr (const char *file_path) {
         file_text = file_to_string(file_path);
         ASSERT_NON_NULL(file_text);
 
-        var_count_ret = var_count(file_text); 
+        var_count_ret = var_count(file_text);
         ASSERT_MSG(var_count_ret.success, "");
 
     }
@@ -137,7 +137,7 @@ struct new_crepr new_crepr (const char *file_path) {
 
 on_error:
     if (ret.crepr != NULL) {
-        free_crepr(ret.crepr); 
+        free_crepr(ret.crepr);
     }
     if (file_text != NULL) {
         free(file_text);
@@ -220,7 +220,8 @@ on_error:
  */
 
 static char *file_to_string(const char *file_path) {
-    size_t file_size = 0; 
+    char *file_text = NULL;
+    size_t file_size = 0;
 
     FILE *file = fopen(file_path, "r");
     ASSERT_MSG(file != NULL, "Failed to open file.");
@@ -232,7 +233,7 @@ static char *file_to_string(const char *file_path) {
 
     rewind(file);
     /*In the worst case we'll allocate ~6MB*/
-    char *file_text = malloc(sizeof(*file_text) * (file_size + 1));
+    file_text = malloc(sizeof(*file_text) * (file_size + 1));
     ASSERT_NON_NULL(file_text);
     size_t num_read = fread(file_text, sizeof(*file_text), file_size, file);
     ASSERT_MSG(num_read == file_size, "Couldn't read whole file.");
@@ -274,7 +275,7 @@ static struct var_count var_count(const char *file_text) {
     parsed_long = parse_long(parsed_long.str_next_pos);
     ASSERT_MSG(parsed_long.success, "Failed to parse num clauses");
     ASSERT_MSG_VA(parsed_long.value >= 1
-                  && parsed_long.value <= MAX_NUM_CLAUSES, 
+                  && parsed_long.value <= MAX_NUM_CLAUSES,
                   "Number of clauses not within bounds: expected_num_clauses '%zu'",
                   parsed_long.value);
     ret.num_clauses = parsed_long.value;
@@ -387,7 +388,7 @@ static void parse_clauses(const char *file_text,
 
 
         if(parsed_long.value == 0) {
-            *clauses_index = (cur_clauses - clauses); 
+            *clauses_index = (cur_clauses - clauses);
             ++clauses_index;
         } else {
             *cur_clauses = parsed_long.value;
@@ -401,7 +402,7 @@ static void parse_clauses(const char *file_text,
  *We implement as a pair of arrays like clauses_index.
  */
 static void fill_var_clauses_index(struct var_count var_count,
-                                   const uint32_t *clauses_index, 
+                                   const uint32_t *clauses_index,
                                    const int8_t *clauses,
                                    uint32_t *var_clauses_index,
                                    uint16_t *var_clauses) {
@@ -418,7 +419,7 @@ static void fill_var_clauses_index(struct var_count var_count,
 
     size_t clause;
     /*cur pos between clauses_index[var] and clauses_index[var+1]*/
-    size_t cur_var_clause[var_count.num_vars + 1]; 
+    size_t cur_var_clause[var_count.num_vars + 1];
     memset(cur_var_clause, 0, sizeof(cur_var_clause));
 
     for(clause = 0; clause < var_count.num_clauses; ++clause) {
@@ -440,4 +441,3 @@ static void fill_var_clauses_index(struct var_count var_count,
 #undef MAX_NUM_VARS_CLAUSE
 #undef MAX_VAR_STR_SIZE
 #undef MAX_NUM_CLAUSES
-
