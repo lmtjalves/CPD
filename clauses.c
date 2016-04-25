@@ -60,10 +60,10 @@ void maxsat_problem_send(uint64_t *msg, int dest);
 void maxsat_problem_recv(uint64_t *msg, int source);
 void slave_request_problem(struct result *result,
                            uint64_t *prob,
-                           size_t *num_initialized_vars);
+                           size_t *num_init_vars);
 void master_give_problem(struct result *result,
                          uint64_t prob,
-                         uint64_t num_initialized_vars,
+                         uint64_t num_init_vars,
                          uint64_t *best_maxsat_mpi_rank);
 /*sync maxsat step*/
 void slave_sync_maxsat(struct result *result);
@@ -76,7 +76,7 @@ uint8_t num_bit_len(int num);
 void maxsat_prob_division(const uint8_t num_vars,
                           const size_t num_workers,                         
                           uint64_t *num_problems,
-                          uint64_t *num_initialized_vars);
+                          uint64_t *num_init_vars);
 
 /*ancillary*/
 void sync_result(struct result *result, struct result *sync_result);
@@ -85,7 +85,7 @@ void count_thread_time(double start_time,
                         double *last_finish_time);
 
 /*maxsat solving functions*/
-void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_initialized_vars, uint64_t prob);
+void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_init_vars, uint64_t prob);
 void partial_maxsat(struct clauses *clauses, struct result *result);
 void do_partial_maxsat(struct clauses *clauses, struct result *result, uint8_t var);
 bool should_prune(struct clauses *clauses, struct result *result);
@@ -152,9 +152,9 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  *  na is the number of assignments it for that maxsat it got in the last problem.
  *  a is a maxsat assignment
  *
- * The master answers a request in the format: |prob|num_initialized_vars|maxsat|0|0|
+ * The master answers a request in the format: |prob|num_init_vars|maxsat|0|0|
  *  prob is the problem the slave must solve
- *  num_initialized_vars is self explanatory
+ *  num_init_vars is self explanatory
  *  maxsat is the value of the best maxsat it has seen until now.
  *
  * Master uses sync_result to sync the the maxsat, na and assignment given by 
@@ -188,20 +188,20 @@ const int MAXSAT_SYNC_LEN = 4;
 
 void maxsat_master(const struct crepr *crepr, struct result *result) {
     uint64_t best_maxsat_mpi_rank = UINT64_MAX;
-    uint64_t num_problems, num_initialized_vars;
+    uint64_t num_problems, num_init_vars;
 
     maxsat_prob_division(crepr_num_vars(crepr),
                          mpi_size() - 1, /*-1 because the master isn't a worker*/
                          &num_problems,
-                         &num_initialized_vars);
+                         &num_init_vars);
 
     LOG_DEBUG("Distributing %"PRIu64 " problems with %"PRIu64" initialized vars.",
               num_problems,
-              num_initialized_vars);
+              num_init_vars);
 
     uint64_t cur_problem = 0;
     while(cur_problem < num_problems) {
-        master_give_problem(result, cur_problem, num_initialized_vars, &best_maxsat_mpi_rank);
+        master_give_problem(result, cur_problem, num_init_vars, &best_maxsat_mpi_rank);
         ++cur_problem;
     }
 
@@ -241,7 +241,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
 
     /*these variables are shared, but written only my omp master when the other
      *  threads are waiting, so no synchronization is used to access them*/
-    uint64_t prob, num_initialized_vars; 
+    uint64_t prob, num_init_vars; 
     #pragma omp parallel
     while (true) {
         #pragma omp master
@@ -251,7 +251,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
             last_finish_time = 0;
 
             double req_time = start_time; 
-            slave_request_problem(&slave_result, &prob, &num_initialized_vars);
+            slave_request_problem(&slave_result, &prob, &num_init_vars);
             total_req_time += omp_get_wtime() - req_time;
     
             LOG_DEBUG("mpi:%zu received problem:%"PRIu64, mpi_rank(), prob);
@@ -269,7 +269,7 @@ void maxsat_slave(const struct crepr *crepr, struct result *result) {
             break;
         }
 
-        do_maxsat(crepr, &slave_result, num_initialized_vars, prob);
+        do_maxsat(crepr, &slave_result, num_init_vars, prob);
 
         #pragma omp critical
         count_thread_time(start_time, &first_finish_time, &last_finish_time);
@@ -339,7 +339,7 @@ on_error:
 }
 
 
-void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_initialized_vars) {
+void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_init_vars) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
     msg_buf[0] = mpi_rank();
@@ -352,7 +352,7 @@ void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_in
     maxsat_problem_recv(msg_buf, mpi_master());
 
     *prob = msg_buf[0];
-    *num_initialized_vars = msg_buf[1];
+    *num_init_vars = msg_buf[1];
     uint64_t master_maxsat = msg_buf[2];
 
     if(master_maxsat > result_maxsat(result)) {
@@ -362,7 +362,7 @@ void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_in
 
 void master_give_problem(struct result *result,
                          uint64_t prob,
-                         uint64_t num_initialized_vars,
+                         uint64_t num_init_vars,
                          uint64_t *best_maxsat_mpi_rank) {
     uint64_t msg_buf[PROBLEM_REQUEST_LEN];
 
@@ -384,7 +384,7 @@ void master_give_problem(struct result *result,
     sync_result(result, &slave_result);
 
     msg_buf[0] = prob;
-    msg_buf[1] = num_initialized_vars;
+    msg_buf[1] = num_init_vars;
     msg_buf[2] = result_maxsat(result);
     msg_buf[3] = 0;
     msg_buf[4] = 0;
@@ -430,13 +430,13 @@ void master_sync_maxsat(struct result *result) {
  *nowait is used to measure the time difference between first and last
  * thread finishing. Without nowait there'd be a barrier before 
  * measuring the time*/ 
-void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_initialized_vars, uint64_t prob) {
+void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_init_vars, uint64_t prob) {
     struct result thread_result = new_stack_result();
     #pragma omp critical
     result_set_maxsat(&thread_result, result_maxsat(result));
 
     uint64_t num_subprob_init_threads, num_subprobs, subprob;
-    maxsat_prob_division(crepr_num_vars(crepr) - num_initialized_vars,
+    maxsat_prob_division(crepr_num_vars(crepr) - num_init_vars,
                          omp_get_num_threads(),
                          &num_subprobs,
                          &num_subprob_init_threads);
@@ -445,14 +445,14 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
         struct clauses clauses;
         ALLOC_LOCAL_CLAUSES(clauses, crepr);
 
-        /*the least num_initialized_vars least significant bits of prob
-         * have the assignments for the num_initialized_vars least sig bits*/
-        uint64_t assignment_num[2] = {0, (prob << 1) + (subprob << (num_initialized_vars + 1))};
+        /*the least num_init_vars least significant bits of prob
+         * have the assignments for the num_init_vars least sig bits*/
+        uint64_t assignment_num[2] = {0, (prob << 1) + (subprob << (num_init_vars + 1))};
         struct assignment assignment = new_stack_assignment_from_num(assignment_num);
 
-        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_initialized_vars + num_subprob_init_threads);
+        INIT_LOCAL_CLAUSES(clauses, crepr, assignment, num_init_vars + num_subprob_init_threads);
 
-        /*Solve the partial problem starting with num_initialized_vars
+        /*Solve the partial problem starting with num_init_vars
          * assigned*/
         partial_maxsat(&clauses, &thread_result);
 
@@ -461,7 +461,7 @@ void do_maxsat(const struct crepr *crepr, struct result *result, uint8_t num_ini
                 subprob,
                 num_subprobs - 1,
                 prob,
-                (((size_t)1 << num_initialized_vars)  - 1),
+                (((size_t)1 << num_init_vars)  - 1),
                 result_maxsat(&thread_result),
                 result_na(&thread_result));
 
@@ -493,7 +493,7 @@ uint8_t num_bit_len(int num) {
     return cur_bit;
 }
 
-/* Chooses how many num_initialized_vars and problems in function of num_vars
+/* Chooses how many num_init_vars and problems in function of num_vars
  *  and num_workers
  *
  * num_problems is the value of the number of problems,
@@ -503,7 +503,7 @@ uint8_t num_bit_len(int num) {
 void maxsat_prob_division(const uint8_t num_vars,
                           const size_t num_workers,
                           uint64_t *num_problems,
-                          uint64_t *num_initialized_vars) {
+                          uint64_t *num_init_vars) {
 
     /*We would like that each process have 32(log2(32)=5) problems.*/
     const uint8_t num_vars_per_worker = 5; 
@@ -512,28 +512,28 @@ void maxsat_prob_division(const uint8_t num_vars,
 
     /* num_bit_len() - 1 because when there's only 1 worker, we don't want to
      *  add more vars.*/
-    *num_initialized_vars = num_vars_per_worker + num_bit_len(num_workers) - 1;
+    *num_init_vars = num_vars_per_worker + num_bit_len(num_workers) - 1;
 
     #pragma omp master
-    LOG_DEBUG("maxsat: %zu workers, num_initialized_vars %" PRIu64 " of %"PRIu8 ,
+    LOG_DEBUG("maxsat: %zu workers, num_init_vars %" PRIu64 " of %"PRIu8 ,
             num_workers,
-            *num_initialized_vars,
+            *num_init_vars,
             num_vars);
     
     /*too many workers for problem size,
      * would give more init_vars than there are vars*/
     if (num_vars < min_num_vars_remaining) {
-        *num_initialized_vars = 0;
+        *num_init_vars = 0;
         #pragma omp master
-        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu64, *num_initialized_vars);
-    } else if(*num_initialized_vars > num_vars
-       || ((num_vars - *num_initialized_vars) < min_num_vars_remaining) ) {
-        *num_initialized_vars = num_vars - min_num_vars_remaining;
+        LOG_DEBUG("Reducing num_init_vars to %" PRIu64, *num_init_vars);
+    } else if(*num_init_vars > num_vars
+       || ((num_vars - *num_init_vars) < min_num_vars_remaining) ) {
+        *num_init_vars = num_vars - min_num_vars_remaining;
         #pragma omp master
-        LOG_DEBUG("Reducing num_initialized_vars to %" PRIu64, *num_initialized_vars);
+        LOG_DEBUG("Reducing num_init_vars to %" PRIu64, *num_init_vars);
     }
 
-    *num_problems = 1 << (*num_initialized_vars);
+    *num_problems = 1 << (*num_init_vars);
     return;
 }
 
