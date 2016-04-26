@@ -52,7 +52,7 @@ do { \
 /*ways to solve maxsat*/
 void maxsat_single(const struct crepr *crepr, struct result *result);
 void maxsat_master(const struct crepr *crepr, struct result *result);
-void maxsat_slave(const struct crepr *crepr, struct result *result);
+void maxsat_slave(const struct crepr *crepr);
 
 /*master/slave communication*/
 /*problem step*/
@@ -103,7 +103,7 @@ struct result maxsat(const struct crepr *crepr) {
     } else if (is_mpi_master()) {
         maxsat_master(crepr, &result);
     } else {
-        maxsat_slave(crepr, &result);
+        maxsat_slave(crepr);
     }
 
     LOG_DEBUG("mpi:%zu finished maxsat. maxsat:%"PRIu16" na:%"PRIu64" assignment:%.16"PRIx64" %.16"PRIx64,
@@ -213,7 +213,7 @@ void maxsat_master(const struct crepr *crepr, struct result *result) {
 }
 
 
-void maxsat_slave(const struct crepr *crepr, struct result *result) {
+void maxsat_slave(const struct crepr *crepr) {
     struct result slave_result = new_stack_result();
     LOG_DEBUG("mpi:%zu Solving maxsat!", mpi_rank());
 

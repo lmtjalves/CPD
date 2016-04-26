@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+#cmake_minimum_required(VERSION 3.3)
 project(cpd)
 
 if (NOT CMAKE_BUILD_TYPE)
@@ -6,8 +6,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-set(WARNING_FLAGS "-Wall -Wextra  -Wshadow -Wstrict-aliasing -Wundef -Wpointer-arith -Wcast-align -Wwrite-strings \
-                   -Winit-self -Wuninitialized -Wunknown-pragmas")
+set(WARNING_FLAGS "-Wall -Wextra  -Wshadow -Wstrict-aliasing -Wundef -Wpointer-arith -Wcast-align -Wwrite-strings -Winit-self -Wuninitialized -Wunknown-pragmas")
 set (OMP_FLAGS "-fopenmp")
 set(COMMON_FLAGS "${WARNING_FLAGS} ${OMP_FLAGS} -std=c11 -Werror -pedantic")
 
