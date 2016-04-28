@@ -4,6 +4,7 @@
 #include "clauses.h"
 #include "result.h"
 #include "debug.h"
+#include "mpi_utils.h"
 
 #include <omp.h>
 #include <mpi.h>
@@ -52,8 +53,9 @@ int main(int argc, char **argv) {
     struct result result = maxsat(crepr);
     LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
 
-    print_result(crepr, result);
-
+    if(is_mpi_master()) {
+        print_result(crepr, result);
+    }
 
     /*Finalization*/
     free_crepr(crepr);
@@ -75,7 +77,7 @@ static struct parse_args parse_args(int argc, char **argv) {
                              .debug = false,
                              .info = false,
                              .filename = NULL};
-    
+
     ASSERT_MSG(argc <= 4 && argc >= 2, "Invalid number of arguments!\n prog_name [--parse-only] [--debug|--info] filename");
     for (int i = 1; i < argc; ++i) {
         if ((strcmp(argv[i], "--parse-only") == 0) && !ret.parse_only) {
@@ -108,12 +110,12 @@ static void set_debug_level(struct parse_args args) {
     }
 }
 
-static void print_result(struct crepr *crepr, struct result result) { 
+static void print_result(struct crepr *crepr, struct result result) {
     printf("%" PRIu16 " %" PRIu64 "\n", result.maxsat_value, result.na);
 
     uint8_t num_vars = crepr_num_vars(crepr);
 
-    for(int i = 1; i <= num_vars; i++) { 
+    for(int i = 1; i <= num_vars; i++) {
         if(assignment_get_var(result.sample, i)) {
             printf("%d ", i);
         } else {
