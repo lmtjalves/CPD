@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
     /*Calculate maxsat*/
     start_time = omp_get_wtime();
     struct result result = maxsat(crepr);
-    LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
 
     if(is_mpi_master()) {
         print_result(crepr, result);
+        LOG_INFO("maxsat time: %fs", omp_get_wtime() - start_time);
     }
 
     /*Finalization*/
