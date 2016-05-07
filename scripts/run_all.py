@@ -7,6 +7,14 @@ import re
 thread_metrics = open('thread_metrics.csv', 'a')
 maxsat_metrics = open('maxsat_metrics.csv', 'a')
 
+# Configurations
+num_threads=4
+slaves=[1,2,4,8,16,32,64]
+tests=[1,2,3]
+# 1 if mpi or mpi and omp, 0 if serial (just to add a master or not)
+parallel=1
+
+
 
 def run_and_store_results(ex_name, filepath, num_slaves, num_threads_per_slave, num_iteration):
   # print filepath + str(num_slaves)
@@ -14,13 +22,11 @@ def run_and_store_results(ex_name, filepath, num_slaves, num_threads_per_slave, 
   out_file   = ex_name + "_" + str(num_slaves) + "_" + str(num_iteration) + ".out"
   log_file   = ex_name + "_" + str(num_slaves) + "_" + str(num_iteration) + ".log"
   
-  new_env = os.environ.copy()
-  new_env["OMP_NUM_THREADS"] = str(num_threads_per_slave)
 
   if (not os.path.isfile(error_file) or os.stat(out_file).st_size == 0):
     result = Popen([
         "/mnt/cirrus/users/2/6/ist175926/condor_mpi",
-        "-n " + str(num_slaves + 1),
+        "-n " + str(num_slaves + parallel),
         "-o " + out_file,
         "-l " + log_file,
         "-e " + error_file,
@@ -63,9 +69,9 @@ def main():
     if filename.endswith(".in"):
       filepath = folder + "/" + filename
 
-      for num_cores in [1, 2, 4, 8, 16, 32, 64]:
-        for it in [1, 2, 3]:
-            run_and_store_results(filename, filepath, num_cores, 1, it)
+      for num_cores in slaves:
+        for it in tests:
+            run_and_store_results(filename, filepath, num_cores, num_threads, it)
 
 
 if __name__ == "__main__":
