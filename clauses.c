@@ -158,17 +158,7 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  *
  * When there are no more problems, the master answers with UINT_MAX64.
  * This signals the slave to stop solving problems.
- * After being signaled the slaves go to maxsat synchronization step.
- *
- * When all slaves are signaled, the master goes to the maxsat synchronization
- *  step.
- *
- * When on the maxsat sync step, the master broadcasts: |maxsat|na|a[0]|a[1]|
- *  maxsat is the best maxsat obtained
- *  na is the total number of assignments for that maxsat
- *  a is a maxsat assignment
- *
- * Now everyone has a valid result.
+ * Then the master moves on and the slaves stopped eventually.
  * */
 
 /* slave:  |rank|maxsat|na|assignment[0]|assignment[1]|
