@@ -161,7 +161,7 @@ void maxsat_single(const struct crepr *crepr, struct result *result) {
  * Then the master moves on and the slaves stopped eventually.
  * */
 
-/* slave:  |rank|maxsat|na|assignment[0]|assignment[1]|
+/* slave:  |rank|maxsat|na|assignment[1]|assignment[0]|
  * master: |prob|vars|maxsat|0|0| the 0s are so that we use the same len*/
 const int PROBLEM_REQUEST_LEN = 5;
 const int PROBLEM_REQUEST_TAG = 1000;
@@ -323,8 +323,8 @@ void slave_request_problem(struct result *result, uint64_t *prob, size_t *num_in
     msg_buf[0] = mpi_rank();
     msg_buf[1] = result_maxsat(result);
     msg_buf[2] = result_na(result);
-    msg_buf[3] = result_assignment(result).vars[0]; /*FIXME?*/
-    msg_buf[4] = result_assignment(result).vars[1]; /*FIXME?*/;
+    msg_buf[3] = result_assignment(result).vars[1]; /*FIXME?*/
+    msg_buf[4] = result_assignment(result).vars[0]; /*FIXME?*/;
 
     maxsat_problem_send(msg_buf, mpi_master());
     maxsat_problem_recv(msg_buf, mpi_master());
